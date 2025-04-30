@@ -28,7 +28,8 @@ class LombaSeeder extends Seeder
                 'periode_id' => 1,
                 'created_by' => 1,
                 'is_verified' => true,
-                'created_at' => now()
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

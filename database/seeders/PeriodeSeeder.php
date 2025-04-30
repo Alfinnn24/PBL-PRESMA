@@ -15,8 +15,8 @@ class PeriodeSeeder extends Seeder
     public function run(): void
     {
         DB::table('periode')->insert([
-            ['nama' => '2024/2025 Ganjil', 'tahun' => 2024, 'semester' => 'Ganjil'],
-            ['nama' => '2024/2025 Genap', 'tahun' => 2025, 'semester' => 'Genap'],
+            ['nama' => '2024/2025 Ganjil', 'tahun' => 2024, 'semester' => 'Ganjil', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => '2024/2025 Genap', 'tahun' => 2025, 'semester' => 'Genap', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }
