@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('lomba_id')->constrained('lomba');
             $table->foreignId('dosen_pembimbing_id')->constrained('dosen');
             $table->enum('status', ['Disetujui', 'Ditolak']);
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 

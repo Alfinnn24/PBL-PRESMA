@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('file_bukti');
             $table->enum('status', ['Pending', 'Disetujui', 'Ditolak']);
             $table->text('catatan');
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('mahasiswa_nim');
             $table->foreignId('prestasi_id')->constrained('prestasi');
             $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa');
+            $table->timestamps();
         });
     }
 

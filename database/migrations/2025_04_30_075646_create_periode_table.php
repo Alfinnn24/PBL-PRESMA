@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->string('nama');
             $table->integer('tahun');
             $table->enum('semester', ['Ganjil', 'Genap']);
+            $table->timestamps();
         });
     }
 

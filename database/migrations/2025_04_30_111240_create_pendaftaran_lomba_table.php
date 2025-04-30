@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('lomba_id')->constrained('lomba');
             $table->enum('status', ['Terdaftar', 'Selesai', 'Dibatalkan']);
             $table->string('hasil');
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 
