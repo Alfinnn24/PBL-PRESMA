@@ -9,15 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('prestasi', function (Blueprint $table) {
+        Schema::dropIfExists('pendaftaran_lomba');
+        Schema::create('pendaftaran_lomba', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_prestasi');
+            $table->string('mahasiswa_nim');
+            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa');
             $table->foreignId('lomba_id')->constrained('lomba');
-            $table->string('file_bukti');
-            $table->enum('status', ['Pending', 'Disetujui', 'Ditolak']);
-            $table->text('catatan');
+            $table->enum('status', ['Terdaftar', 'Selesai', 'Dibatalkan']);
+            $table->string('hasil');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('prestasi');
+        Schema::dropIfExists('pendaftaran_lomba');
     }
 };
