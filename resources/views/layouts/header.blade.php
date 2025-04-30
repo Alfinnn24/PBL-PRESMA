@@ -137,7 +137,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{url('logout')}}" role="button">
-                <i class="fas fa-sign-out-alt"></i>
+                <i class="fas fa-sign-out-alt" style="color: red;"></i>
             </a>
         </li>
     </ul>
