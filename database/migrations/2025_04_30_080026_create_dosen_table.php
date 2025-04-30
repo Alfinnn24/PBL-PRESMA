@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('dosen', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('user');
             $table->foreignId('program_studi_id')->constrained('program_studi');
             $table->string('nidn')->unique();
             $table->string('nama_lengkap');
