@@ -9,25 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('dosen', function (Blueprint $table) {
+        Schema::create('admin', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('user');
-            $table->foreignId('program_studi_id')->constrained('program_studi');
-            $table->string('nidn')->unique();
-            $table->string('nama_lengkap');
-            $table->string('no_telp');
-            $table->text('bidang_minat');
             $table->string('foto_profile')->nullable();
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('dosen');
+        Schema::dropIfExists('admin');
     }
 };

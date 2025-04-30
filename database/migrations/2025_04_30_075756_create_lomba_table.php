@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->foreignId('periode_id')->constrained('periode');
-            $table->foreignId('created_by')->constrained('users');
+            $table->foreignId('created_by')->constrained('user');
             $table->boolean('is_verified');
             $table->timestamp('created_at')->useCurrent();
         });

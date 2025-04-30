@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('mahasiswa', function (Blueprint $table) {
             $table->string('nim')->primary();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('user');
             $table->string('nama_lengkap');
             $table->year('angkatan');
             $table->string('no_telp');
