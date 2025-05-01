@@ -9,34 +9,34 @@ class UserModel extends Authenticatable
 {
     use HasFactory;
 
-    protected $table = 'user'; 
+    protected $table = 'user';
 
-    protected $primaryKey = 'id'; 
+    protected $primaryKey = 'id';
 
     protected $fillable = ['username', 'email', 'password', 'role', 'created_at', 'updated_at'];
 
     protected $hidden = ['password'];
-  
+
     protected $casts = ['password' => 'hashed'];
- 
+
 
     public function mahasiswa()
     {
-        return $this->hasOne(Mahasiswa::class);
+        return $this->hasOne(MahasiswaModel::class);
     }
 
     public function dosen()
     {
-        return $this->hasOne(Dosen::class);
+        return $this->hasOne(DosenModel::class);
     }
 
     public function admin()
     {
-        return $this->hasOne(Admin::class);
+        return $this->hasOne(AdminModel::class);
     }
 
     public function lombas()
     {
-        return $this->hasMany(Lomba::class, 'created_by');
+        return $this->hasMany(LombaModel::class, 'created_by');
     }
 }
