@@ -30,16 +30,6 @@
                 <form action="{{ url('register') }}" method="POST" id="form-register">
                     @csrf
                     <div class="input-group mb-3">
-                        <input type="text" id="nama" name="nama" class="form-control" placeholder="Full Name"
-                            required>
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-user"></span>
-                            </div>
-                        </div>
-                        {{-- <small id="error-nama" class="error-text text-danger"></small> --}}
-                    </div>
-                    <div class="input-group mb-3">
                         <input type="text" id="username" name="username" class="form-control" placeholder="Username"
                             required>
                         <div class="input-group-append">
@@ -47,18 +37,27 @@
                                 <span class="fas fa-user"></span>
                             </div>
                         </div>
-                        {{-- <small id="error-username" class="error-text text-danger"></small> --}}
                     </div>
+
                     <div class="input-group mb-3">
-                        <input type="password" id="password" name="password" class="form-control"
-                            placeholder="Password" required>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="Email" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Password"
+                            required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
                             </div>
                         </div>
-                        <small id="error-password" class="error-text text-danger"></small>
                     </div>
+
                     <div class="input-group mb-3">
                         <input type="password" id="password_confirmation" name="password_confirmation"
                             class="form-control" placeholder="Re-type Password" required>
@@ -67,14 +66,24 @@
                                 <span class="fas fa-lock"></span>
                             </div>
                         </div>
-                        {{-- <small id="error-password_confirmation" class="error-text text-danger"></small> --}}
                     </div>
+
+                    <div class="input-group mb-3">
+                        <select name="role" id="role" class="form-control text-secondary" required>
+                            <option value="">- Pilih Role -</option>
+                            @foreach ($roles as $role)
+                                <option value="{{ $role }}">{{ ucfirst($role) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div class="row">
                         <div class="col-4 offset-8">
                             <button type="submit" class="btn btn-primary btn-block">Register</button>
                         </div>
                     </div>
                 </form>
+
                 <p class="mt-3 mb-0">
                     Already have an account? <a href="{{ url('login') }}" class="text-center">Login Here</a>
                 </p>
@@ -95,13 +104,13 @@
     <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const dropdown = document.getElementById('level_id');
             if (!dropdown.value) {
                 dropdown.classList.add('text-secondary');
             }
 
-            dropdown.addEventListener('change', function() {
+            dropdown.addEventListener('change', function () {
                 if (dropdown.value) {
                     dropdown.classList.remove('text-secondary');
                     dropdown.style.color = 'black';
@@ -112,26 +121,28 @@
             });
         });
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             $("#form-register").validate({
-                rules: {
-                    nama: {
-                        required: true,
-                        minlength: 3
-                    },
+               rules: {
                     username: {
                         required: true,
                         minlength: 4,
                         maxlength: 20
                     },
+                    email: {
+                        required: true,
+                        email: true
+                    },
                     password: {
                         required: true,
-                        minlength: 5,
-                        maxlength: 20
+                        minlength: 5
                     },
                     password_confirmation: {
                         required: true,
                         equalTo: "#password"
+                    },
+                    role: {
+                        required: true
                     }
                 },
                 messages: {
@@ -139,23 +150,23 @@
                         equalTo: "Password tidak sama!"
                     }
                 },
-                submitHandler: function(form) {
+                submitHandler: function (form) {
                     $.ajax({
                         url: form.action,
                         type: form.method,
                         data: $(form).serialize(),
-                        success: function(response) {
+                        success: function (response) {
                             if (response.status) {
                                 Swal.fire({
                                     icon: 'success',
                                     title: "Register Berhasil",
                                     text: response.message,
-                                }).then(function() {
+                                }).then(function () {
                                     window.location = response.redirect;
                                 });
                             } else {
                                 $('.error-text').text('');
-                                $.each(response.msgField, function(prefix, val) {
+                                $.each(response.msgField, function (prefix, val) {
                                     $("#error-" + prefix).text(val[0]);
                                 });
                                 Swal.fire({
@@ -169,14 +180,14 @@
                     return false;
                 },
                 errorElement: "span",
-                errorPlacement: function(error, element) {
+                errorPlacement: function (error, element) {
                     error.addClass('invalid-feedback');
                     element.closest('.input-group').append(error);
                 },
-                highlight: function(element, errorClass, validClass) {
+                highlight: function (element, errorClass, validClass) {
                     $(element).addClass('is-invalid');
                 },
-                unhighlight: function(element, errorClass, validClass) {
+                unhighlight: function (element, errorClass, validClass) {
                     $(element).removeClass('is-invalid');
                 }
             });
