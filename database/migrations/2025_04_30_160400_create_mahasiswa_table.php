@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -21,7 +20,6 @@ return new class extends Migration
             $table->string('alamat');
             $table->foreignId('program_studi_id')->constrained('program_studi');
             $table->text('bidang_keahlian');
-            $table->text('sertifikasi');
             $table->text('pengalaman');
             $table->string('foto_profile')->nullable();
             $table->timestamps();

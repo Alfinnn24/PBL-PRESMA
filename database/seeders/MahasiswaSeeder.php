@@ -24,7 +24,6 @@ class MahasiswaSeeder extends Seeder
                 'alamat' => 'Jl. Merdeka No. 10',
                 'program_studi_id' => 1,
                 'bidang_keahlian' => 'Web Development',
-                'sertifikasi' => 'AWS Cloud, TOEFL',
                 'pengalaman' => 'Magang di Telkom',
                 'foto_profile' => null,
                 'created_at' => now(),
