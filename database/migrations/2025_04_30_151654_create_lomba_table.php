@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,7 +16,7 @@ return new class extends Migration
             $table->string('nama');
             $table->string('kategori');
             $table->string('penyelenggara');
-            $table->string('tingkat');
+            $table->enum('tingkat', ['Kota/Kabupaten', 'Provinsi', 'Nasional', 'Internasional']);
             $table->text('bidang_keahlian');
             $table->text('persyaratan');
             $table->string('link_registrasi');
