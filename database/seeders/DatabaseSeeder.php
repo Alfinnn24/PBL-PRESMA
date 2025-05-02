@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             DosenSeeder::class,
             MahasiswaSeeder::class,
+            SertifikasiSeeder::class,
             DosenPembimbingSeeder::class,
             LombaSeeder::class,
             PrestasiSeeder::class,

@@ -42,6 +42,11 @@ class MahasiswaModel extends Model
     {
         return $this->hasMany(RekomendasiLombaModel::class, 'mahasiswa_nim', 'nim');
     }
+
+    public function sertifikasis()
+    {
+        return $this->hasMany(SertifikasiModel::class, 'mahasiswa_nim', 'nim');
+    }
 }
 
 ?>
