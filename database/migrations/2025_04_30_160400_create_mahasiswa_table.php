@@ -13,17 +13,18 @@ return new class extends Migration {
         Schema::dropIfExists('mahasiswa');
         Schema::create('mahasiswa', function (Blueprint $table) {
             $table->string('nim')->primary();
-            $table->foreignId('user_id')->constrained('user');
+            $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
             $table->string('nama_lengkap');
-            $table->year('angkatan');
-            $table->string('no_telp');
-            $table->string('alamat');
-            $table->foreignId('program_studi_id')->constrained('program_studi');
-            $table->text('bidang_keahlian');
-            $table->text('pengalaman');
+            $table->year('angkatan')->nullable();
+            $table->string('no_telp')->nullable();
+            $table->string('alamat')->nullable();
+            $table->foreignId('program_studi_id')->nullable()->constrained('program_studi');
+            $table->text('bidang_keahlian')->nullable();
+            $table->text('pengalaman')->nullable();
             $table->string('foto_profile')->nullable();
             $table->timestamps();
         });
+
     }
 
     /**

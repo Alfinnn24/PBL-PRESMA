@@ -30,7 +30,7 @@
                 <form action="{{ url('register') }}" method="POST" id="form-register">
                     @csrf
                     <div class="input-group mb-3">
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Username"
+                        <input type="text" id="username" name="username" class="form-control" placeholder="NIM"
                             required>
                         <div class="input-group-append">
                             <div class="input-group-text">
@@ -38,6 +38,17 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="input-group mb-3">
+                        <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama Lengkap"
+                            required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user-tag"></span>
+                            </div>
+                        </div>
+                    </div>
+
 
                     <div class="input-group mb-3">
                         <input type="email" id="email" name="email" class="form-control" placeholder="Email" required>
@@ -67,13 +78,15 @@
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" name="role" id="role" value="admin"> {{-- nanti diubah valuenya jadi mahasiswa only --}}
-                    {{-- kalau mau bisa ubah value role uncomment yang bawah rek buat sementara aku pakek default admin doang --}}
+                    <input type="hidden" name="role" id="role" value="mahasiswa"> {{-- nanti diubah valuenya jadi
+                    mahasiswa only --}}
+                    {{-- kalau mau bisa ubah value role uncomment yang bawah rek buat sementara aku pakek default admin
+                    doang --}}
                     {{-- <div class="input-group mb-3">
                         <select name="role" id="role" class="form-control text-secondary" required>
                             <option value="">- Pilih Role -</option>
                             @foreach ($roles as $role)
-                                <option value="{{ $role }}">{{ ucfirst($role) }}</option>
+                            <option value="{{ $role }}">{{ ucfirst($role) }}</option>
                             @endforeach
                         </select>
                     </div> --}}
@@ -105,26 +118,30 @@
     <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const dropdown = document.getElementById('level_id');
-            if (!dropdown.value) {
-                dropdown.classList.add('text-secondary');
-            }
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     const dropdown = document.getElementById('level_id');
+        //     if (!dropdown.value) {
+        //         dropdown.classList.add('text-secondary');
+        //     }
 
-            dropdown.addEventListener('change', function () {
-                if (dropdown.value) {
-                    dropdown.classList.remove('text-secondary');
-                    dropdown.style.color = 'black';
-                } else {
-                    dropdown.classList.add('text-secondary');
-                    dropdown.style.color = '';
-                }
-            });
-        });
+        //     dropdown.addEventListener('change', function () {
+        //         if (dropdown.value) {
+        //             dropdown.classList.remove('text-secondary');
+        //             dropdown.style.color = 'black';
+        //         } else {
+        //             dropdown.classList.add('text-secondary');
+        //             dropdown.style.color = '';
+        //         }
+        //     });
+        // });
 
         $(document).ready(function () {
             $("#form-register").validate({
-               rules: {
+                rules: {
+                    nama: {
+                        required: true,
+                        minlength: 3
+                    },
                     username: {
                         required: true,
                         minlength: 4,
@@ -147,6 +164,10 @@
                     }
                 },
                 messages: {
+                    nama: {
+                        required: "Nama lengkap wajib diisi",
+                        minlength: "Nama harus terdiri dari minimal 3 karakter"
+                    },
                     password_confirmation: {
                         equalTo: "Password tidak sama!"
                     }

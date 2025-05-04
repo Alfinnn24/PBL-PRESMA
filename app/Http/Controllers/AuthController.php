@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MahasiswaModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -67,6 +68,7 @@ class AuthController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
                 'username' => 'required|string|min:3|unique:user,username',
+                'nama' => 'required|string|min:3',
                 'email' => 'required|email|unique:user,email',
                 'password' => 'required|string|min:5',
                 'role' => 'required|in:admin,mahasiswa,dosen'
@@ -89,10 +91,11 @@ class AuthController extends Controller
                 'role' => $request->role,
             ]);
 
-            // Jika role admin, tambahkan data ke tabel admin, NB:nanti bisa diubah jadi mhs rek
-            if ($request->role === 'admin') {
-                AdminModel::create([
+            if ($request->role === 'mahasiswa') {
+                MahasiswaModel::create([
                     'user_id' => $user->id,
+                    'nim' => $request->username,
+                    'nama_lengkap' => $request->nama,
                     'foto_profile' => null // null soalnya kosong, nanti bisa diubah defaultnya
                 ]);
             }
