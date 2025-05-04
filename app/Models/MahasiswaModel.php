@@ -11,7 +11,7 @@ class MahasiswaModel extends Model
     protected $primaryKey = 'nim';
     public $incrementing = false;
 
-    protected $fillable = ['user_id', 'nama_lengkap', 'angkatan', 'no_telp', 'alamat', 'program_studi_id', 'bidang_keahlian', 'sertifikasi', 'pengalaman', 'foto_profile'];
+    protected $fillable = ['nim', 'user_id', 'nama_lengkap', 'angkatan', 'no_telp', 'alamat', 'program_studi_id', 'bidang_keahlian', 'sertifikasi', 'pengalaman', 'foto_profile'];
 
     public function user(): BelongsTo
     {
