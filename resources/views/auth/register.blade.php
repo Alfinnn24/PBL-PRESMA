@@ -67,15 +67,16 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="input-group mb-3">
+                    <input type="hidden" name="role" id="role" value="admin"> {{-- nanti diubah valuenya jadi mahasiswa only --}}
+                    {{-- kalau mau bisa ubah value role uncomment yang bawah rek buat sementara aku pakek default admin doang --}}
+                    {{-- <div class="input-group mb-3">
                         <select name="role" id="role" class="form-control text-secondary" required>
                             <option value="">- Pilih Role -</option>
                             @foreach ($roles as $role)
                                 <option value="{{ $role }}">{{ ucfirst($role) }}</option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> --}}
 
                     <div class="row">
                         <div class="col-4 offset-8">

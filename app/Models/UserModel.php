@@ -19,6 +19,9 @@ class UserModel extends Authenticatable
 
     protected $casts = ['password' => 'hashed'];
 
+    public function getRole(){
+        return $this->role;
+    }
 
     public function mahasiswa()
     {

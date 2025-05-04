@@ -46,7 +46,7 @@
             </a>
 
             <!-- Sidebar -->
-            @include('layouts.sidebar')
+            @include('layouts.sidebar.sidebar')
             <!-- /.sidebar -->
         </aside>
 

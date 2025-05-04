@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -6,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\UserModel;
+use App\Models\AdminModel;
 
 class AuthController extends Controller
 {
@@ -80,13 +82,20 @@ class AuthController extends Controller
                 ]);
             }
 
-            UserModel::create([
+            $user = UserModel::create([
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role' => $request->role,
             ]);
 
+            // Jika role admin, tambahkan data ke tabel admin, NB:nanti bisa diubah jadi mhs rek
+            if ($request->role === 'admin') {
+                AdminModel::create([
+                    'user_id' => $user->id,
+                    'foto_profile' => null // null soalnya kosong, nanti bisa diubah defaultnya
+                ]);
+            }
             return response()->json([
                 'status' => true,
                 'message' => 'Data user berhasil disimpan',
