@@ -19,8 +19,6 @@ return new class extends Migration {
             $table->string('no_telp')->nullable();
             $table->string('alamat')->nullable();
             $table->foreignId('program_studi_id')->nullable()->constrained('program_studi');
-            $table->text('bidang_keahlian')->nullable();
-            $table->text('pengalaman')->nullable();
             $table->string('foto_profile')->nullable();
             $table->timestamps();
         });

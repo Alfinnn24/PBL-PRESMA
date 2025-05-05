@@ -21,7 +21,6 @@ class DosenSeeder extends Seeder
                 'nidn' => '1234567890',
                 'nama_lengkap' => 'Dr. Siti Aminah',
                 'no_telp' => '082233445566',
-                'bidang_minat' => 'Machine Learning',
                 'foto_profile' => null,
                 'created_at' => now(),
                 'updated_at' => now()

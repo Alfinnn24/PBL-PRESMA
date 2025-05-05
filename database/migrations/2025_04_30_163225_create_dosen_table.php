@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -19,7 +18,6 @@ return new class extends Migration
             $table->string('nidn')->unique();
             $table->string('nama_lengkap');
             $table->string('no_telp');
-            $table->text('bidang_minat');
             $table->string('foto_profile')->nullable();
             $table->timestamps();
         });

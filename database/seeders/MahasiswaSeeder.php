@@ -23,8 +23,6 @@ class MahasiswaSeeder extends Seeder
                 'no_telp' => '08123456789',
                 'alamat' => 'Jl. Merdeka No. 10',
                 'program_studi_id' => 1,
-                'bidang_keahlian' => 'Web Development',
-                'pengalaman' => 'Magang di Telkom',
                 'foto_profile' => null,
                 'created_at' => now(),
                 'updated_at' => now()

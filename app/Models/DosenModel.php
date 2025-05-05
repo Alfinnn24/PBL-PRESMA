@@ -29,6 +29,23 @@ class DosenModel extends Model
     {
         return $this->hasMany(RekomendasiLombaModel::class, 'dosen_pembimbing_id');
     }
+
+    // Relasi ke detail bidang minat
+    // public function detailBidangMinat(): HasMany
+    // {
+    //     return $this->hasMany(DetailBidangMinatModel::class, 'dosen_id');
+    // }
+
+    // Relasi langsung ke bidang minat (banyak ke banyak)
+    public function bidangMinat()
+    {
+        return $this->belongsToMany(
+            BidangMinatModel::class,
+            'detail_bidang_minat',
+            'dosen_id',
+            'id_minat'
+        );
+    }
 }
 
 ?>
