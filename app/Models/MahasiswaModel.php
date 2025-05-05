@@ -47,6 +47,42 @@ class MahasiswaModel extends Model
     {
         return $this->hasMany(SertifikasiModel::class, 'mahasiswa_nim', 'nim');
     }
+
+    // public function detailBidangKeahlian(): HasMany
+    // {
+    //     return $this->hasMany(DetailBidangKeahlianModel::class, 'mahasiswa_nim', 'nim');
+    // }
+
+    // // Relasi ke detail pengalaman
+    // public function detailPengalaman(): HasMany
+    // {
+    //     return $this->hasMany(DetailPengalamanModel::class, 'mahasiswa_nim', 'nim');
+    // }
+
+    // Jika ingin akses langsung ke `keahlian` atau `pengalaman` tanpa detail:
+    public function bidangKeahlian()
+    {
+        return $this->belongsToMany(
+            BidangKeahlianModel::class,
+            'detail_bidang_keahlian',
+            'mahasiswa_nim',
+            'id_keahlian',
+            'nim',
+            'id'
+        );
+    }
+
+    public function pengalaman()
+    {
+        return $this->belongsToMany(
+            PengalamanModel::class,
+            'detail_pengalaman',
+            'mahasiswa_nim',
+            'id_pengalaman',
+            'nim',
+            'id'
+        );
+    }
 }
 
 ?>

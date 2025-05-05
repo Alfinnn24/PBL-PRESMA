@@ -25,7 +25,13 @@ class DatabaseSeeder extends Seeder
             PrestasiSeeder::class,
             DetailPrestasiSeeder::class,
             PendaftaranLombaSeeder::class,
-            RekomendasiLombaSeeder::class
+            RekomendasiLombaSeeder::class,
+            BidangKeahlianSeeder::class,
+            PengalamanSeeder::class,
+            BidangMinatSeeder::class,
+            DetailBidangKeahlianSeeder::class,
+            DetailPengalamanSeeder::class,
+            DetailBidangMinatSeeder::class,
         ]);
     }
 }
