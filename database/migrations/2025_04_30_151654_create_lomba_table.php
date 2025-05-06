@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->enum('tingkat', ['Kota/Kabupaten', 'Provinsi', 'Nasional', 'Internasional']);
             $table->text('bidang_keahlian');
             $table->text('persyaratan');
+            $table->integer('jumlah_peserta');
             $table->string('link_registrasi');
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');

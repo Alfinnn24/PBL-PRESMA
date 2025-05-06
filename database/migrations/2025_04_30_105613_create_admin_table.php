@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('admin', function (Blueprint $table) {
             $table->id();
+            $table->string('nama_lengkap');
             $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
             $table->string('foto_profile')->nullable();
             $table->timestamps();
