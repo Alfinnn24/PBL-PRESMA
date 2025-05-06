@@ -8,11 +8,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class PengalamanModel extends Model
 {
     protected $table = 'pengalaman';
-    protected $fillable = ['pengalaman'];
 
-    public function details()
+    protected $fillable = [
+        'pengalaman',
+        'kategori',
+        'mahasiswa_nim',
+    ];
+
+    public function mahasiswa(): BelongsTo
     {
-        return $this->hasMany(DetailPengalamanModel::class, 'id_pengalaman');
+        return $this->belongsTo(Mahasiswa::class, 'mahasiswa_nim', 'nim');
     }
 }
 

@@ -30,7 +30,6 @@ class DatabaseSeeder extends Seeder
             PengalamanSeeder::class,
             BidangMinatSeeder::class,
             DetailBidangKeahlianSeeder::class,
-            DetailPengalamanSeeder::class,
             DetailBidangMinatSeeder::class,
         ]);
     }

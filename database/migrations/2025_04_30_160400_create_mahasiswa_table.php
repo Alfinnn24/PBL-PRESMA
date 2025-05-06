@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->year('angkatan')->nullable();
             $table->string('no_telp')->nullable();
             $table->string('alamat')->nullable();
-            $table->foreignId('program_studi_id')->nullable()->constrained('program_studi');
+            $table->foreignId('program_studi_id')->nullable()->constrained('program_studi')->onDelete('cascade');
             $table->string('foto_profile')->nullable();
             $table->timestamps();
         });

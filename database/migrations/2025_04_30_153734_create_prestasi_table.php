@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('prestasi', function (Blueprint $table) {
             $table->id();
             $table->string('nama_prestasi');
-            $table->foreignId('lomba_id')->constrained('lomba');
+            $table->foreignId('lomba_id')->constrained('lomba')->onDelete('cascade');
             $table->string('file_bukti');
             $table->enum('status', ['Pending', 'Disetujui', 'Ditolak']);
             $table->text('catatan');

@@ -22,8 +22,8 @@ return new class extends Migration {
             $table->string('link_registrasi');
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
-            $table->foreignId('periode_id')->constrained('periode');
-            $table->foreignId('created_by')->constrained('user');
+            $table->foreignId('periode_id')->constrained('periode')->onDelete('cascade');
+            $table->foreignId('created_by')->constrained('user')->onDelete('cascade');
             $table->boolean('is_verified');
             $table->timestamps();
         });

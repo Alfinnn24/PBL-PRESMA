@@ -12,6 +12,7 @@ class SertifikasiModel extends Model
     protected $fillable = [
         'judul',
         'path',
+        'kategori',
         'mahasiswa_nim',
     ];
 
