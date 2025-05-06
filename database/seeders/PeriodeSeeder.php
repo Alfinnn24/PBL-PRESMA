@@ -15,6 +15,14 @@ class PeriodeSeeder extends Seeder
     public function run(): void
     {
         DB::table('periode')->insert([
+            ['nama' => '2020/2021 Ganjil', 'tahun' => 2020, 'semester' => 'Ganjil', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => '2020/2021 Genap', 'tahun' => 2021, 'semester' => 'Genap', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => '2021/2022 Ganjil', 'tahun' => 2021, 'semester' => 'Ganjil', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => '2021/2022 Genap', 'tahun' => 2022, 'semester' => 'Genap', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => '2022/2023 Ganjil', 'tahun' => 2022, 'semester' => 'Ganjil', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => '2022/2023 Genap', 'tahun' => 2023, 'semester' => 'Genap', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => '2023/2024 Ganjil', 'tahun' => 2023, 'semester' => 'Ganjil', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => '2023/2024 Genap', 'tahun' => 2024, 'semester' => 'Genap', 'created_at' => now(), 'updated_at' => now()],
             ['nama' => '2024/2025 Ganjil', 'tahun' => 2024, 'semester' => 'Ganjil', 'created_at' => now(), 'updated_at' => now()],
             ['nama' => '2024/2025 Genap', 'tahun' => 2025, 'semester' => 'Genap', 'created_at' => now(), 'updated_at' => now()],
         ]);
