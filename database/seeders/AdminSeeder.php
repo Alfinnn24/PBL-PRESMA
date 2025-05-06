@@ -17,6 +17,7 @@ class AdminSeeder extends Seeder
         DB::table('admin')->insert([
             [
                 'user_id' => 1,
+                'nama_lengkap' => 'Ilyas Yahya',
                 'foto_profile' => null,
                 'created_at' => now(),
                 'updated_at' => now()

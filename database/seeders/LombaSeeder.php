@@ -22,6 +22,7 @@ class LombaSeeder extends Seeder
                 'tingkat' => 'Nasional',
                 'bidang_keahlian' => 'Pengembangan Aplikasi',
                 'persyaratan' => 'Mahasiswa aktif',
+                'jumlah_peserta'=> '1',
                 'link_registrasi' => 'https://HackathonIndonesia.com',
                 'tanggal_mulai' => '2024-09-01',
                 'tanggal_selesai' => '2024-09-10',
