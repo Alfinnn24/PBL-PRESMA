@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::dropIfExists('dosen_pembimbing');
         Schema::create('dosen_pembimbing', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('dosen_id')->constrained('dosen');
+            $table->foreignId('dosen_id')->constrained('dosen')->onDelete('cascade');
             $table->string('mahasiswa_nim');
-            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa');
+            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
             $table->timestamps();
         });
     }

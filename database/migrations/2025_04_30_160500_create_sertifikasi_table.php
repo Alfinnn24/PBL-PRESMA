@@ -14,8 +14,9 @@ return new class extends Migration {
             $table->id(); // sama dengan: $table->bigIncrements('id');
             $table->string('judul');
             $table->string('path');
+            $table->string('kategori');
             $table->string('mahasiswa_nim');
-            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa');
+            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
             $table->timestamps(); // otomatis membuat created_at dan updated_at
         });
     }

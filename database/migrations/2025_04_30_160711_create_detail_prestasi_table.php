@@ -15,8 +15,8 @@ return new class extends Migration
         Schema::create('detail_prestasi', function (Blueprint $table) {
             $table->id();
             $table->string('mahasiswa_nim');
-            $table->foreignId('prestasi_id')->constrained('prestasi');
-            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa');
+            $table->foreignId('prestasi_id')->constrained('prestasi')->onDelete('cascade');
+            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
             $table->timestamps();
         });
     }
