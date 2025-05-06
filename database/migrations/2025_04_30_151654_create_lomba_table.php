@@ -14,10 +14,9 @@ return new class extends Migration {
         Schema::create('lomba', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->string('kategori');
             $table->string('penyelenggara');
             $table->enum('tingkat', ['Kota/Kabupaten', 'Provinsi', 'Nasional', 'Internasional']);
-            $table->text('bidang_keahlian');
+            $table->foreignId('bidang_keahlian_id')->constrained('bidang_keahlian')->onDelete('cascade');
             $table->text('persyaratan');
             $table->integer('jumlah_peserta');
             $table->string('link_registrasi');

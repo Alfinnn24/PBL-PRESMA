@@ -17,10 +17,9 @@ class LombaSeeder extends Seeder
         DB::table('lomba')->insert([
             [
                 'nama' => 'Hackathon Indonesia',
-                'kategori' => 'Teknologi',
                 'penyelenggara' => 'Kemenkominfo',
                 'tingkat' => 'Nasional',
-                'bidang_keahlian' => 'Pengembangan Aplikasi',
+                'bidang_keahlian_id' => '4',
                 'persyaratan' => 'Mahasiswa aktif',
                 'jumlah_peserta'=> '1',
                 'link_registrasi' => 'https://HackathonIndonesia.com',
