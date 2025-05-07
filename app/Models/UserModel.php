@@ -19,23 +19,24 @@ class UserModel extends Authenticatable
 
     protected $casts = ['password' => 'hashed'];
 
-    public function getRole(){
+    public function getRole()
+    {
         return $this->role;
     }
 
     public function mahasiswa()
     {
-        return $this->hasOne(MahasiswaModel::class);
+        return $this->hasOne(MahasiswaModel::class, 'user_id', 'id');
     }
 
     public function dosen()
     {
-        return $this->hasOne(DosenModel::class);
+        return $this->hasOne(DosenModel::class, 'user_id', 'id');
     }
 
     public function admin()
     {
-        return $this->hasOne(AdminModel::class);
+        return $this->hasOne(AdminModel::class, 'user_id', 'id');
     }
 
     public function lombas()

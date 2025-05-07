@@ -19,5 +19,12 @@
                 <p>Pendaftaran Lomba</p>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ url('/rekomendasi') }}"
+                class="nav-link {{ $activeMenu == 'rekomendasiLomba' ? 'active' : '' }}">
+                <i class="nav-icon fas fa-solid fa-trophy"></i>
+                <p>Rekomendasi Lomba</p>
+            </a>
+        </li>
     </ul>
 </nav>

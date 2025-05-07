@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RekomendasiLombaController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,6 +27,8 @@ Route::post('register', [AuthController::class, 'postregister']);
 Route::middleware(['auth'])->group(function () { // artinya semua route di dalam group ini harus login dulu
 // jangan lupa nanti dimodifikasi sesusai dengan kebutuhan, terus kasih comment kalau sekiranya butuh
     Route::get('/', [WelcomeController::class, 'index']);
+    Route::get('/rekomendasi', [RekomendasiLombaController::class, 'index'])->name('rekomendasi.index');
+    Route::post('/rekomendasi/{id}', [RekomendasiLombaController::class, 'updateStatus'])->name('rekomendasi.updateStatus');
 
     // Route::get('/login', function () {
 //     return view('auth.login');
