@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LombaModel extends Model
 {
     protected $table = 'lomba';
-    protected $fillable = ['nama', 'kategori', 'penyelenggara', 'tingkat', 'bidang_keahlian', 'persyaratan', 'link_registrasi', 'tanggal_mulai', 'tanggal_selesai', 'periode_id', 'created_by', 'is_verified'];
+    protected $fillable = ['nama', 'penyelenggara', 'tingkat', 'bidang_keahlian_id', 'persyaratan', 'jumlah_peserta', 'link_registrasi', 'tanggal_mulai', 'tanggal_selesai', 'periode_id', 'created_by', 'is_verified'];
 
     public function periode(): BelongsTo
     {
@@ -17,6 +17,11 @@ class LombaModel extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(UserModel::class, 'created_by');
+    }
+
+    public function bidangKeahlian(): BelongsTo
+    {
+        return $this->belongsTo(BidangKeahlianModel::class, 'bidang_keahlian_id');
     }
 }
 
