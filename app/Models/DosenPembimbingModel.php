@@ -11,7 +11,7 @@ class DosenPembimbingModel extends Model
 
     public function dosen(): BelongsTo
     {
-        return $this->belongsTo(DosenModel::class);
+        return $this->belongsTo(DosenModel::class, 'dosen_id', 'id');
     }
 
     public function mahasiswa(): BelongsTo

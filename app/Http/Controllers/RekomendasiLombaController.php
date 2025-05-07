@@ -65,18 +65,17 @@ class RekomendasiLombaController extends Controller
     {
         $lomba = $rekomendasi->lomba;
 
-        // Cari pengganti mahasiswa yang memenuhi kriteria
-        $penggantiMahasiswa = MahasiswaModel::with(['sertifikasis', 'bidangKeahlian', 'pengalaman', 'prestasi', 'dosenPembimbing'])
-            ->whereDoesntHave('rekomendasi', function ($query) use ($lomba) {
-                $query->where('lomba_id', $lomba->id);
-            })
-            ->get();
+        $excludedMahasiswa = RekomendasiLombaModel::where('lomba_id', $lomba->id)->pluck('mahasiswa_nim')->toArray();
+        $excludedDosen = RekomendasiLombaModel::where('lomba_id', $lomba->id)->pluck('dosen_pembimbing_id')->filter()->toArray();
 
-        $hasilPengganti = $this->fuzzySpkService->prosesRekomendasi($lomba);
+        $hasilPengganti = $this->fuzzySpkService->prosesRekomendasi($lomba, $excludedMahasiswa, $excludedDosen);
+        //dd($hasilPengganti);
 
-        // Pilih mahasiswa dan dosen pengganti yang sesuai dan buat rekomendasi baru
         foreach ($hasilPengganti as $pengganti) {
-            $this->createRekomendasi($pengganti['mahasiswa'], $lomba);
+            $mahasiswa = MahasiswaModel::where('nama_lengkap', $pengganti['mahasiswa'])->first();
+            if ($mahasiswa) {
+                $this->createRekomendasi($mahasiswa, $lomba);
+            }
         }
     }
 
