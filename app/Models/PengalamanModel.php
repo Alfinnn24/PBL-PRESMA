@@ -17,7 +17,7 @@ class PengalamanModel extends Model
 
     public function mahasiswa(): BelongsTo
     {
-        return $this->belongsTo(Mahasiswa::class, 'mahasiswa_nim', 'nim');
+        return $this->belongsTo(MahasiswaModel::class, 'mahasiswa_nim', 'nim');
     }
 }
 

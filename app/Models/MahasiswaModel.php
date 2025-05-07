@@ -11,11 +11,11 @@ class MahasiswaModel extends Model
     protected $primaryKey = 'nim';
     public $incrementing = false;
 
-    protected $fillable = ['nim', 'user_id', 'nama_lengkap', 'angkatan', 'no_telp', 'alamat', 'program_studi_id', 'bidang_keahlian', 'sertifikasi', 'pengalaman', 'foto_profile'];
+    protected $fillable = ['nim', 'user_id', 'nama_lengkap', 'angkatan', 'no_telp', 'alamat', 'program_studi_id', 'foto_profile'];
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(UserModel::class, 'user_id', 'id');
     }
 
     public function programStudi(): BelongsTo
@@ -53,11 +53,6 @@ class MahasiswaModel extends Model
     //     return $this->hasMany(DetailBidangKeahlianModel::class, 'mahasiswa_nim', 'nim');
     // }
 
-    // // Relasi ke detail pengalaman
-    // public function detailPengalaman(): HasMany
-    // {
-    //     return $this->hasMany(DetailPengalamanModel::class, 'mahasiswa_nim', 'nim');
-    // }
 
     // Jika ingin akses langsung ke `keahlian` atau `pengalaman` tanpa detail:
     public function bidangKeahlian()
@@ -74,15 +69,9 @@ class MahasiswaModel extends Model
 
     public function pengalaman()
     {
-        return $this->belongsToMany(
-            PengalamanModel::class,
-            'detail_pengalaman',
-            'mahasiswa_nim',
-            'id_pengalaman',
-            'nim',
-            'id'
-        );
+        return $this->hasMany(PengalamanModel::class);
     }
+
 }
 
 ?>
