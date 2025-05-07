@@ -31,7 +31,7 @@ class FuzzySpkService
             $cocokBidangMinat = $dosen && $dosen->bidangMinat->pluck('bidang_minat')->contains($lomba->bidang_keahlian) ? 1 : 0;
 
             $skor = $this->fuzzifikasi($nilaiSertifikasi, $nilaiKeahlian, $nilaiPengalaman, $nilaiPrestasi, $jumlahBimbingan, $cocokBidangMinat);
-
+            \Log::info("NIM: {$mhs->nim}, Skor: {$skor}");
             if ($skor >= 0.6) {
                 RekomendasiLombaModel::updateOrCreate([
                     'mahasiswa_nim' => $mhs->nim,

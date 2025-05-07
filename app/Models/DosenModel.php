@@ -22,7 +22,7 @@ class DosenModel extends Model
 
     public function pembimbingMahasiswa(): HasMany
     {
-        return $this->hasMany(DosenPembimbingModel::class);
+        return $this->hasMany(DosenPembimbingModel::class, 'dosen_id', 'id');
     }
 
     public function rekomendasi(): HasMany

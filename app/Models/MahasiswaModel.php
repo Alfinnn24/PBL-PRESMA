@@ -69,7 +69,7 @@ class MahasiswaModel extends Model
 
     public function pengalaman()
     {
-        return $this->hasMany(PengalamanModel::class);
+        return $this->hasMany(PengalamanModel::class, 'mahasiswa_nim', 'nim');
     }
 
 }
