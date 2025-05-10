@@ -23,38 +23,37 @@ class MahasiswaModel extends Model
         return $this->belongsTo(ProgramStudiModel::class);
     }
 
+    // Relasi ke DetailPrestasiModel
     public function prestasi(): HasMany
     {
         return $this->hasMany(DetailPrestasiModel::class, 'mahasiswa_nim', 'nim');
     }
 
+    // Relasi ke PendaftaranLombaModel
     public function pendaftaranLomba(): HasMany
     {
         return $this->hasMany(PendaftaranLombaModel::class, 'mahasiswa_nim', 'nim');
     }
 
+    // Relasi ke DosenPembimbingModel
     public function dosenPembimbing(): HasMany
     {
         return $this->hasMany(DosenPembimbingModel::class, 'mahasiswa_nim', 'nim');
     }
 
+    // Relasi ke RekomendasiLombaModel
     public function rekomendasi(): HasMany
     {
         return $this->hasMany(RekomendasiLombaModel::class, 'mahasiswa_nim', 'nim');
     }
 
+    // Relasi ke SertifikasiModel
     public function sertifikasis()
     {
         return $this->hasMany(SertifikasiModel::class, 'mahasiswa_nim', 'nim');
     }
 
-    // public function detailBidangKeahlian(): HasMany
-    // {
-    //     return $this->hasMany(DetailBidangKeahlianModel::class, 'mahasiswa_nim', 'nim');
-    // }
-
-
-    // Jika ingin akses langsung ke `keahlian` atau `pengalaman` tanpa detail:
+    // Relasi ke BidangKeahlian
     public function bidangKeahlian()
     {
         return $this->belongsToMany(
@@ -67,11 +66,12 @@ class MahasiswaModel extends Model
         );
     }
 
+    // Relasi ke PengalamanModel
     public function pengalaman()
     {
         return $this->hasMany(PengalamanModel::class, 'mahasiswa_nim', 'nim');
     }
-
 }
+
 
 ?>
