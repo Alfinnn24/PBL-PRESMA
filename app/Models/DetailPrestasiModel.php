@@ -16,7 +16,7 @@ class DetailPrestasiModel extends Model
 
     public function prestasi(): BelongsTo
     {
-        return $this->belongsTo(PrestasiModel::class);
+        return $this->belongsTo(PrestasiModel::class, 'prestasi_id', 'id');
     }
 }
 
