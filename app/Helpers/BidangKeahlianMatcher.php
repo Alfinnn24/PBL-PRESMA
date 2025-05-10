@@ -36,11 +36,11 @@ class BidangKeahlianMatcher
             'Web Development',
             'Mobile App Development',
             'Game Development',
-            'AI',
-            'ML',
+            'Artificial Intelligence',
+            'Machine Learning',
             'Cybersecurity',
             'DevOps',
-            'Cloud'
+            'Cloud Computing'
         ];
         if (
             in_array($kategoriLomba, $semigrup) &&
