@@ -10,7 +10,7 @@
 
         <li class="nav-header">Data Pengguna</li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
+            <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-user"></i>
                 <p>Data User</p>
             </a>
