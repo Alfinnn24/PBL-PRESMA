@@ -287,9 +287,22 @@ class UserController extends Controller
 
     public function confirm_ajax(string $id)
     {
-        $user = UserModel::find($id);
+        $user = UserModel::findOrFail($id);
+        $role = UserModel::select('role')->distinct()->get();
 
-        return view('admin.user.confirm_ajax', ['user' => $user]);
+        $detail = null;
+
+        if ($user->role === 'mahasiswa') {
+            $detail = MahasiswaModel::where('user_id', $user->id)->first();
+        } elseif ($user->role === 'dosen') {
+            $detail = DosenModel::where('user_id', $user->id)->first();
+        } elseif ($user->role === 'admin') {
+            $detail = AdminModel::where('user_id', $user->id)->first();
+        }
+
+        $prodi = ProgramStudiModel::all();
+
+        return view('admin.user.confirm_ajax', compact('user', 'role', 'detail', 'prodi'));
     }
 
     public function delete_ajax(Request $request, $id)
