@@ -19,7 +19,7 @@
                     <small id="error-role" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Username</label>
+                    <label id="label-username">Username</label>
                     <input value="" type="text" name="username" id="username" class="form-control" required>
                     <small id="error-username" class="error-text form-text text-danger"></small>
                 </div>
@@ -33,7 +33,12 @@
                     <input value="" type="password" name="password" id="password" class="form-control" required>
                     <small id="error-password" class="error-text form-text text-danger"></small>
                 </div>
-                 <!-- Tambahan field untuk mahasiswa -->
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" name="nama_lengkap" id="nama_lengkap" class="form-control">
+                    <small id="error-nama_lengkap" class="error-text form-text text-danger"></small>
+                </div>
+                <!-- Tambahan field untuk mahasiswa -->
                 {{-- <div id="mahasiswa-fields" style="display: none;">
                     <div class="form-group">
                         <label>Nama Lengkap</label>
@@ -50,17 +55,20 @@
     </div>
 </form>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         var modal = document.getElementsByClassName("modal")[0];
         var role = modal.querySelector("#role");
-        role.addEventListener("change", function() {
-            var mahasiswaFields = document.getElementById("mahasiswa-fields");
-            if (role.value === "mahasiswa") {
-                mahasiswaFields.style.display = "block";
+        role.addEventListener("change", function () {
+            const selectedRole = $(this).val().toLowerCase();
+            if (selectedRole === 'mahasiswa') {
+                $('#label-username').text('NIM');
+            } else if (selectedRole === 'dosen') {
+                $('#label-username').text('NIDN');
             } else {
-                mahasiswaFields.style.display = "none";
+                $('#label-username').text('Username');
             }
-        })
+        });
+
         $("#form-tambah").validate({
             rules: {
                 role: {
@@ -80,21 +88,28 @@
                     required: true,
                     minlength: 6,
                     maxlength: 20
+                },
+                nama_lengkap: {
+                    required: true,
                 }
-                // nama_lengkap: {
-                //     required: {
-                //         depends: function(element) {
-                //             return $('#role').val() === 'mahasiswa';
-                //         }
-                //     }
-                // }
             },
-            submitHandler: function(form) {
+            errorElement: 'span',
+            errorPlacement: function (error, element) {
+                error.addClass('invalid-feedback');
+                element.closest('.form-group').append(error);
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass('is-invalid');
+            },
+            submitHandler: function (form) {
                 $.ajax({
                     url: form.action,
                     type: form.method,
                     data: $(form).serialize(),
-                    success: function(response) {
+                    success: function (response) {
                         if (response.status) {
                             $('#myModal').modal('hide');
                             Swal.fire({
@@ -105,7 +120,7 @@
                             dataUser.ajax.reload();
                         } else {
                             $('.error-text').text('');
-                            $.each(response.msgField, function(prefix, val) {
+                            $.each(response.msgField, function (prefix, val) {
                                 $('#error-' + prefix).text(val[0]);
                             });
                             Swal.fire({
@@ -117,17 +132,6 @@
                     }
                 });
                 return false;
-            },
-            errorElement: 'span',
-            errorPlacement: function(error, element) {
-                error.addClass('invalid-feedback');
-                element.closest('.form-group').append(error);
-            },
-            highlight: function(element, errorClass, validClass) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function(element, errorClass, validClass) {
-                $(element).removeClass('is-invalid');
             }
         });
     });
