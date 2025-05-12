@@ -40,16 +40,16 @@ class UserSeeder extends Seeder
             ['username' => '2341720103', 'email' => 'mhs10@gmail.com', 'password' => Hash::make('123456'), 'role' => 'mahasiswa', 'created_at' => now(), 'updated_at' => now()],
 
             // Dosen
-            ['username' => 'dsn1', 'email' => 'dsn1@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
-            ['username' => 'dsn2', 'email' => 'dsn2@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
-            ['username' => 'dsn3', 'email' => 'dsn3@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
-            ['username' => 'dsn4', 'email' => 'dsn4@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
-            ['username' => 'dsn5', 'email' => 'dsn5@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
-            ['username' => 'dsn6', 'email' => 'dsn6@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
-            ['username' => 'dsn7', 'email' => 'dsn7@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
-            ['username' => 'dsn8', 'email' => 'dsn8@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
-            ['username' => 'dsn9', 'email' => 'dsn9@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
-            ['username' => 'dsn10', 'email' => 'dsn10@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
+            ['username' => '1234567891', 'email' => 'dsn1@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
+            ['username' => '1234567892', 'email' => 'dsn2@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
+            ['username' => '1234567893', 'email' => 'dsn3@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
+            ['username' => '1234567894', 'email' => 'dsn4@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
+            ['username' => '1234567895', 'email' => 'dsn5@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
+            ['username' => '1234567896', 'email' => 'dsn6@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
+            ['username' => '1234567897', 'email' => 'dsn7@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
+            ['username' => '1234567898', 'email' => 'dsn8@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
+            ['username' => '1234567899', 'email' => 'dsn9@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
+            ['username' => '1234567900', 'email' => 'dsn10@gmail.com', 'password' => Hash::make('123456'), 'role' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }
