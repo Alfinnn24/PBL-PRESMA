@@ -80,25 +80,25 @@
                     },
                     {
                         data: "nama",
-                        className: "",
+                        className: "text-center",
                         orderable: true,
                         searchable: true
                     },
                     {
                         data: "tahun",
-                        className: "",
+                        className: "text-center",
                         orderable: true,
                         searchable: true
                     },
                     {
                         data: "semester",
-                        className: "",
+                        className: "text-center",
                         orderable: true,
                         searchable: true
                     },
                     {
                         data: "aksi",
-                        className: "",
+                        className: "text-center",
                         orderable: false,
                         searchable: false
                     }
