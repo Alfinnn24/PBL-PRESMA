@@ -8,6 +8,7 @@ use App\Models\UserModel;
 use App\Models\AdminModel;
 use App\Models\DosenModel;
 use App\Models\MahasiswaModel;
+use App\Models\ProgramStudiModel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -58,8 +59,12 @@ class UserController extends Controller
     public function create_ajax()
     {
         $role = UserModel::select('role')->distinct()->get();
-        return view('admin.user.create_ajax')
-            ->with('role', $role);
+        $programStudi = ProgramStudiModel::all(); // ambil semua program studi
+
+        return view('admin.user.create_ajax', [
+            'role' => $role,
+            'programStudi' => $programStudi
+        ]);
     }
 
     public function store_ajax(Request $request)
@@ -71,11 +76,12 @@ class UserController extends Controller
                 'username' => 'required|string|min:3|unique:user,username',
                 'email' => 'required|max:100',
                 'password' => 'required|min:6',
-                // tambahan untuk mahasiswa
-                // 'nim'        => 'required_if:role,mahasiswa|unique:mahasiswa,nim',
-                // 'nama_lengkap'       => 'required_if:role,mahasiswa|string'
-                // 'program_id' => 'required_if:role,dosen|exists:program_studi,id',
-                // 'nidn'       => 'required_if:role,dosen|unique:dosen,nidn',
+                'nama_lengkap' => 'required|string',
+                //tambahan
+                'angkatan' => 'required_if:role,mahasiswa|digits:4',
+                'no_telp' => 'required_if:role,mahasiswa|string|max:20',
+                'alamat' => 'required_if:role,mahasiswa|string|max:255',
+                'program_studi_id' => 'required_if:role,mahasiswa|exists:program_studi,id',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -95,14 +101,28 @@ class UserController extends Controller
                 'role' => $request->role,
             ]);
 
-            // if ($request->role === 'mahasiswa') {
-            //     MahasiswaModel::create([
-            //         'user_id' => $user->id,
-            //         'nim' => $request->username,
-            //         'nama_lengkap' => $request->nama,
-            //         // 'foto_profile' => null // null soalnya kosong, nanti bisa diubah defaultnya
-            //     ]);
-            // }
+            if ($request->role === 'mahasiswa') {
+                MahasiswaModel::create([
+                    'user_id' => $user->id,
+                    'nim' => $request->username,
+                    'nama_lengkap' => $request->nama_lengkap,
+                    'angkatan' => $request->angkatan,
+                    'no_telp' => $request->no_telp,
+                    'alamat' => $request->alamat,
+                    'program_studi_id' => $request->program_studi_id,
+                ]);
+            } elseif ($request->role === 'dosen') {
+                DosenModel::create([
+                    'user_id' => $user->id,
+                    'nidn' => $request->username,
+                    'nama_lengkap' => $request->nama_lengkap,
+                ]);
+            } elseif ($request->role === 'admin') {
+                AdminModel::create([
+                    'user_id' => $user->id,
+                    'nama_lengkap' => $request->nama_lengkap,
+                ]);
+            }
 
             return response()->json([
                 'status' => true,
