@@ -145,8 +145,28 @@ class UserController extends Controller
     // ajax ver
     public function show_ajax(string $id)
     {
-        $user = UserModel::find($id);
-        return view('admin.user.show_ajax', ['user' => $user]);
+        $user = UserModel::findOrFail($id);
+
+        $detail = null;
+
+        switch ($user->role) {
+            case 'mahasiswa':
+                $detail = MahasiswaModel::where('user_id', $user->id)->with('programStudi')->first();
+                break;
+
+            case 'dosen':
+                $detail = DosenModel::where('user_id', $user->id)->with('programStudi')->first();
+                break;
+
+            case 'admin':
+                $detail = AdminModel::where('user_id', $user->id)->first();
+                break;
+        }
+
+        return view('admin.user.show_ajax', [
+            'user' => $user,
+            'detail' => $detail
+        ]);
     }
 
     // Menampilkan edit user ajax
