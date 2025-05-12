@@ -36,7 +36,7 @@
             <table class="table table-bordered table-striped table-hover table-sm" id="table_periode">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>No</th>
                         <th>Nama Periode</th>
                         <th>Tahun Periode</th>
                         <th>Semester Periode</th>
