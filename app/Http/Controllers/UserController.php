@@ -71,6 +71,7 @@ class UserController extends Controller
                 'username' => 'required|string|min:3|unique:user,username',
                 'email' => 'required|max:100',
                 'password' => 'required|min:6',
+                'nama_lengkap' => 'required|string',
                 // tambahan untuk mahasiswa
                 // 'nim'        => 'required_if:role,mahasiswa|unique:mahasiswa,nim',
                 // 'nama_lengkap'       => 'required_if:role,mahasiswa|string'
@@ -95,14 +96,24 @@ class UserController extends Controller
                 'role' => $request->role,
             ]);
 
-            // if ($request->role === 'mahasiswa') {
-            //     MahasiswaModel::create([
-            //         'user_id' => $user->id,
-            //         'nim' => $request->username,
-            //         'nama_lengkap' => $request->nama,
-            //         // 'foto_profile' => null // null soalnya kosong, nanti bisa diubah defaultnya
-            //     ]);
-            // }
+            if ($request->role === 'mahasiswa') {
+                MahasiswaModel::create([
+                    'user_id' => $user->id,
+                    'nim' => $request->username,
+                    'nama_lengkap' => $request->nama_lengkap,
+                ]);
+            } elseif ($request->role === 'dosen') {
+                DosenModel::create([
+                    'user_id' => $user->id,
+                    'nidn' => $request->username,
+                    'nama_lengkap' => $request->nama_lengkap,
+                ]);
+            } elseif ($request->role === 'admin') {
+                AdminModel::create([
+                    'user_id' => $user->id,
+                    'nama_lengkap' => $request->nama_lengkap,
+                ]);
+            }
 
             return response()->json([
                 'status' => true,
