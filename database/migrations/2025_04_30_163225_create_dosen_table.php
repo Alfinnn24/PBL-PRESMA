@@ -14,10 +14,10 @@ return new class extends Migration {
         Schema::create('dosen', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
-            $table->foreignId('program_studi_id')->constrained('program_studi')->onDelete('cascade');
+            $table->foreignId('program_studi_id')->nullable()->constrained('program_studi')->onDelete('cascade');
             $table->string('nidn')->unique();
             $table->string('nama_lengkap');
-            $table->string('no_telp');
+            $table->string('no_telp')->nullable();
             $table->string('foto_profile')->nullable();
             $table->timestamps();
         });
