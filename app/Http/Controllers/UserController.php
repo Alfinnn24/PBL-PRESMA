@@ -72,17 +72,26 @@ class UserController extends Controller
         // cek apakah request berupa ajax
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'role' => 'required|in:admin,mahasiswa,dosen',
-                'username' => 'required|string|min:3|unique:user,username',
-                'email' => 'required|max:100',
-                'password' => 'required|min:6',
-                'nama_lengkap' => 'required|string',
-                //tambahan
-                'angkatan' => 'required_if:role,mahasiswa|digits:4',
-                'no_telp' => 'required_if:role,mahasiswa|string|max:20',
-                'alamat' => 'required_if:role,mahasiswa|string|max:255',
-                'program_studi_id' => 'required_if:role,mahasiswa|exists:program_studi,id',
+                'role' => 'required',
+                'username' => 'required|min:3|max:20|unique:user,username',
+                'email' => 'required|email|max:100|unique:users,email',
+                'password' => 'required|min:6|max:20',
+                'nama_lengkap' => 'required',
             ];
+
+            if ($request->role === 'mahasiswa') {
+                $rules = array_merge($rules, [
+                    'angkatan' => 'required',
+                    'no_telp' => 'required',
+                    'alamat' => 'required',
+                    'program_studi_id' => 'required',
+                ]);
+            } elseif ($request->role === 'dosen') {
+                $rules = array_merge($rules, [
+                    'no_telp_dosen' => 'required',
+                    'program_studi_id_dosen' => 'required',
+                ]);
+            }
 
             $validator = Validator::make($request->all(), $rules);
 
@@ -116,6 +125,8 @@ class UserController extends Controller
                     'user_id' => $user->id,
                     'nidn' => $request->username,
                     'nama_lengkap' => $request->nama_lengkap,
+                    'no_telp' => $request->no_telp_dosen,
+                    'program_studi_id' => $request->program_studi_id_dosen,
                 ]);
             } elseif ($request->role === 'admin') {
                 AdminModel::create([

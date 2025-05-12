@@ -56,7 +56,7 @@
                     </div>
                     <div class="form-group">
                         <label>Program Studi</label>
-                        <select name="program_studi_id" id="program_studi" class="form-control">
+                        <select name="program_studi_id" id="program_studi_id" class="form-control">
                             <option value="">- Pilih Program Studi -</option>
                             @foreach ($programStudi as $ps)
                                 <option value="{{ $ps->id }}">{{ $ps->nama_prodi }}</option>
@@ -65,7 +65,23 @@
                         <small id="error-program_studi" class="error-text form-text text-danger"></small>
                     </div>
                 </div>
-
+                <div id="dosen-fields" style="display: none;">
+                    <div class="form-group">
+                        <label>No. Telepon</label>
+                        <input type="text" name="no_telp_dosen" id="no_telp_dosen" class="form-control">
+                        <small id="error-no_telp" class="error-text form-text text-danger"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Program Studi</label>
+                        <select name="program_studi_id_dosen" id="program_studi_id_dosen" class="form-control">
+                            <option value="">- Pilih Program Studi -</option>
+                            @foreach ($programStudi as $ps)
+                                <option value="{{ $ps->id }}">{{ $ps->nama_prodi }}</option>
+                            @endforeach
+                        </select>
+                        <small id="error-program_studi_id_dosen" class="error-text form-text text-danger"></small>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
@@ -83,38 +99,25 @@
             if (selectedRole === 'mahasiswa') {
                 $('#label-username').text('NIM');
                 $('#mahasiswa-fields').show();
+                $('#dosen-fields').hide();
             } else if (selectedRole === 'dosen') {
                 $('#label-username').text('NIDN');
                 $('#mahasiswa-fields').hide();
+                $('#dosen-fields').show();
             } else {
                 $('#label-username').text('Username');
                 $('#mahasiswa-fields').hide();
+                $('#dosen-fields').hide();
             }
         });
 
         $("#form-tambah").validate({
             rules: {
-                role: {
-                    required: true,
-                },
-                username: {
-                    required: true,
-                    minlength: 3,
-                    maxlength: 20
-                },
-                email: {
-                    required: true,
-                    minlength: 3,
-                    maxlength: 100
-                },
-                password: {
-                    required: true,
-                    minlength: 6,
-                    maxlength: 20
-                },
-                nama_lengkap: {
-                    required: true,
-                },
+                role: { required: true },
+                username: { required: true, minlength: 3, maxlength: 20 },
+                email: { required: true, minlength: 3, maxlength: 100 },
+                password: { required: true, minlength: 6, maxlength: 20 },
+                nama_lengkap: { required: true },
                 angkatan: {
                     required: function () {
                         return $('#role').val().toLowerCase() === 'mahasiswa';
@@ -125,16 +128,50 @@
                         return $('#role').val().toLowerCase() === 'mahasiswa';
                     }
                 },
+                no_telp_dosen: {
+                    required: function () {
+                        return $('#role').val().toLowerCase() === 'dosen';
+                    }
+                },
                 alamat: {
                     required: function () {
                         return $('#role').val().toLowerCase() === 'mahasiswa';
                     }
                 },
-                program_studi: {
+                program_studi_id: {
                     required: function () {
                         return $('#role').val().toLowerCase() === 'mahasiswa';
                     }
                 },
+                program_studi_id_dosen: {
+                    required: function () {
+                        return $('#role').val().toLowerCase() === 'dosen';
+                    }
+                }
+            },
+            messages: {
+                role: "Role penggguna harus dipilih.",
+                username: {
+                    required: "Username/NIM/NIDN wajib diisi.",
+                    minlength: "Username harus memiliki minimal 3 karakter.",
+                    maxlength: "Username maksimal 20 karakter."
+                },
+                email: {
+                    required: "Email wajib diisi.",
+                    minlength: "Email harus memiliki minimal 3 karakter.",
+                    maxlength: "Email maksimal 100 karakter."
+                },
+                password: {
+                    required: "Password wajib diisi.",
+                    minlength: "Password harus memiliki minimal 6 karakter.",
+                    maxlength: "Password maksimal 20 karakter."
+                },
+                nama_lengkap: "Nama lengkap wajib diisi.",
+                angkatan: "Angkatan wajib diisi untuk mahasiswa.",
+                no_telp: "No. Telepon wajib diisi untuk mahasiswa.",
+                alamat: "Alamat wajib diisi untuk mahasiswa.",
+                program_studi_id: "Program Studi wajib dipilih untuk mahasiswa.",
+                program_studi_id_dosen: "Program Studi wajib dipilih untuk dosen.",
             },
             errorElement: 'span',
             errorPlacement: function (error, element) {
