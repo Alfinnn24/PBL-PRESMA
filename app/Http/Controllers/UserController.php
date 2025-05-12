@@ -18,7 +18,7 @@ class UserController extends Controller
     {
         $breadcrumb = (object) [
             'title' => 'Daftar User',
-            'list'  => ['Home', 'User']
+            'list' => ['Home', 'User']
         ];
 
         $page = (object) [
@@ -30,7 +30,7 @@ class UserController extends Controller
             ->get(); // filter role user
 
         $activeMenu = 'user'; // set menu yang sedang aktif
-        return view('admin.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'role' => $role, 'activeMenu' => $activeMenu]);
+        return view('admin.user.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'role' => $role, 'activeMenu' => $activeMenu]);
     }
 
     public function list(Request $request)
@@ -58,7 +58,7 @@ class UserController extends Controller
     public function create_ajax()
     {
         $role = UserModel::select('role')->distinct()->get();
-        return view('admin.create_ajax')
+        return view('admin.user.create_ajax')
             ->with('role', $role);
     }
 
@@ -103,7 +103,7 @@ class UserController extends Controller
             //         // 'foto_profile' => null // null soalnya kosong, nanti bisa diubah defaultnya
             //     ]);
             // }
-            
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data user berhasil disimpan'
@@ -115,7 +115,7 @@ class UserController extends Controller
     public function show_ajax(string $id)
     {
         $user = UserModel::find($id);
-        return view('admin.show_ajax', ['user' => $user]);
+        return view('admin.user.show_ajax', ['user' => $user]);
     }
 
     // Menampilkan edit user ajax
@@ -123,7 +123,7 @@ class UserController extends Controller
     {
         $user = UserModel::find($id);
         $role = UserModel::select('role')->distinct()->get();
-        return view('admin.edit_ajax', ['user' => $user, 'role' => $role]);
+        return view('admin.user.edit_ajax', ['user' => $user, 'role' => $role]);
     }
     public function update_ajax(Request $request, $id)
     {
@@ -171,7 +171,7 @@ class UserController extends Controller
     {
         $user = UserModel::find($id);
 
-        return view('admin.confirm_ajax', ['user' => $user]);
+        return view('admin.user.confirm_ajax', ['user' => $user]);
     }
 
     public function delete_ajax(Request $request, $id)
