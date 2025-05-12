@@ -16,7 +16,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'verifprestasi' ? 'active' : '' }}">
+            <a href="{{ url('/prestasi') }}" class="nav-link {{ $activeMenu == 'verifprestasi' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-award"></i>
                 <p>Verifikasi Prestasi</p>
             </a>
