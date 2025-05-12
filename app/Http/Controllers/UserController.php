@@ -172,52 +172,119 @@ class UserController extends Controller
     // Menampilkan edit user ajax
     public function edit_ajax(string $id)
     {
-        $user = UserModel::find($id);
+        $user = UserModel::findOrFail($id);
         $role = UserModel::select('role')->distinct()->get();
-        return view('admin.user.edit_ajax', ['user' => $user, 'role' => $role]);
+
+        $detail = null;
+
+        if ($user->role === 'mahasiswa') {
+            $detail = MahasiswaModel::where('user_id', $user->id)->first();
+        } elseif ($user->role === 'dosen') {
+            $detail = DosenModel::where('user_id', $user->id)->first();
+        } elseif ($user->role === 'admin') {
+            $detail = AdminModel::where('user_id', $user->id)->first();
+        }
+
+        $prodi = ProgramStudiModel::all();
+
+        return view('admin.user.edit_ajax', compact('user', 'role', 'detail', 'prodi'));
     }
+
     public function update_ajax(Request $request, $id)
     {
-        // cek apakah request dari ajax
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
                 'role' => 'required',
-                'username' => 'required|max:20|unique:user,username,' . $id . ',id',
-                'email' => 'required|max:100',
-                'password' => 'nullable|min:6|max:20'
+                'username' => 'required|min:3|max:20|unique:user,username,' . $id . ',id',
+                'email' => 'required|email|max:100|unique:users,email,' . $id . ',id',
+                'password' => 'nullable|min:6|max:20',
+                'nama_lengkap' => 'required',
             ];
 
-            // use Illuminate\Support\Facades\Validator;
+            if ($request->role === 'mahasiswa') {
+                $rules = array_merge($rules, [
+                    'angkatan' => 'required',
+                    'no_telp' => 'required',
+                    'alamat' => 'required',
+                    'program_studi_id' => 'required',
+                ]);
+            } elseif ($request->role === 'dosen') {
+                $rules = array_merge($rules, [
+                    'no_telp_dosen' => 'required',
+                    'program_studi_id_dosen' => 'required',
+                ]);
+            }
+
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json([
-                    'status' => false, // respon json, true: berhasil, false: gagal
+                    'status' => false,
                     'message' => 'Validasi gagal.',
-                    'msgField' => $validator->errors() // menunjukkan field mana yang error
+                    'msgField' => $validator->errors()
                 ]);
             }
 
-            $check = UserModel::find($id);
-            if ($check) {
-                if (!$request->filled('password')) { // jika password tidak diisi, maka hapus dari request
-                    $request->request->remove('password');
-                }
-
-                $check->update($request->all());
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil diupdate'
-                ]);
-            } else {
+            $user = UserModel::find($id);
+            if (!$user) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Data tidak ditemukan'
+                    'message' => 'Data user tidak ditemukan'
                 ]);
             }
+
+            // Update data user
+            $user->username = $request->username;
+            $user->email = $request->email;
+            $user->role = $request->role;
+
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+
+            $user->save();
+
+            // Update data role terkait
+            if ($request->role === 'mahasiswa') {
+                MahasiswaModel::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'nim' => $request->username,
+                        'nama_lengkap' => $request->nama_lengkap,
+                        'angkatan' => $request->angkatan,
+                        'no_telp' => $request->no_telp,
+                        'alamat' => $request->alamat,
+                        'program_studi_id' => $request->program_studi_id,
+                    ]
+                );
+            } elseif ($request->role === 'dosen') {
+                DosenModel::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'nidn' => $request->username,
+                        'nama_lengkap' => $request->nama_lengkap,
+                        'no_telp' => $request->no_telp_dosen,
+                        'program_studi_id' => $request->program_studi_id_dosen,
+                    ]
+                );
+            } elseif ($request->role === 'admin') {
+                AdminModel::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'nama_lengkap' => $request->nama_lengkap,
+                    ]
+                );
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data user berhasil diperbarui'
+            ]);
         }
+
         return redirect('/');
     }
+
     public function confirm_ajax(string $id)
     {
         $user = UserModel::find($id);
