@@ -16,7 +16,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('dosen_id')->constrained('dosen')->onDelete('cascade');
             $table->string('mahasiswa_nim');
-            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
+            $table->foreign('mahasiswa_nim')
+                ->references('nim')->on('mahasiswa')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestamps();
         });
     }

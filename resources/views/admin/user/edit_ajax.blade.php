@@ -32,25 +32,20 @@
                     {{-- Data umum --}}
                     <div class="form-group">
                         <label>Role Pengguna</label>
-                        <select name="role" id="role" class="form-control" required>
-                            <option value="">- Pilih Role -</option>
-                            @foreach ($role as $r)
-                                <option value="{{ $r->role }}" {{ $r->role == $user->role ? 'selected' : '' }}>
-                                    {{ ucfirst($r->role) }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <input type="text" class="form-control" value="{{ ucfirst($user->role) }}" disabled>
+                        <input type="hidden" name="role" value="{{ $user->role }}">
                         <small id="error-role" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label>Username</label>
-                        <input value="{{ $user->username }}" type="text" name="username" id="username" class="form-control"
-                            required>
+                        <input value="{{ $user->username }}" type="text" name="username" id="username"
+                            class="form-control" required>
                         <small id="error-username" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input value="{{ $user->email }}" type="text" name="email" id="email" class="form-control" required>
+                        <input value="{{ $user->email }}" type="text" name="email" id="email" class="form-control"
+                            required>
                         <small id="error-email" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
@@ -65,7 +60,8 @@
                         <hr>
                         <div class="form-group">
                             <label>Nama Lengkap</label>
-                            <input value="{{ $detail->nama_lengkap }}" type="text" name="nama_lengkap" class="form-control">
+                            <input value="{{ $detail->nama_lengkap }}" type="text" name="nama_lengkap"
+                                class="form-control">
                         </div>
                         <div class="form-group">
                             <label>NIM</label>
@@ -88,7 +84,8 @@
                             <select name="program_studi_id" class="form-control">
                                 <option value="">- Pilih Program Studi -</option>
                                 @foreach ($prodi as $p)
-                                    <option value="{{ $p->id }}" {{ $detail->program_studi_id == $p->id ? 'selected' : '' }}>
+                                    <option value="{{ $p->id }}"
+                                        {{ $detail->program_studi_id == $p->id ? 'selected' : '' }}>
                                         {{ $p->nama_prodi }}
                                     </option>
                                 @endforeach
@@ -99,34 +96,38 @@
                         <hr>
                         <div class="form-group">
                             <label>Nama Lengkap</label>
-                            <input value="{{ $detail->nama_lengkap }}" type="text" name="nama_lengkap" class="form-control">
+                            <input value="{{ $detail->nama_lengkap }}" type="text" name="nama_lengkap"
+                                class="form-control">
                         </div>
                         <div class="form-group">
                             <label>NIDN</label>
-                            <input value="{{ $detail->nidn }}" type="text" name="nidn" class="form-control" readonly>
+                            <input value="{{ $detail->nidn }}" type="text" name="nidn" class="form-control"
+                                readonly>
                         </div>
                         <div class="form-group">
                             <label>No. Telepon</label>
-                            <input value="{{ $detail->no_telp }}" type="text" name="no_telp_dosen" class="form-control">
+                            <input value="{{ $detail->no_telp }}" type="text" name="no_telp_dosen"
+                                class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Program Studi</label>
                             <select name="program_studi_id_dosen" class="form-control">
                                 <option value="">- Pilih Program Studi -</option>
                                 @foreach ($prodi as $p)
-                                    <option value="{{ $p->id }}" {{ $detail->program_studi_id == $p->id ? 'selected' : '' }}>
+                                    <option value="{{ $p->id }}"
+                                        {{ $detail->program_studi_id == $p->id ? 'selected' : '' }}>
                                         {{ $p->nama_prodi }}
                                     </option>
                                 @endforeach
                             </select>
                             <small id="error-program_studi_id_dosen" class="error-text form-text text-danger"></small>
                         </div>
-
                     @elseif ($user->role === 'admin' && $detail)
                         <hr>
                         <div class="form-group">
                             <label>Nama Lengkap</label>
-                            <input value="{{ $detail->nama_lengkap }}" type="text" name="nama_lengkap" class="form-control">
+                            <input value="{{ $detail->nama_lengkap }}" type="text" name="nama_lengkap"
+                                class="form-control">
                         </div>
                     @endif
 
@@ -139,16 +140,31 @@
         </div>
     </form>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $("#form-edit").validate({
                 rules: {
-                    role: { required: true },
-                    username: { required: true, minlength: 3, maxlength: 20 },
-                    email: { required: true, minlength: 3, maxlength: 100 },
-                    password: { minlength: 6, maxlength: 20 },
-                    nama_lengkap: { required: true },
+                    role: {
+                        required: true
+                    },
+                    username: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 20
+                    },
+                    email: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 100
+                    },
+                    password: {
+                        minlength: 6,
+                        maxlength: 20
+                    },
+                    nama_lengkap: {
+                        required: true
+                    },
                     angkatan: {
-                        required: function () {
+                        required: function() {
                             return $('#role').val().toLowerCase() === 'mahasiswa';
                         },
                         digits: true,
@@ -157,27 +173,27 @@
                         range: [1900, new Date().getFullYear()]
                     },
                     no_telp: {
-                        required: function () {
+                        required: function() {
                             return $('#role').val().toLowerCase() === 'mahasiswa';
                         }
                     },
                     no_telp_dosen: {
-                        required: function () {
+                        required: function() {
                             return $('#role').val().toLowerCase() === 'dosen';
                         }
                     },
                     alamat: {
-                        required: function () {
+                        required: function() {
                             return $('#role').val().toLowerCase() === 'mahasiswa';
                         }
                     },
                     program_studi_id: {
-                        required: function () {
+                        required: function() {
                             return $('#role').val().toLowerCase() === 'mahasiswa';
                         }
                     },
                     program_studi_id_dosen: {
-                        required: function () {
+                        required: function() {
                             return $('#role').val().toLowerCase() === 'dosen';
                         }
                     }
@@ -213,12 +229,12 @@
                     program_studi_id: "Program Studi wajib dipilih untuk mahasiswa.",
                     program_studi_id_dosen: "Program Studi wajib dipilih untuk dosen."
                 },
-                submitHandler: function (form) {
+                submitHandler: function(form) {
                     $.ajax({
                         url: form.action,
                         type: form.method,
                         data: $(form).serialize(),
-                        success: function (response) {
+                        success: function(response) {
                             if (response.status) {
                                 $('#myModal').modal('hide');
                                 Swal.fire({
@@ -229,7 +245,7 @@
                                 dataUser.ajax.reload();
                             } else {
                                 $('.error-text').text('');
-                                $.each(response.msgField, function (prefix, val) {
+                                $.each(response.msgField, function(prefix, val) {
                                     $('#error-' + prefix).text(val[0]);
                                 });
                                 Swal.fire({
@@ -243,14 +259,14 @@
                     return false;
                 },
                 errorElement: 'span',
-                errorPlacement: function (error, element) {
+                errorPlacement: function(error, element) {
                     error.addClass('invalid-feedback');
                     element.closest('.form-group').append(error);
                 },
-                highlight: function (element, errorClass, validClass) {
+                highlight: function(element, errorClass, validClass) {
                     $(element).addClass('is-invalid');
                 },
-                unhighlight: function (element, errorClass, validClass) {
+                unhighlight: function(element, errorClass, validClass) {
                     $(element).removeClass('is-invalid');
                 }
             });
