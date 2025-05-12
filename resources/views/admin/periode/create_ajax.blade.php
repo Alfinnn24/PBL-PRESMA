@@ -59,15 +59,31 @@
                             dataPeriode.ajax.reload();
                         } else {
                             $('.error-text').text('');
-                            $.each(response.msgField, function (prefix, val) {
-                                $('#error-'+prefix).text(val[0]);
-                            });
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Terjadi Kesalahan',
-                                text: response.message
-                            });
+    
+                            if (response.msgField) {
+                                $.each(response.msgField, function (prefix, val) {
+                                   $('#error-' + prefix).text(val[0]);
+                                });
+                            }
+
+                            // Tampilkan alert umum
+                            if (response.message) {
+                                Swal.fire({
+                                   icon: 'error',
+                                   title: 'Gagal',
+                                   text: response.message
+                                });
+                            }
                         }
+                    },
+
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", error);  // Menambahkan error handling
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Terjadi Kesalahan',
+                            text: 'Terjadi kesalahan saat mengirimkan data. Silakan coba lagi.'
+                        });
                     }
                 });
                 return false;

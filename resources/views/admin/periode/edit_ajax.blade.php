@@ -90,16 +90,23 @@ $(document).ready(function() {
                         dataPeriode.ajax.reload();
                     } else {
                         $('.error-text').text('');
-                        $.each(response.msgField, function(prefix, val) {
-                            $('#error-' + prefix).text(val[0]);
-                        });
+                        // Cek apakah ada validasi error (msgField)
+                        if (response.msgField) {
+                            $.each(response.msgField, function (prefix, val) {
+                                $('#error-' + prefix).text(val[0]);
+                            });
+                        }
+
+                        // Tampilkan alert umum jika ada error
+                        if (response.message) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Terjadi Kesalahan',
                             text: response.message
                         });
                     }
-                },
+                }
+            },
                 error: function(xhr) {
                     console.error("AJAX Error:", xhr.responseText);
                     Swal.fire({
