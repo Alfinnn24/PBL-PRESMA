@@ -20,7 +20,11 @@
                 </div>
                 <div class="form-group">
                     <label>Semester Periode</label>
-                    <input value="" type="text" name="semester" id="semester" class="form-control" required>
+                    <select name="semester" id="semester" class="form-control" required>
+                        <option value="">- Pilih Semester -</option>
+                        <option value="Ganjil">Ganjil</option>
+                        <option value="Genap">Genap</option>
+                    </select>
                     <small id="error-semester" class="error-text form-text text-danger"></small>
                 </div>
             </div>
@@ -37,7 +41,7 @@
             rules: {
                 nama: { required: true, minlength: 3, maxlength: 20 },
                 tahun: { required: true, digits: true, minlength: 4, maxlength: 4 },
-                semester: { required: true, minlength: 3, maxlength: 20 },
+                semester: { required: true },
             },
             submitHandler: function (form) {
                 $.ajax({
