@@ -121,7 +121,11 @@
                 angkatan: {
                     required: function () {
                         return $('#role').val().toLowerCase() === 'mahasiswa';
-                    }
+                    },
+                    digits: true,
+                    minlength: 4,
+                    maxlength: 4,
+                    range: [1900, new Date().getFullYear()]
                 },
                 no_telp: {
                     required: function () {
@@ -167,7 +171,13 @@
                     maxlength: "Password maksimal 20 karakter."
                 },
                 nama_lengkap: "Nama lengkap wajib diisi.",
-                angkatan: "Angkatan wajib diisi untuk mahasiswa.",
+                angkatan: {
+                    required: "Angkatan wajib diisi untuk mahasiswa.",
+                    digits: "Angkatan harus berupa angka.",
+                    minlength: "Angkatan harus terdiri dari 4 digit.",
+                    maxlength: "Angkatan harus terdiri dari 4 digit.",
+                    range: "Masukkan tahun yang valid antara 1900 dan " + new Date().getFullYear() + "."
+                },
                 no_telp: "No. Telepon wajib diisi untuk mahasiswa.",
                 alamat: "Alamat wajib diisi untuk mahasiswa.",
                 program_studi_id: "Program Studi wajib dipilih untuk mahasiswa.",
