@@ -15,7 +15,10 @@ return new class extends Migration {
             $table->string('pengalaman');
             $table->string('kategori');
             $table->string('mahasiswa_nim');
-            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
+            $table->foreign('mahasiswa_nim')
+                ->references('nim')->on('mahasiswa')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestamps();
         });
     }

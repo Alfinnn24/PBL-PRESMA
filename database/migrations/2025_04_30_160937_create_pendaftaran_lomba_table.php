@@ -15,7 +15,10 @@ return new class extends Migration
         Schema::create('pendaftaran_lomba', function (Blueprint $table) {
             $table->id();
             $table->string('mahasiswa_nim');
-            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
+            $table->foreign('mahasiswa_nim')
+                ->references('nim')->on('mahasiswa')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->foreignId('lomba_id')->constrained('lomba')->onDelete('cascade');
             $table->enum('status', ['Terdaftar', 'Selesai', 'Dibatalkan']);
             $table->string('hasil');
