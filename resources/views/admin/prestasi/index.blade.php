@@ -1,0 +1,139 @@
+@extends('layouts.template')
+@section('content')
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title">{{ $page->title }}</h3>
+            <div class="card-tools">
+                <button onclick="modalAction('{{ url('prestasi/create_ajax') }}')"
+                    class="btn btn-sm btn-success mt-1">Tambah Prestasi</button>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+
+            {{-- filter opsi (jika nanti ingin filter berdasarkan nama prestasi, bisa diaktifkan) --}}
+            {{--
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <label class="col-1 control-label col-form-label">Filter:</label>
+                        <div class="col-3">
+                            <select class="form-control" id="nama_prestasi" name="nama_prestasi">
+                                <option value="">- Semua -</option>
+                                @foreach ($namaPrestasi as $item)
+                                <option value="{{ $item->nama_prestasi }}">{{ $item->nama_prestasi }}</option>
+                                @endforeach
+                            </select>
+                            <small class="form-text text-muted">Nama Prestasi</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            --}}
+
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_prestasi">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Prestasi</th>
+                        <th>Status</th>
+                        <th>Catatan</th>
+                        <th>Jumlah Mahasiswa</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
+@endsection
+
+@push('css')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
+@push('js')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function modalAction(url = '') {
+            $('#myModal').load(url, function () {
+                $('#myModal').modal('show');
+            });
+        }
+
+        var dataPrestasi;
+        $(document).ready(function () {
+            dataPrestasi = $('#table_prestasi').DataTable({
+                serverSide: true,
+                ajax: {
+                    url: "{{ url('prestasi/list') }}",
+                    type: "POST",
+                    dataType: "json",
+                    data: function (d) {
+                        // contoh jika ada filter, tambahkan:
+                        // d.nama_prestasi = $('#nama_prestasi').val();
+                    }
+                },
+                columns: [
+                    {
+                        data: "DT_RowIndex",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: "nama_prestasi",
+                    },
+                    {
+                        data: "status",
+                    },
+                    {
+                        data: "catatan",
+                    },
+                    {
+                        data: "jumlah_mahasiswa",
+                        className: "text-center"
+                    },
+                    {
+                        data: "action",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
+
+            // jika pakai filter
+            // $('#nama_prestasi').on('change', function () {
+            //     dataPrestasi.ajax.reload();
+            // });
+        });
+
+        function ubahStatus(id, aksi) {
+            let url = `/prestasi/${id}/${aksi}_ajax`;
+            Swal.fire({
+                title: aksi === 'approve' ? 'Setujui Prestasi?' : 'Tolak Prestasi?',
+                text: "Tindakan ini akan mengubah status prestasi.",
+                icon: aksi === 'approve' ? 'success' : 'warning',
+                showCancelButton: true,
+                confirmButtonColor: aksi === 'approve' ? '#28a745' : '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: aksi === 'approve' ? 'Ya, Setujui!' : 'Ya, Tolak!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(url, { _token: '{{ csrf_token() }}' }, function (res) {
+                        Swal.fire('Berhasil', res.success, 'success');
+                        $('#table_prestasi').DataTable().ajax.reload();
+                    });
+                }
+            });
+        }
+    </script>
+@endpush

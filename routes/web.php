@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RekomendasiLombaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PeriodeController;
+use App\Http\Controllers\PrestasiController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -57,5 +58,20 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::put('/{id}/update_ajax', [PeriodeController::class, 'update_ajax']);    // Menyimpan perubahan data periode Ajax
         Route::get('/{id}/delete_ajax', [PeriodeController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete periode Ajax
         Route::delete('/{id}/delete_ajax', [PeriodeController::class, 'delete_ajax']); // Untuk hapus data periode Ajax
+    });
+
+    Route::group(['prefix' => 'prestasi'], function () {
+        Route::get('/', [PrestasiController::class, 'index']);                          // menampilkan halaman awal prestasi
+        Route::post('/list', [PrestasiController::class, 'list']);                      // menampilkan data prestasi dalam bentuk json untuk datatables
+        Route::get('/create_ajax', [PrestasiController::class, 'create_ajax']);         // Menampilkan halaman form tambah prestasi Ajax
+        Route::post('/ajax', [PrestasiController::class, 'store_ajax']);                // Menyimpan data prestasi baru Ajax
+        Route::get('/{id}/show_ajax', [PrestasiController::class, 'show_ajax']);        // menampilkan detail prestasi Ajax
+        Route::get('/{id}/edit_ajax', [PrestasiController::class, 'edit_ajax']);        // Menampilkan halaman form edit prestasi Ajax
+        Route::put('/{id}/update_ajax', [PrestasiController::class, 'update_ajax']);    // Menyimpan perubahan data prestasi Ajax
+        Route::get('/{id}/delete_ajax', [PrestasiController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete prestasi Ajax
+        Route::delete('/{id}/delete_ajax', [PrestasiController::class, 'delete_ajax']); // Untuk hapus data prestasi Ajax
+        Route::post('/{id}/approve_ajax', [PrestasiController::class, 'approve_ajax']);
+        Route::post('/{id}/reject_ajax', [PrestasiController::class, 'reject_ajax']);
+
     });
 });
