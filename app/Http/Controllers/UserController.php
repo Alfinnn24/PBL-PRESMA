@@ -70,10 +70,10 @@ class UserController extends Controller
                 'role' => 'required|in:admin,mahasiswa,dosen',
                 'username' => 'required|string|min:3|unique:user,username',
                 'email' => 'required|max:100',
-                'password' => 'required|min:6'
-                
+                'password' => 'required|min:6',
+                // tambahan untuk mahasiswa
                 // 'nim'        => 'required_if:role,mahasiswa|unique:mahasiswa,nim',
-                // 'nama'       => 'required_if:role,mahasiswa|string',
+                // 'nama_lengkap'       => 'required_if:role,mahasiswa|string'
                 // 'program_id' => 'required_if:role,dosen|exists:program_studi,id',
                 // 'nidn'       => 'required_if:role,dosen|unique:dosen,nidn',
             ];
@@ -88,8 +88,22 @@ class UserController extends Controller
                 ]);
             }
 
-            UserModel::create($request->all());
+            $user = UserModel::create([
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => $request->role,
+            ]);
 
+            // if ($request->role === 'mahasiswa') {
+            //     MahasiswaModel::create([
+            //         'user_id' => $user->id,
+            //         'nim' => $request->username,
+            //         'nama_lengkap' => $request->nama,
+            //         // 'foto_profile' => null // null soalnya kosong, nanti bisa diubah defaultnya
+            //     ]);
+            // }
+            
             return response()->json([
                 'status' => true,
                 'message' => 'Data user berhasil disimpan'
@@ -108,8 +122,8 @@ class UserController extends Controller
     public function edit_ajax(string $id)
     {
         $user = UserModel::find($id);
-        $role = UserModel::select('role')->get();
-        return view('user.edit_ajax', ['user' => $user, 'role' => $role]);
+        $role = UserModel::select('role')->distinct()->get();
+        return view('admin.edit_ajax', ['user' => $user, 'role' => $role]);
     }
     public function update_ajax(Request $request, $id)
     {
@@ -157,7 +171,7 @@ class UserController extends Controller
     {
         $user = UserModel::find($id);
 
-        return view('user.confirm_ajax', ['user' => $user]);
+        return view('admin.confirm_ajax', ['user' => $user]);
     }
 
     public function delete_ajax(Request $request, $id)

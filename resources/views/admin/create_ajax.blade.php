@@ -33,6 +33,14 @@
                     <input value="" type="password" name="password" id="password" class="form-control" required>
                     <small id="error-password" class="error-text form-text text-danger"></small>
                 </div>
+                 <!-- Tambahan field untuk mahasiswa -->
+                {{-- <div id="mahasiswa-fields" style="display: none;">
+                    <div class="form-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" name="nama_lengkap" id="nama_lengkap" class="form-control">
+                        <small id="error-nama_lengkap" class="error-text form-text text-danger"></small>
+                    </div>
+                </div> --}}
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
@@ -43,6 +51,16 @@
 </form>
 <script>
     $(document).ready(function() {
+        var modal = document.getElementsByClassName("modal")[0];
+        var role = modal.querySelector("#role");
+        role.addEventListener("change", function() {
+            var mahasiswaFields = document.getElementById("mahasiswa-fields");
+            if (role.value === "mahasiswa") {
+                mahasiswaFields.style.display = "block";
+            } else {
+                mahasiswaFields.style.display = "none";
+            }
+        })
         $("#form-tambah").validate({
             rules: {
                 role: {
@@ -63,6 +81,13 @@
                     minlength: 6,
                     maxlength: 20
                 }
+                // nama_lengkap: {
+                //     required: {
+                //         depends: function(element) {
+                //             return $('#role').val() === 'mahasiswa';
+                //         }
+                //     }
+                // }
             },
             submitHandler: function(form) {
                 $.ajax({
