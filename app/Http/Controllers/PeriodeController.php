@@ -81,6 +81,19 @@ class PeriodeController extends Controller
                 ]);
             }
 
+            // Pengecekan data duplikat
+            $exists = PeriodeModel::where('nama', $request->nama)
+                ->where('tahun', $request->tahun)
+                ->where('semester', $request->semester)
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data dengan kombinasi Nama, Tahun, dan Semester tersebut sudah ada.',
+                ]);
+            }
+
             PeriodeModel::create($request->all());
             return response()->json([
                 'status'=> true,
@@ -123,7 +136,21 @@ class PeriodeController extends Controller
                     'message'  => 'Validasi gagal.', 
                     'msgField' => $validator->errors() 
                 ]); 
-            } 
+            }
+
+            // Cek duplikasi data kecuali ID yang sedang diedit
+            $duplicate = PeriodeModel::where('nama', $request->nama)
+                ->where('tahun', $request->tahun)
+                ->where('semester', $request->semester)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($duplicate) {
+                return response()->json([
+                   'status'  => false,
+                   'message' => 'Data dengan kombinasi Nama, Tahun, dan Semester tersebut sudah ada.'
+                ]);
+            }
      
             // Proses update
             $check->update($request->only(['nama', 'tahun', 'semester'])); 

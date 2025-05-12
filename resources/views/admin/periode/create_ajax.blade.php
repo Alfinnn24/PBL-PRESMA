@@ -20,7 +20,11 @@
                 </div>
                 <div class="form-group">
                     <label>Semester Periode</label>
-                    <input value="" type="text" name="semester" id="semester" class="form-control" required>
+                    <select name="semester" id="semester" class="form-control" required>
+                        <option value="">- Pilih Semester -</option>
+                        <option value="Ganjil">Ganjil</option>
+                        <option value="Genap">Genap</option>
+                    </select>
                     <small id="error-semester" class="error-text form-text text-danger"></small>
                 </div>
             </div>
@@ -37,7 +41,7 @@
             rules: {
                 nama: { required: true, minlength: 3, maxlength: 20 },
                 tahun: { required: true, digits: true, minlength: 4, maxlength: 4 },
-                semester: { required: true, minlength: 3, maxlength: 20 },
+                semester: { required: true },
             },
             submitHandler: function (form) {
                 $.ajax({
@@ -55,15 +59,31 @@
                             dataPeriode.ajax.reload();
                         } else {
                             $('.error-text').text('');
-                            $.each(response.msgField, function (prefix, val) {
-                                $('#error-'+prefix).text(val[0]);
-                            });
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Terjadi Kesalahan',
-                                text: response.message
-                            });
+    
+                            if (response.msgField) {
+                                $.each(response.msgField, function (prefix, val) {
+                                   $('#error-' + prefix).text(val[0]);
+                                });
+                            }
+
+                            // Tampilkan alert umum
+                            if (response.message) {
+                                Swal.fire({
+                                   icon: 'error',
+                                   title: 'Gagal',
+                                   text: response.message
+                                });
+                            }
                         }
+                    },
+
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", error);  // Menambahkan error handling
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Terjadi Kesalahan',
+                            text: 'Terjadi kesalahan saat mengirimkan data. Silakan coba lagi.'
+                        });
                     }
                 });
                 return false;
