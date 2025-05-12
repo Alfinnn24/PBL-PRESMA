@@ -22,7 +22,7 @@ class PrestasiController extends Controller
             'title' => 'Daftar Prestasi Mahasiswa'
         ];
 
-        $activeMenu = 'prestasi';
+        $activeMenu = 'verifprestasi';
 
         return view('admin.prestasi.index', compact('breadcrumb', 'page', 'activeMenu'));
     }
