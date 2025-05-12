@@ -14,7 +14,10 @@ return new class extends Migration {
         Schema::create('rekomendasi_lomba', function (Blueprint $table) {
             $table->id();
             $table->string('mahasiswa_nim');
-            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa')->onDelete('cascade');
+           $table->foreign('mahasiswa_nim')
+                ->references('nim')->on('mahasiswa')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->foreignId('lomba_id')->constrained('lomba')->onDelete('cascade');
             $table->foreignId('dosen_pembimbing_id')->constrained('dosen')->onDelete('cascade');
             $table->enum('status', ['Disetujui', 'Ditolak', 'Pending']);
