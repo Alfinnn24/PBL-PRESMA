@@ -5,6 +5,7 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RekomendasiLombaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PeriodeController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -44,5 +45,17 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::put('/{id}/update_ajax', [UserController::class, 'update_ajax']);    // Menyimpan perubahan data user Ajax
         Route::get('/{id}/delete_ajax', [UserController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete user Ajax
         Route::delete('/{id}/delete_ajax', [UserController::class, 'delete_ajax']); // Untuk hapus data user Ajax
+    });
+
+    Route::group(['prefix' => 'periode'], function () {
+        Route::get('/', [PeriodeController::class, 'index']);                          // menampilkan halaman awal periode
+        Route::post('/list', [PeriodeController::class, 'list']);                      // menampilkan data periode dalam bentuk json untuk datatables
+        Route::get('/create_ajax', [PeriodeController::class, 'create_ajax']);         // Menampilkan halaman form tambah periode Ajax
+        Route::post('/ajax', [PeriodeController::class, 'store_ajax']);                // Menyimpan data periode baru Ajax
+        Route::get('/{id}/show_ajax', [PeriodeController::class, 'show_ajax']);        // menampilkan detail periode Ajax
+        Route::get('/{id}/edit_ajax', [PeriodeController::class, 'edit_ajax']);        // Menampilkan halaman form edit periode Ajax
+        Route::put('/{id}/update_ajax', [PeriodeController::class, 'update_ajax']);    // Menyimpan perubahan data periode Ajax
+        Route::get('/{id}/delete_ajax', [PeriodeController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete periode Ajax
+        Route::delete('/{id}/delete_ajax', [PeriodeController::class, 'delete_ajax']); // Untuk hapus data periode Ajax
     });
 });
