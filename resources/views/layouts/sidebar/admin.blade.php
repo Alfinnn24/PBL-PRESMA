@@ -29,7 +29,7 @@
         </li>
         <li class="nav-header">Manejemen Akademik</li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
+            <a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-calendar-minus"></i>
                 <p>Periode Semester</p>
             </a>
