@@ -174,19 +174,34 @@ class PrestasiController extends Controller
         return redirect('/');
     }
 
-    public function approve_ajax($id)
+    public function approve_ajax(Request $request, $id)
     {
         $prestasi = PrestasiModel::findOrFail($id);
+
+        if (empty($prestasi->catatan) || $prestasi->status == 'Ditolak') {
+            $catatan = $request->input('catatan', 'Tidak ada catatan');
+            $prestasi->catatan = $catatan;
+        }
+
         $prestasi->status = 'Disetujui';
         $prestasi->save();
 
         return response()->json(['success' => 'Prestasi berhasil disetujui']);
     }
 
-    public function reject_ajax($id)
+    public function reject_ajax(Request $request, $id)
     {
         $prestasi = PrestasiModel::findOrFail($id);
         $prestasi->status = 'Ditolak';
+
+        // Cek jika ada catatan yang diberikan
+        $catatan = $request->input('catatan');
+        if (!$catatan) {
+            return response()->json(['error' => 'Catatan wajib diisi!'], 400); // Jika catatan tidak diisi, kirimkan error
+        }
+
+        $prestasi->catatan = $catatan;
+
         $prestasi->save();
 
         return response()->json(['success' => 'Prestasi berhasil ditolak']);
