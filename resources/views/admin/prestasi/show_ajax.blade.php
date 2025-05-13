@@ -1,5 +1,5 @@
 @empty($prestasi)
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+    <div id="myModal" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
@@ -17,7 +17,7 @@
         </div>
     </div>
 @else
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+    <div id="myModal" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Detail Prestasi</h5>
@@ -100,6 +100,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-primary">Tutup</button>
+                <button onclick="ubahStatus({{ $prestasi->id }}, 'approve')" class="btn btn-success btn">Setujui</button>
+                <button onclick="ubahStatus({{ $prestasi->id }}, 'reject')" class="btn btn-danger btn">Tolak</button>
             </div>
         </div>
     </div>
