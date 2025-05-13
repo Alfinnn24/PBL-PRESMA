@@ -129,8 +129,23 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.post(url, { _token: '{{ csrf_token() }}' }, function (res) {
-                        Swal.fire('Berhasil', res.success, 'success');
-                        $('#table_prestasi').DataTable().ajax.reload();
+                        Swal.fire({
+                            title: 'Berhasil',
+                            text: res.success,
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        // Tutup modal setelah aksi selesai
+                        $('#myModal').modal('hide');
+
+                        // Refresh tabel di halaman index
+                        if ($.fn.DataTable.isDataTable('#table_prestasi')) {
+                            $('#table_prestasi').DataTable().ajax.reload(null, false); // reload tanpa reset halaman
+                        }
+                    }).fail(function (xhr) {
+                        Swal.fire('Gagal', 'Terjadi kesalahan saat memproses data.', 'error');
                     });
                 }
             });
