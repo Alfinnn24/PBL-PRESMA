@@ -7,6 +7,7 @@ use App\Http\Controllers\RekomendasiLombaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\PrestasiController;
+use App\Http\Controllers\LombaController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -72,6 +73,19 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::delete('/{id}/delete_ajax', [PrestasiController::class, 'delete_ajax']); // Untuk hapus data prestasi Ajax
         Route::post('/{id}/approve_ajax', [PrestasiController::class, 'approve_ajax']);
         Route::post('/{id}/reject_ajax', [PrestasiController::class, 'reject_ajax']);
+
+    });
+
+    Route::group(['prefix' => 'lomba'], function () {
+        Route::get('/', [LombaController::class, 'index']);                          // menampilkan halaman awal lomba
+        Route::post('/list', [LombaController::class, 'list']);                      // menampilkan data lomba dalam bentuk json untuk datatables
+        Route::get('/create_ajax', [LombaController::class, 'create_ajax']);         // Menampilkan halaman form tambah lomba Ajax
+        Route::post('/ajax', [LombaController::class, 'store_ajax']);                // Menyimpan data lomba baru Ajax
+        Route::get('/{id}/show_ajax', [LombaController::class, 'show_ajax']);        // menampilkan detail lomba Ajax
+        Route::get('/{id}/edit_ajax', [LombaController::class, 'edit_ajax']);        // Menampilkan halaman form edit lomba Ajax
+        Route::put('/{id}/update_ajax', [LombaController::class, 'update_ajax']);    // Menyimpan perubahan data lomba Ajax
+        Route::get('/{id}/delete_ajax', [LombaController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete lomba Ajax
+        Route::delete('/{id}/delete_ajax', [LombaController::class, 'delete_ajax']); // Untuk hapus data lomba Ajax
 
     });
 });

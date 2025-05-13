@@ -42,7 +42,7 @@
         </li>
         <li class="nav-header">Manejemen Perlombaan</li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'datalomba' ? 'active' : '' }}">
+            <a href="{{ url('/lomba') }}" class="nav-link {{ $activeMenu == 'datalomba' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-folder-open"></i>
                 <p>Data Lomba</p>
             </a>
