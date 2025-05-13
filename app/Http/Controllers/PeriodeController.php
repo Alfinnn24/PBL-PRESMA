@@ -18,7 +18,7 @@ class PeriodeController extends Controller
         ];
 
         $page = (object) [
-            'title' => 'Daftar Periode yang terdaftar di sistem'
+            'title' => 'Daftar periode yang terdaftar di sistem'
         ];
         
         $nama = PeriodeModel::select('nama')
