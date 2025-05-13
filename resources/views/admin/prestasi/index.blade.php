@@ -51,7 +51,8 @@
         </div>
     </div>
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
-        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
+        data-keyboard="false" data-width="75%" aria-hidden="true">
+    </div>
 @endsection
 
 @push('css')
@@ -117,38 +118,65 @@
 
         function ubahStatus(id, aksi) {
             let url = `/prestasi/${id}/${aksi}_ajax`;
-            Swal.fire({
-                title: aksi === 'approve' ? 'Setujui Prestasi?' : 'Tolak Prestasi?',
-                text: "Tindakan ini akan mengubah status prestasi.",
-                icon: aksi === 'approve' ? 'success' : 'warning',
-                showCancelButton: true,
-                confirmButtonColor: aksi === 'approve' ? '#28a745' : '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: aksi === 'approve' ? 'Ya, Setujui!' : 'Ya, Tolak!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post(url, { _token: '{{ csrf_token() }}' }, function (res) {
-                        Swal.fire({
-                            title: 'Berhasil',
-                            text: res.success,
-                            icon: 'success',
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
+            let inputCatatan = `<textarea id="catatan" class="form-control" placeholder="Masukkan catatan (optional)"></textarea>`;
+            let title = aksi === 'approve' ? 'Setujui Prestasi?' : 'Tolak Prestasi?';
+            let text = "Tindakan ini akan mengubah status prestasi.";
+            let icon = aksi === 'approve' ? 'success' : 'warning';
+            let confirmButtonText = aksi === 'approve' ? 'Ya, Setujui!' : 'Ya, Tolak!';
+            let confirmButtonColor = aksi === 'approve' ? '#28a745' : '#d33';
 
-                        // Tutup modal setelah aksi selesai
-                        $('#myModal').modal('hide');
+            // Jika status ditolak, buat textarea sebagai input wajib
+            if (aksi === 'reject') {
+                inputCatatan = `<textarea id="catatan" class="form-control" placeholder="Masukkan catatan (wajib)" required></textarea>`;
+            }
 
-                        // Refresh tabel di halaman index
-                        if ($.fn.DataTable.isDataTable('#table_prestasi')) {
-                            $('#table_prestasi').DataTable().ajax.reload(null, false); // reload tanpa reset halaman
+            $('#myModal').modal('hide');
+
+            setTimeout(() => {
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: icon,
+                    html: inputCatatan,
+                    showCancelButton: true,
+                    confirmButtonColor: confirmButtonColor,
+                    cancelButtonColor: '#6c757d',
+                    cancelButtonText: 'Batal',
+                    confirmButtonText: confirmButtonText,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let catatan = document.getElementById('catatan').value;
+                        // Jika tidak ada catatan pada saat disetujui, beri kalimat default
+                        if (aksi === 'approve' && !catatan) {
+                            catatan = 'Tidak ada catatan';
                         }
-                    }).fail(function (xhr) {
-                        Swal.fire('Gagal', 'Terjadi kesalahan saat memproses data.', 'error');
-                    });
-                }
-            });
+
+                        $.post(url, {
+                            _token: '{{ csrf_token() }}',
+                            catatan: catatan // Kirim catatan ke server
+                        }, function (res) {
+                            Swal.fire({
+                                title: 'Berhasil',
+                                text: res.success,
+                                icon: 'success',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+
+                            // Tutup modal setelah aksi selesai
+                            $('#myModal').modal('hide');
+
+                            // Refresh tabel di halaman index
+                            if ($.fn.DataTable.isDataTable('#table_prestasi')) {
+                                $('#table_prestasi').DataTable().ajax.reload(null, false); // reload tanpa reset halaman
+                            }
+                        }).fail(function (xhr) {
+                            Swal.fire('Gagal', 'Terjadi kesalahan saat memproses data.', 'error');
+                            $('#myModal').modal('hide');
+                        });
+                    }
+                });
+            }, 500);
         }
     </script>
 @endpush
