@@ -73,6 +73,7 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::delete('/{id}/delete_ajax', [PrestasiController::class, 'delete_ajax']); // Untuk hapus data prestasi Ajax
         Route::post('/{id}/approve_ajax', [PrestasiController::class, 'approve_ajax']);
         Route::post('/{id}/reject_ajax', [PrestasiController::class, 'reject_ajax']);
+        Route::get('/mahasiswa/search', [PrestasiController::class, 'search']);
 
     });
 
