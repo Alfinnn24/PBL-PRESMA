@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('file_bukti');
             $table->enum('status', ['Pending', 'Disetujui', 'Ditolak']);
             $table->text('catatan');
+            $table->foreignId('created_by')->constrained('user')->onDelete('cascade');
             $table->timestamps();
         });
     }
