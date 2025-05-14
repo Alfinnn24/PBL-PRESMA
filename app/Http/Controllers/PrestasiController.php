@@ -105,7 +105,7 @@ class PrestasiController extends Controller
 
     public function show_ajax($id)
     {
-        $prestasi = PrestasiModel::with(['lomba', 'detailPrestasi.mahasiswa'])->findOrFail($id);
+        $prestasi = PrestasiModel::with(['lomba', 'detailPrestasi.mahasiswa', 'creator.mahasiswa', 'creator.dosen', 'creator.admin'])->findOrFail($id);
         return view('admin.prestasi.show_ajax', compact('prestasi'));
     }
 

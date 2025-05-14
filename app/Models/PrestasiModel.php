@@ -19,6 +19,11 @@ class PrestasiModel extends Model
     {
         return $this->hasMany(DetailPrestasiModel::class, 'prestasi_id', 'id'); // pastikan 'prestasi_id' dan 'id' sesuai dengan kolom di tabel
     }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(UserModel::class, 'created_by');
+    }
 }
 
 ?>
