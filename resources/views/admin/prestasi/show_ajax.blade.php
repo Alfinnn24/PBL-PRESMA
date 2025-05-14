@@ -52,8 +52,8 @@
                     <tr>
                         <th>Bukti Prestasi</th>
                         <td>
-                            <a href="{{ asset('storage/' . $prestasi->file_bukti) }}" target="_blank"
-                                class="btn btn-sm btn-info">Lihat Bukti</a>
+                            <a href="{{ asset($prestasi->file_bukti) }}" target="_blank" class="btn btn-sm btn-info">Lihat
+                                Bukti</a>
                         </td>
                     </tr>
                 </table>
