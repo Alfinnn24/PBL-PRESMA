@@ -15,6 +15,8 @@ class PrestasiController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
+
         $breadcrumb = (object) [
             'title' => 'Data Prestasi',
             'list' => ['Home', 'Prestasi']
@@ -26,17 +28,33 @@ class PrestasiController extends Controller
 
         $activeMenu = 'verifprestasi';
 
-        return view('admin.prestasi.index', compact('breadcrumb', 'page', 'activeMenu'));
+        if ($user->role === 'admin') {
+            return view('admin.prestasi.index', compact('breadcrumb', 'page', 'activeMenu'));
+        } else {
+            return view('prestasi.index', compact('breadcrumb', 'page', 'activeMenu'));
+        }
     }
 
     public function list(Request $request)
     {
         $user = auth()->user(); // mendapatkan user yang login
-        $data = PrestasiModel::with('detailPrestasi.mahasiswa')
-            ->get()
-            ->filter(function ($item) {
-                return $item->detailPrestasi->count() > 0;
-            });
+
+        if ($user->role === 'admin') {
+            // Admin melihat semua data
+            $data = PrestasiModel::with('detailPrestasi.mahasiswa')
+                ->get()
+                ->filter(function ($item) {
+                    return $item->detailPrestasi->count() > 0;
+                });
+        } else {
+            // Mahasiswa hanya melihat data dirinya
+            $mahasiswa = $user->mahasiswa; // asumsi relasi: User -> mahasiswa
+            $data = PrestasiModel::with(['detailPrestasi.mahasiswa'])
+                ->whereHas('detailPrestasi.mahasiswa', function ($query) use ($mahasiswa) {
+                    $query->where('nim', $mahasiswa->nim);
+                })
+                ->get();
+        }
 
         return DataTables::of($data)
             ->addIndexColumn()
@@ -64,14 +82,36 @@ class PrestasiController extends Controller
 
     public function create_ajax()
     {
+        $user = auth()->user();
+
         $mahasiswa = MahasiswaModel::all();
         $lomba = LombaModel::all();
-        return view('admin.prestasi.create_ajax', compact('mahasiswa', 'lomba'));
+
+        if ($user->role === 'admin') {
+            return view('admin.prestasi.create_ajax', compact('mahasiswa', 'lomba'));
+        } else {
+            return view('prestasi.create_ajax', compact('mahasiswa', 'lomba', 'user'));
+        }
     }
 
     public function store_ajax(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $user = Auth::user();
+
+        // Pastikan input mahasiswa_nim menjadi array
+        $mahasiswaNimInput = $request->input('mahasiswa_nim');
+        $mahasiswaNimArray = is_array($mahasiswaNimInput)
+            ? $mahasiswaNimInput
+            : [$mahasiswaNimInput];
+
+        // Validasi input
+        $validator = Validator::make([
+            'nama_prestasi' => $request->input('nama_prestasi'),
+            'lomba_id' => $request->input('lomba_id'),
+            'file_bukti' => $request->file('file_bukti'),
+            'catatan' => $request->input('catatan'),
+            'mahasiswa_nim' => $mahasiswaNimArray,
+        ], [
             'nama_prestasi' => 'required|string|max:255',
             'lomba_id' => 'required|exists:lomba,id',
             'file_bukti' => 'required|file|mimetypes:application/pdf,image/jpeg,image/png,image/jpg,image/webp',
@@ -97,10 +137,10 @@ class PrestasiController extends Controller
             $file->move(public_path('uploads/prestasi'), $namaFile);
         }
 
-        $user = Auth::user();
+        // Status otomatis berdasarkan role user
         $status = $user->role == 'admin' ? 'Disetujui' : 'Pending';
 
-        // Simpan data ke tabel prestasi
+        // Simpan ke tabel prestasi
         $prestasi = PrestasiModel::create([
             'nama_prestasi' => $request->nama_prestasi,
             'lomba_id' => $request->lomba_id,
@@ -110,8 +150,8 @@ class PrestasiController extends Controller
             'created_by' => $user->id
         ]);
 
-        // Simpan relasi ke mahasiswa
-        foreach ($request->mahasiswa_nim as $nim) {
+        // Simpan relasi mahasiswa ke tabel detail_prestasi
+        foreach ($mahasiswaNimArray as $nim) {
             DetailPrestasiModel::create([
                 'prestasi_id' => $prestasi->id,
                 'mahasiswa_nim' => $nim
@@ -123,6 +163,7 @@ class PrestasiController extends Controller
             'message' => 'Prestasi berhasil ditambahkan'
         ]);
     }
+
 
     public function show_ajax($id)
     {

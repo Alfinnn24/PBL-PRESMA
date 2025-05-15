@@ -8,7 +8,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'catatprestasi' ? 'active' : '' }}">
+            <a href="{{ url('/prestasi') }}" class="nav-link {{ $activeMenu == 'catatprestasi' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-award"></i>
                 <p>Pencatatan Prestasi</p>
             </a>
