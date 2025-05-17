@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\LombaController;
+use App\Http\Controllers\ProgramStudiController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -88,4 +89,17 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::delete('/{id}/delete_ajax', [LombaController::class, 'delete_ajax']); // Untuk hapus data lomba Ajax
 
     });
+
+    Route::group(['prefix' => 'program_studi'], function () {
+    Route::get('/', [ProgramStudiController::class, 'index']);                            // Menampilkan halaman daftar program studi
+    Route::post('/list', [ProgramStudiController::class, 'list']);                        // Menampilkan data program studi dalam bentuk JSON
+    Route::get('/create_ajax', [ProgramStudiController::class, 'create_ajax']);           // Menampilkan form tambah program studi Ajax
+    Route::post('/store_ajax', [ProgramStudiController::class, 'store_ajax']);                  // Menyimpan data program studi baru Ajax
+    Route::get('/{id}/show_ajax', [ProgramStudiController::class, 'show_ajax']);          // Menampilkan detail program studi Ajax
+    Route::get('/{id}/edit_ajax', [ProgramStudiController::class, 'edit_ajax']);          // Menampilkan form edit program studi Ajax
+    Route::put('/{id}/update_ajax', [ProgramStudiController::class, 'update_ajax']);      // Menyimpan perubahan data program studi Ajax
+    Route::get('/{id}/delete_ajax', [ProgramStudiController::class, 'confirm_ajax']);     // Menampilkan form konfirmasi delete Ajax
+    Route::delete('/{id}/delete_ajax', [ProgramStudiController::class, 'delete_ajax']);   // Menghapus data program studi Ajax
+});
+
 });
