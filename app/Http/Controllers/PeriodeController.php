@@ -14,7 +14,7 @@ class PeriodeController extends Controller
     {
         $breadcrumb = (object) [
             'title' => 'Daftar Periode',
-            'list' => ['Home', 'Periode']
+            'list' => ['Home', 'periode']
         ];
 
         $page = (object) [

@@ -5,16 +5,16 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('periode/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Periode</button>
-            </div>
+                <button onclick="modalAction('{{ url('periode/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah
+                    Periode</button>
             </div>
         </div>
         <div class="card-body">
             @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+                <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
+                <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
             {{-- filter opsi --}}
             <div class="row">
@@ -25,7 +25,7 @@
                             <select class="form-control" id="nama" name="nama" required>
                                 <option value="">- Semua -</option>
                                 @foreach ($nama as $item)
-                                    <option value="{{ $item->nama }}">{{ $item->nama}}</option>
+                                    <option value="{{ $item->nama }}">{{ $item->nama }}</option>
                                 @endforeach
                             </select>
                             <small class="form-text text-muted">Nama Periode</small>
@@ -46,19 +46,20 @@
             </table>
         </div>
     </div>
-    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 
 @push('css')
 @endpush
 
 @push('js')
-<script>
-        function modalAction(url = ''){ 
-            $('#myModal').load(url,function(){ 
-                $('#myModal').modal('show'); 
-            }); 
-        } 
+    <script>
+        function modalAction(url = '') {
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
+            });
+        }
         var dataPeriode;
         $(document).ready(function() {
             var dataPeriode = $('#table_periode').DataTable({
@@ -71,8 +72,7 @@
                         d.nama = $('#nama').val(); // kirim nilai dropdown ke server
                     }
                 },
-                columns: [
-                    {
+                columns: [{
                         data: "DT_RowIndex",
                         className: "text-center",
                         orderable: false,
