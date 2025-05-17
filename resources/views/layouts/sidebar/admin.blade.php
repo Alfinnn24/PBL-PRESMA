@@ -35,7 +35,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'prodi' ? 'active' : '' }}">
+            <a href="{{ url('/program_studi') }}" class="nav-link {{ $activeMenu == 'prodi' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-school"></i>
                 <p>Program Studi</p>
             </a>
