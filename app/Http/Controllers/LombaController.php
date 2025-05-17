@@ -17,7 +17,7 @@ class LombaController extends Controller
     {
         $breadcrumb = (object) [
             'title' => 'Daftar Lomba',
-            'list' => ['Home', 'Lomba']
+            'list' => ['Home', 'lomba']
         ];
 
         $page = (object) [

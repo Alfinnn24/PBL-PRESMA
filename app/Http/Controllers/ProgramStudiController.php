@@ -13,7 +13,7 @@ class ProgramStudiController extends Controller
     {
         $breadcrumb = (object) [
             'title' => 'Daftar Program Studi',
-            'list' => ['Home', 'Program Studi']
+            'list' => ['Home', 'prodi']
         ];
 
         $page = (object) [
@@ -21,7 +21,7 @@ class ProgramStudiController extends Controller
         ];
 
         $nama = ProgramStudiModel::select('nama_prodi')->distinct()->get();
-        $activeMenu = 'program_studi';
+        $activeMenu = 'prodi';
 
         return view('admin.program_studi.index', compact('breadcrumb', 'page', 'activeMenu', 'nama'));
     }
