@@ -43,4 +43,24 @@ class UserModel extends Authenticatable
     {
         return $this->hasMany(LombaModel::class, 'created_by');
     }
+
+    public function prestasi()
+    {
+        return $this->hasMany(PrestasiModel::class, 'created_by');
+    }
+
+    public function getFullNameAttribute()
+    {
+        switch ($this->role) {
+            case 'mahasiswa':
+                return $this->mahasiswa ? $this->mahasiswa->nama_lengkap : $this->username;
+            case 'dosen':
+                return $this->dosen ? $this->dosen->nama_lengkap : $this->username;
+            case 'admin':
+                return $this->admin ? $this->admin->nama_lengkap : $this->username;
+            default:
+                return $this->username;
+        }
+    }
+
 }

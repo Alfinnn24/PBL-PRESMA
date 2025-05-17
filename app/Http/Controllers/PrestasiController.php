@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LombaModel;
 use App\Models\PrestasiModel;
 use App\Models\MahasiswaModel;
 use App\Models\DetailPrestasiModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class PrestasiController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
+
         $breadcrumb = (object) [
             'title' => 'Data Prestasi',
             'list' => ['Home', 'Prestasi']
@@ -24,17 +28,33 @@ class PrestasiController extends Controller
 
         $activeMenu = 'verifprestasi';
 
-        return view('admin.prestasi.index', compact('breadcrumb', 'page', 'activeMenu'));
+        if ($user->role === 'admin') {
+            return view('admin.prestasi.index', compact('breadcrumb', 'page', 'activeMenu'));
+        } else {
+            return view('prestasi.index', compact('breadcrumb', 'page', 'activeMenu'));
+        }
     }
 
     public function list(Request $request)
     {
         $user = auth()->user(); // mendapatkan user yang login
-        $data = PrestasiModel::with('detailPrestasi.mahasiswa')
-            ->get()
-            ->filter(function ($item) {
-                return $item->detailPrestasi->count() > 0;
-            });
+
+        if ($user->role === 'admin') {
+            // Admin melihat semua data
+            $data = PrestasiModel::with('detailPrestasi.mahasiswa')
+                ->get()
+                ->filter(function ($item) {
+                    return $item->detailPrestasi->count() > 0;
+                });
+        } else {
+            // Mahasiswa hanya melihat data dirinya
+            $mahasiswa = $user->mahasiswa; // asumsi relasi: User -> mahasiswa
+            $data = PrestasiModel::with(['detailPrestasi.mahasiswa'])
+                ->whereHas('detailPrestasi.mahasiswa', function ($query) use ($mahasiswa) {
+                    $query->where('nim', $mahasiswa->nim);
+                })
+                ->get();
+        }
 
         return DataTables::of($data)
             ->addIndexColumn()
@@ -62,18 +82,42 @@ class PrestasiController extends Controller
 
     public function create_ajax()
     {
+        $user = auth()->user();
+
         $mahasiswa = MahasiswaModel::all();
-        return view('admin.prestasi.create_ajax', compact('mahasiswa'));
+        $lomba = LombaModel::all();
+
+        if ($user->role === 'admin') {
+            return view('admin.prestasi.create_ajax', compact('mahasiswa', 'lomba'));
+        } else {
+            return view('prestasi.create_ajax', compact('mahasiswa', 'lomba', 'user'));
+        }
     }
 
     public function store_ajax(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'nama_prestasi' => 'required',
-            'tingkat' => 'required',
-            'tahun' => 'required|integer',
-            'mahasiswa_id' => 'required|array',
-            'mahasiswa_id.*' => 'exists:mahasiswa,id'
+        $user = Auth::user();
+
+        // Pastikan input mahasiswa_nim menjadi array
+        $mahasiswaNimInput = $request->input('mahasiswa_nim');
+        $mahasiswaNimArray = is_array($mahasiswaNimInput)
+            ? $mahasiswaNimInput
+            : [$mahasiswaNimInput];
+
+        // Validasi input
+        $validator = Validator::make([
+            'nama_prestasi' => $request->input('nama_prestasi'),
+            'lomba_id' => $request->input('lomba_id'),
+            'file_bukti' => $request->file('file_bukti'),
+            'catatan' => $request->input('catatan'),
+            'mahasiswa_nim' => $mahasiswaNimArray,
+        ], [
+            'nama_prestasi' => 'required|string|max:255',
+            'lomba_id' => 'required|exists:lomba,id',
+            'file_bukti' => 'required|file|mimetypes:application/pdf,image/jpeg,image/png,image/jpg,image/webp',
+            'catatan' => 'nullable|string',
+            'mahasiswa_nim' => 'required|array',
+            'mahasiswa_nim.*' => 'exists:mahasiswa,nim',
         ]);
 
         if ($validator->fails()) {
@@ -84,16 +128,33 @@ class PrestasiController extends Controller
             ]);
         }
 
+        // Proses upload file
+        $pathBukti = null;
+        if ($request->hasFile('file_bukti')) {
+            $file = $request->file('file_bukti');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            $pathBukti = 'uploads/prestasi/' . $namaFile;
+            $file->move(public_path('uploads/prestasi'), $namaFile);
+        }
+
+        // Status otomatis berdasarkan role user
+        $status = $user->role == 'admin' ? 'Disetujui' : 'Pending';
+
+        // Simpan ke tabel prestasi
         $prestasi = PrestasiModel::create([
             'nama_prestasi' => $request->nama_prestasi,
-            'tingkat' => $request->tingkat,
-            'tahun' => $request->tahun
+            'lomba_id' => $request->lomba_id,
+            'file_bukti' => $pathBukti,
+            'status' => $status,
+            'catatan' => $request->catatan ?? '',
+            'created_by' => $user->id
         ]);
 
-        foreach ($request->mahasiswa_id as $id) {
+        // Simpan relasi mahasiswa ke tabel detail_prestasi
+        foreach ($mahasiswaNimArray as $nim) {
             DetailPrestasiModel::create([
                 'prestasi_id' => $prestasi->id,
-                'mahasiswa_id' => $id
+                'mahasiswa_nim' => $nim
             ]);
         }
 
@@ -103,9 +164,10 @@ class PrestasiController extends Controller
         ]);
     }
 
+
     public function show_ajax($id)
     {
-        $prestasi = PrestasiModel::with(['lomba', 'detailPrestasi.mahasiswa'])->findOrFail($id);
+        $prestasi = PrestasiModel::with(['lomba', 'detailPrestasi.mahasiswa', 'creator.mahasiswa', 'creator.dosen', 'creator.admin'])->findOrFail($id);
         return view('admin.prestasi.show_ajax', compact('prestasi'));
     }
 
@@ -203,5 +265,17 @@ class PrestasiController extends Controller
 
         return response()->json(['success' => 'Prestasi berhasil ditolak']);
     }
+
+    public function search(Request $request)
+    {
+        $search = $request->q;
+        $mahasiswa = MahasiswaModel::where('nama_lengkap', 'LIKE', "%$search%")
+            ->select('nim', 'nama_lengkap')
+            ->limit(20)
+            ->get();
+
+        return response()->json($mahasiswa);
+    }
+
 
 }

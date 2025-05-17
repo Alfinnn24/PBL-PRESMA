@@ -45,10 +45,15 @@
                         <td>{{ $prestasi->catatan }}</td>
                     </tr>
                     <tr>
+                        <th>Dibuat Oleh</th>
+                        <td>{{ $prestasi->creator->fullName }}</td>
+                    </tr>
+                    </tr>
+                    <tr>
                         <th>Bukti Prestasi</th>
                         <td>
-                            <a href="{{ asset('storage/' . $prestasi->file_bukti) }}" target="_blank"
-                                class="btn btn-sm btn-info">Lihat Bukti</a>
+                            <a href="{{ asset($prestasi->file_bukti) }}" target="_blank" class="btn btn-sm btn-info">Lihat
+                                Bukti</a>
                         </td>
                     </tr>
                 </table>
@@ -66,6 +71,11 @@
                     <tr>
                         <th>Tingkat</th>
                         <td>{{ $prestasi->lomba->tingkat }}</td>
+                    </tr>
+                    <tr>
+                        <th>Kategori Lomba</th>
+                        <td>{{ $prestasi->lomba->bidangKeahlian->keahlian }}</td>
+                    </tr>
                     </tr>
                     <tr>
                         <th>Tanggal Lomba</th>

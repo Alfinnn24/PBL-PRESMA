@@ -21,6 +21,7 @@ class PrestasiSeeder extends Seeder
                 'file_bukti' => 'hackathon.pdf',
                 'status' => 'Disetujui',
                 'catatan' => 'Prestasi tingkat nasional',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -30,6 +31,7 @@ class PrestasiSeeder extends Seeder
                 'file_bukti' => 'uiux_challenge.pdf',
                 'status' => 'Disetujui',
                 'catatan' => 'Presentasi sangat baik',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -39,6 +41,7 @@ class PrestasiSeeder extends Seeder
                 'file_bukti' => 'datascience_finalist.pdf',
                 'status' => 'Disetujui',
                 'catatan' => 'Tembus 10 besar nasional',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -48,6 +51,7 @@ class PrestasiSeeder extends Seeder
                 'file_bukti' => 'ai_fest_innovation.pdf',
                 'status' => 'Disetujui',
                 'catatan' => 'Pengakuan internasional',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -57,6 +61,7 @@ class PrestasiSeeder extends Seeder
                 'file_bukti' => 'cybersecurity_winner.pdf',
                 'status' => 'Disetujui',
                 'catatan' => 'Tim terbaik kedua',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -66,6 +71,7 @@ class PrestasiSeeder extends Seeder
                 'file_bukti' => 'cloudchallenge_top5.pdf',
                 'status' => 'Disetujui',
                 'catatan' => 'Presentasi dan prototipe unggul',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -75,6 +81,7 @@ class PrestasiSeeder extends Seeder
                 'file_bukti' => 'devops_favorit.pdf',
                 'status' => 'Disetujui',
                 'catatan' => 'Proyek disukai juri',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -84,6 +91,7 @@ class PrestasiSeeder extends Seeder
                 'file_bukti' => 'gamejam_runnerup.pdf',
                 'status' => 'Disetujui',
                 'catatan' => 'Gameplay kreatif dan unik',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -93,6 +101,7 @@ class PrestasiSeeder extends Seeder
                 'file_bukti' => 'mobiledev_bestapp.pdf',
                 'status' => 'Disetujui',
                 'catatan' => 'User interface menarik',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -102,9 +111,10 @@ class PrestasiSeeder extends Seeder
                 'file_bukti' => 'mlchampionship_top3.pdf',
                 'status' => 'Disetujui',
                 'catatan' => 'Model akurat dan efisien',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
-        ]);        
+        ]);
     }
 }

@@ -23,6 +23,11 @@
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     {{-- SweetAlert2 --}}
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{ asset('adminlte/plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css') }}">
 
@@ -92,7 +97,13 @@
 
     <!-- SweetAlert2 -->
     <script src="{{ asset('adminlte/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-    
+
+    <!-- Select2 -->
+    <script src="{{ asset('adminlte/plugins/select2/js/select2.full.min.js') }}"></script>
+    <script src="{{ asset('adminlte/plugins/select2/js/i18n/id.js') }}"></script>
+    <script src="{{ asset('adminlte/plugins/select2/js/i18n/en.js') }}"></script>
+
+
     <!-- AdminLTE App -->
     <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
 

@@ -1,0 +1,129 @@
+body {
+    background-color: #0c3b2e;
+    background-image: linear-gradient(135deg, #0c3b2e 0%, #1a1a1a 100%);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0;
+}
+
+.register-box,
+.login-box {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    margin-bottom: 0;
+}
+
+.card-primary.card-outline {
+    border-top: none;
+}
+
+.login-card-body {
+    padding: 30px;
+}
+
+.login-logo {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.login-box-msg {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.input-group {
+    margin-bottom: 25px;
+}
+
+.form-control {
+    border-radius: 8px;
+    padding: 12px 10px;
+    height: auto;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: #000;
+    border-color: #000;
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 600;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background-color: #333;
+    border-color: #333;
+}
+
+.login-card-split {
+    display: flex;
+}
+
+.login-card-left {
+    flex: 1;
+    padding: 40px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.login-card-right {
+    flex: 1;
+    background-color: #f7f7f7;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-card-right img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.brand-logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.sign-up-link {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.form-check {
+    padding-left: 0;
+}
+
+.form-check-input {
+    margin-left: 0;
+}
+
+.form-check-label {
+    margin-left: 20px;
+}
+
+@media (max-width: 768px) {
+    .login-card-right {
+        display: none;
+    }
+}

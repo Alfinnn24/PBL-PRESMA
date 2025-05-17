@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PrestasiModel extends Model
 {
     protected $table = 'prestasi';
-    protected $fillable = ['nama_prestasi', 'lomba_id', 'file_bukti', 'status', 'catatan'];
+    protected $fillable = ['nama_prestasi', 'lomba_id', 'file_bukti', 'status', 'catatan', 'created_by'];
 
     public function lomba(): BelongsTo
     {
@@ -18,6 +18,11 @@ class PrestasiModel extends Model
     public function detailPrestasi(): HasMany
     {
         return $this->hasMany(DetailPrestasiModel::class, 'prestasi_id', 'id'); // pastikan 'prestasi_id' dan 'id' sesuai dengan kolom di tabel
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(UserModel::class, 'created_by');
     }
 }
 
