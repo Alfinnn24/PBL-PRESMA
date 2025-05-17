@@ -57,7 +57,6 @@
         </div>
     </div>
 </div>
-            <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover table-sm" id="table_lomba">
                 <thead>
                     <tr>
@@ -66,19 +65,10 @@
                         <th>Penyelenggara Lomba</th>
                         <th>Tingkat Lomba</th>
                         <th>Bidang Keahlian Lomba</th>
-                        <th>Persyaratan Lomba</th>
-                        <th>Jumlah Peserta Lomba</th>
-                        <th>Link Registrasi Lomba</th>
-                        <th>Tanggal Mulai Lomba</th>
-                        <th>Tanggal Selesai Lomba</th>
-                        <th>Periode Lomba</th>
-                        <th>Admin Pembuat Lomba</th>
-                        <th>Status Lomba</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
             </table>
-            </div>
         </div>
     </div>
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
@@ -108,13 +98,13 @@
                        d.user = $('#user').val(); // user (created_by)
                     }
                 },
-                scrollX: true,
                 columns: [
                     {
                         data: "DT_RowIndex",
                         className: "text-center",
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        width: "40px"
                     },
                     {
                         data: "nama",
@@ -128,7 +118,7 @@
                         className: "text-center",
                         orderable: true,
                         searchable: true,
-                        width: "150px"
+                        width: "200px"
                     },
                     {
                         data: "tingkat",
@@ -143,67 +133,6 @@
                         orderable: true,
                         searchable: true,
                         width: "150px"
-                    },
-                    {
-                        data: "persyaratan",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        width: "150px"
-                    },
-                    {
-                        data: "jumlah_peserta",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        width: "150px"
-                    },
-                    {
-                        data: "link_registrasi",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        width: "150px"
-                    },
-                    {
-                        data: "tanggal_mulai",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        width: "150px"
-                    },
-                    {
-                        data: "tanggal_selesai",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        width: "150px"
-                    },
-                    {
-                        data: "nama",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        width: "150px"
-                    },
-                    {
-                        data: "username",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        width: "150px"
-                    },
-                    {
-                        data: "is_verified",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        width: "150px",
-                        render: function(data, type, row) {
-                          return data == 1
-                             ? '<span class="btn btn-success btn-sm px-3">Valid</span>'
-                             : '<span class="btn btn-warning btn-sm px 3">Belum Valid</span>';
-                        }
                     },
                     {
                         data: "aksi",
