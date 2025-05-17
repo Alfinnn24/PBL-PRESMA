@@ -167,56 +167,81 @@ class PrestasiController extends Controller
 
     public function show_ajax($id)
     {
+        $user = auth()->user();
         $prestasi = PrestasiModel::with(['lomba', 'detailPrestasi.mahasiswa', 'creator.mahasiswa', 'creator.dosen', 'creator.admin'])->findOrFail($id);
-        return view('admin.prestasi.show_ajax', compact('prestasi'));
+        if ($user->role === 'admin') {
+            return view('admin.prestasi.show_ajax', compact('prestasi'));
+        } else {
+            return view('prestasi.show_ajax', compact('prestasi'));
+        }
     }
 
 
     public function edit_ajax($id)
     {
+        $lomba = LombaModel::all();
         $prestasi = PrestasiModel::with('detailPrestasi')->findOrFail($id);
         $mahasiswa = MahasiswaModel::all();
-        return view('admin.prestasi.edit_ajax', compact('prestasi', 'mahasiswa'));
+        return view('prestasi.edit_ajax', compact('prestasi', 'mahasiswa', 'lomba'));
     }
 
     public function update_ajax(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'nama_prestasi' => 'required',
-            'tingkat' => 'required',
-            'tahun' => 'required|integer',
-            'mahasiswa_id' => 'required|array',
-            'mahasiswa_id.*' => 'exists:mahasiswa,id'
+        $user = Auth::user();
+        $prestasi = PrestasiModel::find($id);
+
+        // if (!$prestasi || $prestasi->created_by != $user->id) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => 'Data tidak ditemukan atau akses ditolak.'
+        //     ]);
+        // }
+
+        $validator = Validator::make([
+            'nama_prestasi' => $request->input('nama_prestasi'),
+            'lomba_id' => $request->input('lomba_id'),
+            'file_bukti' => $request->file('file_bukti'),
+            'catatan' => $request->input('catatan'),
+        ], [
+            'nama_prestasi' => 'required|string|max:255',
+            'lomba_id' => 'required|exists:lomba,id',
+            'file_bukti' => 'nullable|file|mimetypes:application/pdf,image/jpeg,image/png,image/jpg,image/webp',
+            'catatan' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Validasi Gagal',
+                'message' => 'Validasi gagal',
                 'msgField' => $validator->errors()
             ]);
         }
 
-        $prestasi = PrestasiModel::findOrFail($id);
-        $prestasi->update([
-            'nama_prestasi' => $request->nama_prestasi,
-            'tingkat' => $request->tingkat,
-            'tahun' => $request->tahun
-        ]);
-
-        // Hapus dan tambah ulang relasi mahasiswa
-        DetailPrestasiModel::where('prestasi_id', $prestasi->id)->delete();
-        foreach ($request->mahasiswa_id as $mhsId) {
-            DetailPrestasiModel::create([
-                'prestasi_id' => $prestasi->id,
-                'mahasiswa_id' => $mhsId
-            ]);
+        // Handle file upload jika ada
+        if ($request->hasFile('file_bukti')) {
+            $file = $request->file('file_bukti');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            $pathBukti = 'uploads/prestasi/' . $namaFile;
+            $file->move(public_path('uploads/prestasi'), $namaFile);
+            $prestasi->file_bukti = $pathBukti;
         }
+
+        $prestasi->nama_prestasi = $request->input('nama_prestasi');
+        $prestasi->lomba_id = $request->input('lomba_id');
+        $prestasi->catatan = $request->input('catatan');
+        $prestasi->status = 'Pending'; // Reset status ke pending untuk update mahasiswa
+        $prestasi->save();
 
         return response()->json([
             'status' => true,
             'message' => 'Prestasi berhasil diperbarui'
         ]);
+    }
+
+    public function confirm_ajax(string $id)
+    {
+        $prestasi = PrestasiModel::find($id);
+        return view('prestasi.confirm_ajax', ['prestasi' => $prestasi]);
     }
 
     public function delete_ajax(Request $request, $id)

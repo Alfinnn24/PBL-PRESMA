@@ -110,8 +110,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-primary">Tutup</button>
-                <button onclick="ubahStatus({{ $prestasi->id }}, 'approve')" class="btn btn-success">Setujui</button>
-                <button onclick="ubahStatus({{ $prestasi->id }}, 'reject')" class="btn btn-danger">Tolak</button>
+                <a href="{{ url('/prestasi/' . $prestasi->id . '/edit_ajax') }}" class="btn btn-warning btn">Edit</a>
+                <a href="{{ url('/prestasi/' . $prestasi->id . '/delete_ajax') }}" class="btn btn-danger btn">Hapus</a>
+
             </div>
         </div>
     </div>
