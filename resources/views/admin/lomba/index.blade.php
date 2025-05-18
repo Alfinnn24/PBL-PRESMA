@@ -62,6 +62,7 @@
                     <tr>
                         <th>No</th>
                         <th>Periode Lomba</th>
+                        <th>Nama Lomba</th>
                         <th>Penyelenggara Lomba</th>
                         <th>Tingkat Lomba</th>
                         <th>Bidang Keahlian Lomba</th>
@@ -105,6 +106,13 @@
                         orderable: false,
                         searchable: false,
                         width: "40px"
+                    },
+                    {
+                        data: "periode_id",
+                        className: "text-center",
+                        orderable: true,
+                        searchable: true,
+                        width: "150px"
                     },
                     {
                         data: "nama",
