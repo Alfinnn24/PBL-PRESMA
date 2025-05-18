@@ -33,6 +33,25 @@
                     <small id="error-lomba_id" class="error-text form-text text-danger"></small>
                 </div>
 
+                <div id="info-lomba" class="mt-3 d-none">
+                    <div class="form-group">
+                        <label>Penyelenggara</label>
+                        <input type="text" class="form-control" id="penyelenggara" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Perolehan</label>
+                        <input type="date" class="form-control" id="tanggal_perolehan" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Tingkat Lomba</label>
+                        <input type="text" class="form-control" id="tingkat" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Bidang Keahlian / Kategori</label>
+                        <input type="text" class="form-control" id="kategori" readonly>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>Mahasiswa</label>
                     <select name="mahasiswa_nim[]" id="mahasiswa_id" class="form-control" multiple="multiple"
@@ -173,4 +192,26 @@
             }
         });
     });
+
+    $('#lomba_id').on('change', function () {
+        let id = $(this).val();
+        if (id) {
+            $.get("/prestasi/lomba/" + id + "/detail", function (res) {
+                if (res.status) {
+                    $('#info-lomba').removeClass('d-none');
+                    $('#penyelenggara').val(res.data.penyelenggara || '-');
+                    $('#tanggal_perolehan').val(res.data.tanggal_perolehan || '');
+                    $('#tingkat').val(res.data.tingkat || '-');
+                    $('#kategori').val(res.data.kategori || '-');
+                } else {
+                    $('#info-lomba').addClass('d-none');
+                }
+            }).fail(function () {
+                $('#info-lomba').addClass('d-none');
+            });
+        } else {
+            $('#info-lomba').addClass('d-none');
+        }
+    });
+
 </script>

@@ -16,25 +16,37 @@
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-            {{-- filter opsi (jika nanti ingin filter berdasarkan nama prestasi, bisa diaktifkan) --}}
-            {{--
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group row">
-                        <label class="col-1 control-label col-form-label">Filter:</label>
-                        <div class="col-3">
-                            <select class="form-control" id="nama_prestasi" name="nama_prestasi">
-                                <option value="">- Semua -</option>
-                                @foreach ($namaPrestasi as $item)
-                                <option value="{{ $item->nama_prestasi }}">{{ $item->nama_prestasi }}</option>
-                                @endforeach
-                            </select>
-                            <small class="form-text text-muted">Nama Prestasi</small>
-                        </div>
-                    </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label>Status</label>
+                    <select id="filter_status" class="form-control">
+                        <option value="">- Semua -</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Disetujui">Disetujui</option>
+                        <option value="Ditolak">Ditolak</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Periode</label>
+                    <select id="filter_periode" class="form-control">
+                        <option value="">- Semua -</option>
+                        @foreach ($listPeriode as $periode)
+                            <option value="{{ $periode->id }}">{{ $periode->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Bidang Keahlian</label>
+                    <select id="filter_keahlian" class="form-control">
+                        <option value="">- Semua -</option>
+                        @foreach ($listKeahlian as $keahlian)
+                            <option value="{{ $keahlian->id }}">{{ $keahlian->keahlian }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
-            --}}
+
             <table class="table table-bordered table-striped table-hover table-sm" id="table_prestasi">
                 <thead>
                     <tr>
@@ -66,55 +78,55 @@
         function modalAction(url = '') {
             $('#myModal').modal('hide').removeData('bs.modal');
             $('#myModal').html('');
-            $('#myModal').load(url, function() {
+            $('#myModal').load(url, function () {
                 $('#myModal').modal('show');
             });
         }
 
         var dataPrestasi;
-        $(document).ready(function() {
+        $(document).ready(function () {
             dataPrestasi = $('#table_prestasi').DataTable({
                 serverSide: true,
                 ajax: {
                     url: "{{ url('prestasi/list') }}",
                     type: "POST",
-                    dataType: "json"
-                    // data: function (d) {
-                    // contoh jika ada filter, tambahkan:
-                    // d.nama_prestasi = $('#nama_prestasi').val();
-                    // }
+                    dataType: "json",
+                    data: function (d) {
+                        d.status = $('#filter_status').val();
+                        d.periode = $('#filter_periode').val();
+                        d.keahlian = $('#filter_keahlian').val();
+                    }
                 },
                 columns: [{
-                        data: "DT_RowIndex",
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: "nama_prestasi"
-                    },
-                    {
-                        data: "status"
-                    },
-                    {
-                        data: "catatan"
-                    },
-                    {
-                        data: "jumlah_mahasiswa",
-                        className: "text-center"
-                    },
-                    {
-                        data: "action",
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false
-                    }
+                    data: "DT_RowIndex",
+                    className: "text-center",
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: "nama_prestasi"
+                },
+                {
+                    data: "status"
+                },
+                {
+                    data: "catatan"
+                },
+                {
+                    data: "jumlah_mahasiswa",
+                    className: "text-center"
+                },
+                {
+                    data: "action",
+                    className: "text-center",
+                    orderable: false,
+                    searchable: false
+                }
                 ]
             });
-            // jika pakai filter
-            // $('#nama_prestasi').on('change', function () {
-            //     dataPrestasi.ajax.reload();
-            // });
+            $('#filter_status, #filter_periode, #filter_keahlian').on('change', function () {
+                dataPrestasi.ajax.reload();
+            });
         });
 
         function ubahStatus(id, aksi) {
@@ -155,7 +167,7 @@
                         $.post(url, {
                             _token: '{{ csrf_token() }}',
                             catatan: catatan // Kirim catatan ke server
-                        }, function(res) {
+                        }, function (res) {
                             Swal.fire({
                                 title: 'Berhasil',
                                 text: res.success,
@@ -166,9 +178,9 @@
                             // Refresh tabel di halaman index
                             if ($.fn.DataTable.isDataTable('#table_prestasi')) {
                                 $('#table_prestasi').DataTable().ajax.reload(null,
-                                false); // reload tanpa reset halaman
+                                    false); // reload tanpa reset halaman
                             }
-                        }).fail(function() {
+                        }).fail(function () {
                             Swal.fire('Gagal', 'Terjadi kesalahan saat memproses data.', 'error');
                         });
                     }

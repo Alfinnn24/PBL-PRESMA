@@ -111,6 +111,6 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
         Route::put('/{id}/update_ajax', [PrestasiController::class, 'update_ajax']);    // Menyimpan perubahan data prestasi Ajax
         Route::get('/{id}/delete_ajax', [PrestasiController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete prestasi Ajax
         Route::delete('/{id}/delete_ajax', [PrestasiController::class, 'delete_ajax']); // Untuk hapus data prestasi Ajax
-
+        Route::get('/lomba/{id}/detail', [PrestasiController::class, 'getDetail']);
     });
 });
