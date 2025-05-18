@@ -55,7 +55,7 @@ class LombaController extends Controller
             'lomba.link_registrasi',
             'lomba.tanggal_mulai',
             'lomba.tanggal_selesai',
-            'periode.nama as nama',
+            'periode.nama as periode_id',
             'user.username as username',
             'lomba.is_verified'
         )
