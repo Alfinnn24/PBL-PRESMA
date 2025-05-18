@@ -19,7 +19,7 @@ return new class extends Migration {
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->foreignId('lomba_id')->constrained('lomba')->onDelete('cascade');
-            $table->foreignId('dosen_pembimbing_id')->constrained('dosen')->onDelete('cascade');
+            $table->foreignId('dosen_pembimbing_id')->nullable()->constrained('dosen')->onDelete('cascade');
             $table->enum('status', ['Disetujui', 'Ditolak', 'Pending']);
             $table->integer('skor')->nullable();
             $table->timestamps();
