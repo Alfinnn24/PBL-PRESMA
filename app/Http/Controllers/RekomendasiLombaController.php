@@ -7,6 +7,7 @@ use App\Models\MahasiswaModel;
 use App\Models\RekomendasiLombaModel;
 use App\Services\FuzzySpkService;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class RekomendasiLombaController extends Controller
 {
