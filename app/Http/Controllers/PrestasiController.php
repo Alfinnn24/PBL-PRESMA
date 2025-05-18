@@ -6,6 +6,8 @@ use App\Models\LombaModel;
 use App\Models\PrestasiModel;
 use App\Models\MahasiswaModel;
 use App\Models\DetailPrestasiModel;
+use App\Models\PeriodeModel;
+use App\Models\BidangKeahlianModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -28,10 +30,13 @@ class PrestasiController extends Controller
 
         $activeMenu = 'verifprestasi';
 
+        $listPeriode = PeriodeModel::all();
+        $listKeahlian = BidangKeahlianModel::all();
+
         if ($user->role === 'admin') {
-            return view('admin.prestasi.index', compact('breadcrumb', 'page', 'activeMenu'));
+            return view('admin.prestasi.index', compact('breadcrumb', 'page', 'activeMenu', 'listPeriode', 'listKeahlian'));
         } else {
-            return view('prestasi.index', compact('breadcrumb', 'page', 'activeMenu'));
+            return view('prestasi.index', compact('breadcrumb', 'page', 'activeMenu', 'listPeriode', 'listKeahlian'));
         }
     }
 
@@ -39,19 +44,49 @@ class PrestasiController extends Controller
     {
         $user = auth()->user(); // mendapatkan user yang login
 
+        // Ambil filter dari request
+        $status = $request->status;
+        $periode = $request->periode;
+        $keahlian = $request->keahlian;
+
         if ($user->role === 'admin') {
-            // Admin melihat semua data
-            $data = PrestasiModel::with('detailPrestasi.mahasiswa')
+            $data = PrestasiModel::with(['lomba', 'detailPrestasi.mahasiswa'])
+                ->when($status, function ($query) use ($status) {
+                    $query->where('status', $status);
+                })
+                ->when($periode, function ($query) use ($periode) {
+                    $query->whereHas('lomba', function ($q) use ($periode) {
+                        $q->where('periode_id', $periode);
+                    });
+                })
+                ->when($keahlian, function ($query) use ($keahlian) {
+                    $query->whereHas('lomba', function ($q) use ($keahlian) {
+                        $q->where('bidang_keahlian_id', $keahlian);
+                    });
+                })
                 ->get()
                 ->filter(function ($item) {
                     return $item->detailPrestasi->count() > 0;
                 });
         } else {
             // Mahasiswa hanya melihat data dirinya
-            $mahasiswa = $user->mahasiswa; // asumsi relasi: User -> mahasiswa
+            $mahasiswa = $user->mahasiswa;
             $data = PrestasiModel::with(['detailPrestasi.mahasiswa'])
                 ->whereHas('detailPrestasi.mahasiswa', function ($query) use ($mahasiswa) {
                     $query->where('nim', $mahasiswa->nim);
+                })
+                ->when($status, function ($query) use ($status) {
+                    $query->where('status', $status);
+                })
+                ->when($periode, function ($query) use ($periode) {
+                    $query->whereHas('lomba', function ($q) use ($periode) {
+                        $q->where('periode_id', $periode);
+                    });
+                })
+                ->when($keahlian, function ($query) use ($keahlian) {
+                    $query->whereHas('lomba', function ($q) use ($keahlian) {
+                        $q->where('bidang_keahlian_id', $keahlian);
+                    });
                 })
                 ->get();
         }
@@ -65,11 +100,9 @@ class PrestasiController extends Controller
                 $btn = '<button onclick="modalAction(\'' . url('/prestasi/' . $row->id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
 
                 if ($user->role == 'admin') {
-                    // tombol Setujui dan Tolak hanya untuk admin
                     $btn .= '<button onclick="ubahStatus(' . $row->id . ', \'approve\')" class="btn btn-success btn-sm">Setujui</button> ';
                     $btn .= '<button onclick="ubahStatus(' . $row->id . ', \'reject\')" class="btn btn-danger btn-sm">Tolak</button>';
                 } else {
-                    // selain admin (mahasiswa/dosen) bisa edit dan delete
                     $btn .= '<button onclick="modalAction(\'' . url('/prestasi/' . $row->id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                     $btn .= '<button onclick="modalAction(\'' . url('/prestasi/' . $row->id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button>';
                 }
@@ -300,6 +333,25 @@ class PrestasiController extends Controller
             ->get();
 
         return response()->json($mahasiswa);
+    }
+
+    public function getDetail($id)
+    {
+        $lomba = LombaModel::with('bidangKeahlian')->find($id);
+
+        if (!$lomba) {
+            return response()->json(['status' => false, 'message' => 'Lomba tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'penyelenggara' => $lomba->penyelenggara,
+                'tanggal_perolehan' => $lomba->tanggal_selesai,
+                'tingkat' => $lomba->tingkat,
+                'kategori' => $lomba->bidangKeahlian->keahlian, // atau bidang_keahlian
+            ]
+        ]);
     }
 
 
