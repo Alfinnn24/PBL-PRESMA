@@ -21,33 +21,40 @@ class TesRekomendasi extends Controller
     {
         $lombas = LombaModel::with('bidangKeahlian')->get();
 
+        $hasilAkhir = [];
+
         foreach ($lombas as $lomba) {
             $hasilRekomendasi = $this->topsisService->prosesRekomendasi($lomba);
 
             foreach ($hasilRekomendasi as $rekom) {
-                $nim = $rekom['nim'];
-                $skor = $rekom['skor'];
-
-                $mahasiswa = MahasiswaModel::with('dosenPembimbing.dosen')->where('nim', $nim)->first();
-                $dosenPembimbingId = $mahasiswa->dosenPembimbing->first()?->dosen_id ?? null;
-
-                RekomendasiLombaModel::updateOrCreate(
-                    [
-                        'mahasiswa_nim' => $nim,
-                        'lomba_id' => $lomba->id,
-                    ],
-                    [
-                        'dosen_pembimbing_id' => $dosenPembimbingId,
-                        'status' => 'Pending',
-                        'skor' => $skor, // <- PASTIKAN INI ADA
-                    ]
-                );
+                $hasilAkhir[] = [
+                    'lomba_id' => $lomba->id,
+                    'lomba_nama' => $lomba->nama ?? '-',
+                    'nim' => $rekom['nim'],
+                    'nama' => $rekom['nama'],
+                    'skor' => $rekom['skor'],
+                    'dosen_pembimbing_id' => null,
+                ];
             }
         }
 
-        return response()->json([
-            'message' => 'Semua lomba telah diproses dengan metode TOPSIS dan hasil disimpan.',
-        ]);
+        // Simpan hasil rekomendasi ke dalam tabel rekomendasi_lomba
+        foreach ($hasilAkhir as $data) {
+            RekomendasiLombaModel::updateOrCreate(
+                [
+                    'lomba_id' => $data['lomba_id'],
+                    'mahasiswa_nim' => $data['nim'],
+                ],
+                [
+                    'nama' => $data['nama'],
+                    'skor' => $data['skor'],
+                    'dosen_pembimbing_id' => $data['dosen_pembimbing_id'],
+                    'status' => 'Pending',
+                ]
+            );
+        }
+
+        return response()->json($hasilAkhir);
     }
 
     public function lihatHasilTopsis($idLomba)
