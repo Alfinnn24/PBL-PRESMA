@@ -213,7 +213,7 @@ class PrestasiController extends Controller
     public function edit_ajax($id)
     {
         $lomba = LombaModel::all();
-        $prestasi = PrestasiModel::with('detailPrestasi')->findOrFail($id);
+        $prestasi = PrestasiModel::with(['lomba.bidangKeahlian', 'detailPrestasi'])->findOrFail($id);
         $mahasiswa = MahasiswaModel::all();
         return view('prestasi.edit_ajax', compact('prestasi', 'mahasiswa', 'lomba'));
     }
