@@ -33,8 +33,8 @@ Route::post('register', [AuthController::class, 'postregister']);
 Route::middleware(['auth'])->group(function () { // artinya semua route di dalam group ini harus login dulu
 // jangan lupa nanti dimodifikasi sesusai dengan kebutuhan, terus kasih comment kalau sekiranya butuh
     Route::get('/', [WelcomeController::class, 'index']);
-    Route::get('/rekomendasi', [RekomendasiLombaController::class, 'index'])->name('rekomendasi.index');
-    Route::post('/rekomendasi/{id}', [RekomendasiLombaController::class, 'updateStatus'])->name('rekomendasi.updateStatus');
+    // Route::get('/rekomendasi', [RekomendasiLombaController::class, 'index'])->name('rekomendasi.index');
+    // Route::post('/rekomendasi/{id}', [RekomendasiLombaController::class, 'updateStatus'])->name('rekomendasi.updateStatus');
 
 });
 
@@ -112,6 +112,19 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
         Route::get('/{id}/delete_ajax', [PrestasiController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete prestasi Ajax
         Route::delete('/{id}/delete_ajax', [PrestasiController::class, 'delete_ajax']); // Untuk hapus data prestasi Ajax
         Route::get('/lomba/{id}/detail', [PrestasiController::class, 'getDetail']);
+    });
+
+    Route::group(['prefix' => 'rekomendasi'], function () {
+        Route::get('/', [RekomendasiLombaController::class, 'index']);                          // menampilkan halaman awal prestasi
+        Route::post('/list', [RekomendasiLombaController::class, 'list']);                      // menampilkan data prestasi dalam bentuk json untuk datatables
+        Route::get('/create_ajax', [RekomendasiLombaController::class, 'create_ajax']);         // Menampilkan halaman form tambah prestasi Ajax
+        Route::post('/ajax', [RekomendasiLombaController::class, 'store_ajax']);                // Menyimpan data prestasi baru Ajax
+        Route::get('/{id}/show_ajax', [RekomendasiLombaController::class, 'show_ajax']);        // menampilkan detail prestasi Ajax
+        Route::get('/{id}/edit_ajax', [RekomendasiLombaController::class, 'edit_ajax']);        // Menampilkan halaman form edit prestasi Ajax
+        Route::put('/{id}/update_ajax', [RekomendasiLombaController::class, 'update_ajax']);    // Menyimpan perubahan data prestasi Ajax
+        Route::get('/{id}/delete_ajax', [RekomendasiLombaController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete prestasi Ajax
+        Route::delete('/{id}/delete_ajax', [RekomendasiLombaController::class, 'delete_ajax']); // Untuk hapus data prestasi Ajax
+        Route::get('/lomba/{id}/detail', [RekomendasiLombaController::class, 'getDetail']);
     });
 
     Route::get('/tes-rekomendasi/topsis', [TesRekomendasi::class, 'prosesSemuaLombaDenganTopsis']); //jangan dipake dulu masih belum stabil
