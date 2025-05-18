@@ -36,7 +36,8 @@
                 </div>
             </div>
 
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_user">
+            <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_user"
+                style="width:100%">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -107,7 +108,10 @@
                         data: "action",
                         className: "",
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        width: "20%",
+                        className: "text-center"
+
                     }
                 ]
             });

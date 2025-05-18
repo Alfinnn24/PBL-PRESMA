@@ -46,7 +46,8 @@
                 </div>
             </div>
 
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_prestasi">
+            <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_prestasi"
+                style="width:100%">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -77,53 +78,53 @@
         function modalAction(url = '') {
             $('#myModal').modal('hide').removeData('bs.modal');
             $('#myModal').html('');
-            $('#myModal').load(url, function () {
+            $('#myModal').load(url, function() {
                 $('#myModal').modal('show');
             });
         }
 
         var dataPrestasi;
-        $(document).ready(function () {
+        $(document).ready(function() {
             dataPrestasi = $('#table_prestasi').DataTable({
                 serverSide: true,
                 ajax: {
                     url: "{{ url('prestasi/list') }}",
                     type: "POST",
                     dataType: "json",
-                    data: function (d) {
+                    data: function(d) {
                         d.status = $('#filter_status').val();
                         d.periode = $('#filter_periode').val();
                         d.keahlian = $('#filter_keahlian').val();
                     }
                 },
                 columns: [{
-                    data: "DT_RowIndex",
-                    className: "text-center",
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: "nama_prestasi"
-                },
-                {
-                    data: "status"
-                },
-                {
-                    data: "catatan"
-                },
-                {
-                    data: "jumlah_mahasiswa",
-                    className: "text-center"
-                },
-                {
-                    data: "action",
-                    className: "text-center",
-                    orderable: false,
-                    searchable: false
-                }
+                        data: "DT_RowIndex",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: "nama_prestasi"
+                    },
+                    {
+                        data: "status"
+                    },
+                    {
+                        data: "catatan"
+                    },
+                    {
+                        data: "jumlah_mahasiswa",
+                        className: "text-center"
+                    },
+                    {
+                        data: "action",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    }
                 ]
             });
-            $('#filter_status, #filter_periode, #filter_keahlian').on('change', function () {
+            $('#filter_status, #filter_periode, #filter_keahlian').on('change', function() {
                 dataPrestasi.ajax.reload();
             });
         });
@@ -166,7 +167,7 @@
                         $.post(url, {
                             _token: '{{ csrf_token() }}',
                             catatan: catatan // Kirim catatan ke server
-                        }, function (res) {
+                        }, function(res) {
                             Swal.fire({
                                 title: 'Berhasil',
                                 text: res.success,
@@ -179,7 +180,7 @@
                                 $('#table_prestasi').DataTable().ajax.reload(null,
                                     false); // reload tanpa reset halaman
                             }
-                        }).fail(function () {
+                        }).fail(function() {
                             Swal.fire('Gagal', 'Terjadi kesalahan saat memproses data.', 'error');
                         });
                     }

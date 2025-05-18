@@ -37,7 +37,8 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover table-sm" id="table_program_studi">
+                <table class="table table-bordered table-striped table-hover table-sm display nowrap"
+                    id="table_program_studi" style="width:100%">
                     <thead>
                         <tr>
                             <th>No</th>

@@ -33,7 +33,8 @@
                     </div>
                 </div>
             </div>
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_periode">
+            <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_periode"
+                style="width:100%">
                 <thead>
                     <tr>
                         <th>No</th>
