@@ -1,139 +1,126 @@
 @extends('layouts.template')
-
 @section('content')
-    <div class="container-fluid">
-        <div class="card shadow-sm mt-4 border-0">
-            <div class="card-header bg-dark text-white">
-                <h3 class="card-title mb-0">
-                    <i class="fas fa-trophy mr-2"></i> Rekomendasi Lomba
-                </h3>
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title">{{ $page->title }}</h3>
+        </div>
+        <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label>Status</label>
+                    <select id="filter_status" class="form-control">
+                        <option value="">- Semua -</option>
+                        <option value="pending">Pending</option>
+                        <option value="disetujui">Disetujui</option>
+                        <option value="ditolak">Ditolak</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Nama Lomba</label>
+                    <select id="filter_lomba" class="form-control">
+                        <option value="">- Semua -</option>
+                        @foreach ($namaLomba as $lomba)
+                            <option value="{{ $lomba->nama }}">{{ $lomba->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-            <div class="card-body p-2">
-                @if ($rekomendasi->isEmpty())
-                    <div class="alert alert-info text-center">
-                        <i class="fas fa-info-circle"></i> Tidak ada rekomendasi lomba.
-                    </div>
-                @else
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover m-0">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th>Nama Lomba</th>
-                                    <th>Status</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($rekomendasi as $item)
-                                    <tr>
-                                        <td>{{ $item->lomba->nama }}</td>
-                                        <td>
-                                            <span
-                                                class="badge 
-                                            @if ($item->status == 'Pending') badge-warning
-                                            @elseif($item->status == 'Disetujui') badge-success
-                                            @elseif($item->status == 'Ditolak') badge-danger @endif py-2 px-3"
-                                                style="font-size: 0.9rem;">
-                                                {{ $item->status }}
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            @if ($item->status == 'Pending')
-                                                <button type="button" class="btn btn-sm btn-success"
-                                                    data-toggle="modal" data-target="#konfirmasiSetuju{{ $item->id }}">
-                                                    <i class="fas fa-check-circle"></i> Setujui
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                                    data-target="#konfirmasiTolak{{ $item->id }}">
-                                                    <i class="fas fa-times-circle"></i> Tolak
-                                                </button>
 
-                                                <!-- Modal Konfirmasi Setuju -->
-                                                <div class="modal fade" id="konfirmasiSetuju{{ $item->id }}"
-                                                    tabindex="-1" role="dialog"
-                                                    aria-labelledby="konfirmasiSetujuLabel{{ $item->id }}"
-                                                    aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                                        <div class="modal-content border-0 shadow-sm">
-                                                            <div class="modal-body text-center p-4">
-                                                                <div class="mb-4">
-                                                                    <div class="mx-auto"
-                                                                        style="width: 80px; height: 80px; border-radius: 50%; background-color: rgba(40, 167, 69, 0.1); display: flex; align-items: center; justify-content: center;">
-                                                                        <i class="fas fa-check"
-                                                                            style="font-size: 40px; color: #28a745;"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <h5 class="font-weight-bold mb-3">Berhasil</h5>
-                                                                <p class="text-muted mb-4">Apakah Anda yakin ingin
-                                                                    menyetujui rekomendasi lomba
-                                                                    <strong>{{ $item->lomba->nama }}</strong>?
-                                                                </p>
-
-                                                                <form
-                                                                    action="{{ route('rekomendasi.updateStatus', $item->id) }}"
-                                                                    method="POST" class="d-inline">
-                                                                    @csrf
-                                                                    @method('POST')
-                                                                    <button type="submit" name="status" value="Disetujui"
-                                                                        class="btn btn-primary px-4">
-                                                                        OK
-                                                                    </button>
-                                                                </form>
-                                                                <button type="button" class="btn btn-light ml-2"
-                                                                    data-dismiss="modal">Batal</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Modal Konfirmasi Tolak -->
-                                                <div class="modal fade" id="konfirmasiTolak{{ $item->id }}"
-                                                    tabindex="-1" role="dialog"
-                                                    aria-labelledby="konfirmasiTolakLabel{{ $item->id }}"
-                                                    aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                                        <div class="modal-content border-0 shadow-sm">
-                                                            <div class="modal-body text-center p-4">
-                                                                <div class="mb-4">
-                                                                    <div class="mx-auto"
-                                                                        style="width: 80px; height: 80px; border-radius: 50%; background-color: rgba(220, 53, 69, 0.1); display: flex; align-items: center; justify-content: center;">
-                                                                        <i class="fas fa-times"
-                                                                            style="font-size: 40px; color: #dc3545;"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <h5 class="font-weight-bold mb-3">Konfirmasi</h5>
-                                                                <p class="text-muted mb-4">Apakah Anda yakin ingin menolak
-                                                                    rekomendasi lomba
-                                                                    <strong>{{ $item->lomba->nama }}</strong>?
-                                                                </p>
-
-                                                                <form
-                                                                    action="{{ route('rekomendasi.updateStatus', $item->id) }}"
-                                                                    method="POST" class="d-inline">
-                                                                    @csrf
-                                                                    @method('POST')
-                                                                    <button type="submit" name="status" value="Ditolak"
-                                                                        class="btn btn-primary px-4">
-                                                                        OK
-                                                                    </button>
-                                                                </form>
-                                                                <button type="button" class="btn btn-light ml-2"
-                                                                    data-dismiss="modal">Batal</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <span class="text-muted">-</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
-            </div>
+            <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_rekomendasi"
+                style="width:100%">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Lomba</th>
+                        <th>Status</th>
+                        <th>Skor</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
+
+    {{-- Modal AJAX --}}
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" aria-hidden="true">
+    </div>
 @endsection
+
+@push('js')
+    <script>
+        var tableRekomendasi;
+
+        $(document).ready(function () {
+            tableRekomendasi = $('#table_rekomendasi').DataTable({
+                serverSide: true,
+                ajax: {
+                    url: "{{ url('rekomendasi/list') }}",
+                    type: "POST",
+                    dataType: "json",
+                    data: function (d) {
+                        d.status = $('#filter_status').val();
+                        d.nama_lomba = $('#filter_lomba').val();
+                        d._token = '{{ csrf_token() }}';
+                    }
+                },
+                columns: [
+                    { data: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
+                    { data: 'lomba' },
+                    { data: 'status', className: "text-capitalize" },
+                    { data: 'skor', className: "text-center" },
+                    { data: 'aksi', className: "text-center", orderable: false, searchable: false }
+                ]
+            });
+
+            $('#filter_status, #filter_lomba').on('change', function () {
+                tableRekomendasi.ajax.reload();
+            });
+        });
+
+        function ubahStatus(id, aksi) {
+            let url = `/rekomendasi/${id}/${aksi}_ajax`;
+            let title = aksi === 'approve' ? 'Setujui Rekomendasi?' : 'Tolak Rekomendasi?';
+            let icon = aksi === 'approve' ? 'success' : 'warning';
+            let confirmText = aksi === 'approve' ? 'Ya, Setujui!' : 'Ya, Tolak!';
+            // let inputCatatan = aksi === 'reject'
+            //     ? `<textarea id="catatan" class="form-control" placeholder="Masukkan catatan (wajib)" required></textarea>`
+            //     : `<textarea id="catatan" class="form-control" placeholder="Masukkan catatan (optional)"></textarea>`;
+
+            $('#myModal').modal('hide');
+
+            setTimeout(() => {
+                Swal.fire({
+                    title: title,
+                    icon: icon,
+                    //html: inputCatatan,
+                    showCancelButton: true,
+                    confirmButtonText: confirmText,
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: aksi === 'approve' ? '#28a745' : '#d33'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        //let catatan = document.getElementById('catatan').value;
+                        //if (aksi === 'approve' && !catatan) catatan = 'Tidak ada catatan';
+
+                        $.post(url, {
+                            _token: '{{ csrf_token() }}',
+                            catatan: catatan
+                        }, function (res) {
+                            Swal.fire('Berhasil', res.success, 'success');
+                            tableRekomendasi.ajax.reload(null, false);
+                        }).fail(function () {
+                            Swal.fire('Gagal', 'Terjadi kesalahan saat memproses data.', 'error');
+                        });
+                    }
+                });
+            }, 500);
+        }
+    </script>
+@endpush
