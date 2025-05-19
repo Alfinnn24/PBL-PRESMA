@@ -22,12 +22,12 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label>Nama Lomba</label>
-                    <select id="filter_lomba" class="form-control">
+                    <label>Kecocokan</label>
+                    <select id="filter_kecocokan" class="form-control">
                         <option value="">- Semua -</option>
-                        @foreach ($namaLomba as $lomba)
-                            <option value="{{ $lomba->nama }}">{{ $lomba->nama }}</option>
-                        @endforeach
+                        <option value="tinggi">Tinggi (≥ 0.7)</option>
+                        <option value="sedang">Sedang (0.4 - 0.69)</option>
+                        <option value="rendah">Rendah (< 0.4)</option>
                     </select>
                 </div>
             </div>
@@ -55,6 +55,14 @@
 
 @push('js')
     <script>
+        function modalAction(url = '') {
+            $('#myModal').modal('hide').removeData('bs.modal');
+            $('#myModal').html('');
+            $('#myModal').load(url, function () {
+                $('#myModal').modal('show');
+            });
+        }
+
         var tableRekomendasi;
 
         $(document).ready(function () {
@@ -66,7 +74,7 @@
                     dataType: "json",
                     data: function (d) {
                         d.status = $('#filter_status').val();
-                        d.nama_lomba = $('#filter_lomba').val();
+                        d.kecocokan = $('#filter_kecocokan').val();
                         d._token = '{{ csrf_token() }}';
                     }
                 },
@@ -79,7 +87,7 @@
                 ]
             });
 
-            $('#filter_status, #filter_lomba').on('change', function () {
+            $('#filter_status, #filter_kecocokan').on('change', function () {
                 tableRekomendasi.ajax.reload();
             });
         });

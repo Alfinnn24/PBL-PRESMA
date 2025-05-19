@@ -49,18 +49,26 @@ class RekomendasiLombaController extends Controller
         $rekomendasi = RekomendasiLombaModel::with(['mahasiswa', 'lomba']);
 
         if ($user->role == 'mahasiswa') {
-            $rekomendasi->where('mahasiswa_nim', $user->mahasiswa->nim);
-            $rekomendasi->orderBy('skor', 'desc');
+            $rekomendasi->where('mahasiswa_nim', $user->mahasiswa->nim)
+                ->orderBy('skor', 'desc');
         } elseif ($user->role == 'dosen') {
             $rekomendasi->where('dosen_pembimbing_id', $user->dosen->id);
         }
-        // jika admin, tidak ada filter (melihat semua)
 
-        // Filter berdasarkan nama lomba
-        if ($request->nama_lomba) {
-            $rekomendasi->whereHas('lomba', function ($query) use ($request) {
-                $query->where('nama', $request->nama_lomba);
-            });
+        // Filter berdasarkan status
+        if ($request->status) {
+            $rekomendasi->where('status', $request->status);
+        }
+
+        // Filter berdasarkan kecocokan (tinggi/sedang/rendah)
+        if ($request->kecocokan) {
+            if ($request->kecocokan == 'tinggi') {
+                $rekomendasi->where('skor', '>=', 0.7);
+            } elseif ($request->kecocokan == 'sedang') {
+                $rekomendasi->whereBetween('skor', [0.4, 0.699]);
+            } elseif ($request->kecocokan == 'rendah') {
+                $rekomendasi->where('skor', '<', 0.4);
+            }
         }
 
         return DataTables::of($rekomendasi)
@@ -75,8 +83,30 @@ class RekomendasiLombaController extends Controller
                 return ucfirst($data->status);
             })
             ->addColumn('aksi', function ($data) {
+                $detailUrl = url('/rekomendasi/' . $data->lomba_id . '/show_ajax');
+
+                $disabledApprove = '';
+
+                // Cek jika status sudah 'approve'
+                if ($data->status == 'Disetujui') {
+                    $disabledApprove = 'disabled';
+                }
+
+                // Hitung jumlah peserta yang sudah disetujui pada lomba ini
+                $jumlahDisetujui = RekomendasiLombaModel::where('lomba_id', $data->lomba_id)
+                    ->where('status', 'Disetujui')
+                    ->count();
+
+                // Jika jumlah peserta yang disetujui sudah sama atau lebih dari kuota
+                if ($jumlahDisetujui >= $data->lomba->jumlah_peserta) {
+                    $disabledApprove = 'disabled';
+                }
+
                 return '
-                    <button class="btn btn-sm btn-success" onclick="ubahStatus(' . $data->id . ', \'approve\')">
+                    <button class="btn btn-sm btn-primary" onclick="modalAction(\'' . $detailUrl . '\')">
+                        <i class="fas fa-search"></i> Detail
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="ubahStatus(' . $data->id . ', \'approve\')" ' . $disabledApprove . '>
                         <i class="fas fa-check-circle"></i> Setujui
                     </button>
                     <button class="btn btn-sm btn-danger" onclick="ubahStatus(' . $data->id . ', \'reject\')">
@@ -86,6 +116,13 @@ class RekomendasiLombaController extends Controller
             ->rawColumns(['aksi'])
             ->make(true);
     }
+
+    public function show_ajax(string $id)
+    {
+        $lomba = LombaModel::with('creator.mahasiswa', 'creator.dosen', 'creator.admin')->find($id);
+        return view('rekomendasi.show_ajax', ['lomba' => $lomba]);
+    }
+
     // Proses untuk menyetujui atau menolak rekomendasi lomba
     public function updateStatus(Request $request, $id)
     {
