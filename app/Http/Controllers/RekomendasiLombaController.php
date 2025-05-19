@@ -123,57 +123,20 @@ class RekomendasiLombaController extends Controller
         return view('rekomendasi.show_ajax', ['lomba' => $lomba]);
     }
 
-    // Proses untuk menyetujui atau menolak rekomendasi lomba
-    public function updateStatus(Request $request, $id)
+    public function approve(Request $request, string $id)
     {
-        $rekomendasi = RekomendasiLombaModel::findOrFail($id);
-
-        // Validasi status yang dipilih
-        $request->validate([
-            'status' => 'required|in:Disetujui,Ditolak',
-        ]);
-
-        // Mengupdate status rekomendasi lomba
-        $rekomendasi->status = $request->status;
+        $rekomendasi = RekomendasiLombaModel::find($id);
+        $rekomendasi->status = 'Disetujui';
         $rekomendasi->save();
 
-        // Jika ada yang menolak, carikan pengganti
-        if ($request->status == 'Ditolak') {
-            $this->cariPengganti($rekomendasi);
-        }
-
-        return redirect()->route('rekomendasi.index')->with('success', 'Status rekomendasi berhasil diperbarui');
+        return response()->json(['status' => 'success', 'message' => 'Rekomendasi lomba disetujui']);
     }
-
-    // Fungsi untuk mencari pengganti jika ada yang menolak
-    private function cariPengganti(RekomendasiLombaModel $rekomendasi)
+    public function reject(Request $request, string $id)
     {
-        $lomba = $rekomendasi->lomba;
+        $rekomendasi = RekomendasiLombaModel::find($id);
+        $rekomendasi->status = 'Ditolak';
+        $rekomendasi->save();
 
-        $excludedMahasiswa = RekomendasiLombaModel::where('lomba_id', $lomba->id)->pluck('mahasiswa_nim')->toArray();
-        $excludedDosen = RekomendasiLombaModel::where('lomba_id', $lomba->id)->pluck('dosen_pembimbing_id')->filter()->toArray();
-
-        $hasilPengganti = $this->fuzzySpkService->prosesRekomendasi($lomba, $excludedMahasiswa, $excludedDosen);
-        //dd($hasilPengganti);
-
-        foreach ($hasilPengganti as $pengganti) {
-            $mahasiswa = MahasiswaModel::where('nama_lengkap', $pengganti['mahasiswa'])->first();
-            if ($mahasiswa) {
-                $this->createRekomendasi($mahasiswa, $lomba);
-            }
-        }
-    }
-
-    // Membuat rekomendasi baru untuk mahasiswa dan dosen pengganti
-    private function createRekomendasi($mahasiswa, LombaModel $lomba)
-    {
-        $dosen = $mahasiswa->dosenPembimbing->first()?->dosen;
-
-        RekomendasiLombaModel::create([
-            'mahasiswa_nim' => $mahasiswa->nim,
-            'lomba_id' => $lomba->id,
-            'dosen_pembimbing_id' => $dosen?->id,
-            'status' => 'Disetujui',
-        ]);
+        return response()->json(['status' => 'success', 'message' => 'Rekomendasi lomba ditolak']);
     }
 }
