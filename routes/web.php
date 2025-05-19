@@ -125,6 +125,8 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
         Route::get('/{id}/delete_ajax', [RekomendasiLombaController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete prestasi Ajax
         Route::delete('/{id}/delete_ajax', [RekomendasiLombaController::class, 'delete_ajax']); // Untuk hapus data prestasi Ajax
         Route::get('/lomba/{id}/detail', [RekomendasiLombaController::class, 'getDetail']);
+        Route::post('/{id}/approve_ajax', [RekomendasiLombaController::class, 'approve']);
+        Route::post('/{id}/reject_ajax', [RekomendasiLombaController::class, 'reject']);
     });
 
     Route::get('/tes-rekomendasi/topsis', [TesRekomendasi::class, 'prosesSemuaLombaDenganTopsis']); //jangan dipake dulu masih belum stabil

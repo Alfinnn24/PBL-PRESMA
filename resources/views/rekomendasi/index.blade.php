@@ -118,14 +118,14 @@
                         //if (aksi === 'approve' && !catatan) catatan = 'Tidak ada catatan';
 
                         $.post(url, {
-                            _token: '{{ csrf_token() }}',
-                            catatan: catatan
+                            _token: '{{ csrf_token() }}'
                         }, function (res) {
-                            Swal.fire('Berhasil', res.success, 'success');
+                            Swal.fire('Berhasil', res.message, 'success');
                             tableRekomendasi.ajax.reload(null, false);
                         }).fail(function () {
                             Swal.fire('Gagal', 'Terjadi kesalahan saat memproses data.', 'error');
                         });
+
                     }
                 });
             }, 500);
