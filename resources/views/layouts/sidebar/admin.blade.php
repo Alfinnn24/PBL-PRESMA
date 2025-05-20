@@ -59,5 +59,11 @@
                 <p>Rekomandasi Lomba</p>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ url('/profile') }}" class="nav-link {{ $activeMenu == 'userprofile' ? 'active' : '' }}">
+                <i class="nav-icon fas fa-solid fa-futbol"></i>
+                <p>user profile</p>
+            </a>
+        </li>
     </ul>
 </nav>

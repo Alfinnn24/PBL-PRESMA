@@ -10,6 +10,7 @@ use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\LombaController;
 use App\Http\Controllers\ProgramStudiController;
 use App\Http\Controllers\TesRekomendasi;
+use App\Http\Controllers\ProfileController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -38,6 +39,11 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
 
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+});
 
 // Route untuk admin
 Route::middleware(['authorize:admin'])->group(function () {
