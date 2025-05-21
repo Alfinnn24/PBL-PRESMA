@@ -82,10 +82,20 @@ class ProfileController extends Controller
 
         if ($user->role === 'mahasiswa') {
             $rules = array_merge($rules, [
-                'angkatan'          => 'required',
-                'no_telp'           => 'required',
-                'alamat'            => 'required',
-                'program_studi_id'  => 'required',
+                'angkatan' => [
+                    'required',
+                    'digits:4', // Validasi 4 digit angka
+                    'numeric',
+                    'min:2000',
+                    'max:' . date('Y')
+                ],
+                'no_telp' => [
+                    'required',
+                    'numeric',
+                    'digits_between:10,15'
+                ],
+                'alamat'            => ['required'],
+                'program_studi_id'  => ['required'],
             ]);
         } elseif ($user->role === 'dosen') {
             $rules = array_merge($rules, [
@@ -102,50 +112,77 @@ class ProfileController extends Controller
             $rules['foto_profile'] = 'image|mimes:jpg,jpeg,png|max:2048';
         }
 
-        $request->validate($rules);
-
-        // Update User
-        $user->email = $request->email;
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-        $user->save();
-
-        // Siapkan data untuk detail (mahasiswa/dosen/admin)
-        $dataDetail = [
-            'nama_lengkap'       => $request->nama_lengkap,
-        ];
-
-        // Role-specific fields
-        if ($user->role === 'mahasiswa') {
-            $dataDetail = array_merge($dataDetail, [
-                'angkatan'         => $request->angkatan,
-                'no_telp'          => $request->no_telp,
-                'alamat'           => $request->alamat,
-                'program_studi_id' => $request->program_studi_id,
-            ]);
-        }
-        elseif ($user->role === 'dosen') {
-            $dataDetail = array_merge($dataDetail, [
-                'no_telp'          => $request->no_telp,
-                'program_studi_id' => $request->program_studi_id,
-            ]);
+        // $request->validate($rules);
+        $validator = Validator::make($request->all(), $rules, [
+            // profile
+            'foto_profile.image' => 'File harus berupa gambar.',
+            'foto_profile.mimes' => 'Format file harus JPG, JPEG, atau PNG.',
+            'foto_profile.max' => 'Ukuran foto profil tidak boleh lebih dari 2MB.',
+            // password
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'password.min' => 'Password minimal 6 karakter.',
+            // angkatan
+            'angkatan.max' => 'Tahun angkatan tidak boleh lebih dari tahun saat ini.',
+            // no-telp
+            'no_telp.digits_between' => 'Nomor telepon harus antara 10 sampai 15 digit.',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+                'message' => 'Terjadi kesalahan validasi.'
+            ], 422);
         }
 
-        // Handle upload foto_profile
-        if ($request->hasFile('foto_profile')) {
-            // Hapus lama jika ada
-            if ($detail->foto_profile && Storage::exists('public/' . $detail->foto_profile)) {
-                Storage::delete('public/' . $detail->foto_profile);
+        // Proses update user dan detail
+        try {
+            $user->email = $request->email;
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
             }
-            $path = $request->file('foto_profile')->store('foto_profile', 'public');
-            $dataDetail['foto_profile'] = $path;
-        }
+            $user->save();
 
-        // Simpan update ke model detail
-        $detail->update($dataDetail);
-        
-        return redirect()->route('profile.index')
-                         ->with('success', 'Profil berhasil diperbarui.');
+            // Siapkan data untuk detail (mahasiswa/dosen/admin)
+            $dataDetail = [
+                'nama_lengkap'       => $request->nama_lengkap,
+            ];
+
+            // Role-specific fields
+            if ($user->role === 'mahasiswa') {
+                $dataDetail = array_merge($dataDetail, [
+                    'angkatan'         => $request->angkatan,
+                    'no_telp'          => $request->no_telp,
+                    'alamat'           => $request->alamat,
+                    'program_studi_id' => $request->program_studi_id,
+                ]);
+            } elseif ($user->role === 'dosen') {
+                $dataDetail = array_merge($dataDetail, [
+                    'no_telp'          => $request->no_telp,
+                    'program_studi_id' => $request->program_studi_id,
+                ]);
+            }
+
+            // Handle upload foto_profile
+            if ($request->hasFile('foto_profile')) {
+                // Hapus lama jika ada
+                if ($detail->foto_profile && Storage::exists('public/' . $detail->foto_profile)) {
+                    Storage::delete('public/' . $detail->foto_profile);
+                }
+                $path = $request->file('foto_profile')->store('foto_profile', 'public');
+                $dataDetail['foto_profile'] = $path;
+            }
+
+            // Simpan update ke model detail
+            $detail->update($dataDetail);
+
+            return response()->json([
+                'message' => 'Profil berhasil diperbarui.',
+                'foto_profile' => $detail->foto_profile ? asset('storage/' . $detail->foto_profile) : null,
+                'redirect' => route('profile.index') // direct ke halaman awal
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

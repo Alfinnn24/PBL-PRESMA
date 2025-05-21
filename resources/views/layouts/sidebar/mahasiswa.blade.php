@@ -26,11 +26,11 @@
                 <p>Rekomendasi Lomba</p>
             </a>
         </li>
-        <li class="nav-item">
+        {{-- <li class="nav-item">
             <a href="{{ url('/profile') }}" class="nav-link {{ $activeMenu == 'profile' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-futbol"></i>
                 <p>user profile</p>
             </a>
-        </li>
+        </li> --}}
     </ul>
 </nav>
