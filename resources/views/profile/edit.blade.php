@@ -3,14 +3,15 @@
 @section('content')
     <div class="container">
         <div class="card shadow">
-            <div class="card-header">
+            {{-- <div class="card-header">
                 <h3>Edit Profil</h3>
-            </div>
+            </div> --}}
             <div class="card-body">
-                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+                <form id="profileForm" action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf @method('PUT')
                     <!-- Upload Foto Profil dengan Preview dan Overlay -->
                     <div class="form-group text-center">
+                        {{-- profile pict --}}
                         <div class="d-flex flex-column align-items-center mb-3">
                             <strong class="mb-2">Upload Foto Profil</strong>
                             <label class="position-relative" for="profile_picture">
@@ -42,6 +43,7 @@
                             <small class="form-text text-danger">{{ $message }}</small>
                         @enderror
                     </div>
+                    {{-- kabeh --}}
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label>Nama Lengkap</label>
@@ -61,7 +63,7 @@
                             @enderror
                         </div>
                     </div>
-
+                    {{-- mahasiswa --}}
                     @if ($user->role === 'mahasiswa')
                         <div class="form-row">
                             <div class="form-group col-md-4">
@@ -72,7 +74,9 @@
                                 <label>Angkatan</label>
                                 <input type="text" name="angkatan"
                                     class="form-control @error('angkatan') is-invalid @enderror"
-                                    value="{{ old('angkatan', $detail->angkatan) }}">
+                                    value="{{ old('angkatan', $detail->angkatan) }}" maxlength="4" pattern="\d{4}"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,4)"
+                                    title="Harus 4 digit angka">
                                 @error('angkatan')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -99,7 +103,9 @@
                                 <label>No. Telp</label>
                                 <input type="text" name="no_telp"
                                     class="form-control @error('no_telp') is-invalid @enderror"
-                                    value="{{ old('no_telp', $detail->no_telp) }}">
+                                    value="{{ old('no_telp', $detail->no_telp) }}" maxlength="15"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,15)"
+                                    title="Nomor telepon 10-15 digit angka">
                                 @error('no_telp')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -114,6 +120,8 @@
                                 @enderror
                             </div>
                         </div>
+
+                        {{-- dosen --}}
                     @elseif($user->role === 'dosen')
                         <div class="form-row">
                             <div class="form-group col-md-4">
@@ -128,7 +136,7 @@
                                     @foreach ($prodi as $p)
                                         <option value="{{ $p->id }}"
                                             {{ old('program_studi_id', $detail->program_studi_id) == $p->id ? 'selected' : '' }}>
-                                            {{ $p->nama }}
+                                            {{ $p->nama_prodi }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -140,7 +148,9 @@
                                 <label>No. Telp</label>
                                 <input type="text" name="no_telp"
                                     class="form-control @error('no_telp') is-invalid @enderror"
-                                    value="{{ old('no_telp', $detail->no_telp) }}">
+                                    value="{{ old('no_telp', $detail->no_telp) }}" maxlength="15"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,15)"
+                                    title="Nomor telepon 10-15 digit angka">
                                 @error('no_telp')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -152,7 +162,8 @@
 
                     <div class="form-group">
                         <label>Password <small class="text-muted">(kosongkan jika tidak diubah)</small></label>
-                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror">
+                        <input type="password" name="password"
+                            class="form-control @error('password') is-invalid @enderror">
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -161,7 +172,7 @@
                         <input type="password" name="password_confirmation" class="form-control">
                     </div>
 
-                    <button type="submit" class="btn btn-success">
+                    <button type="button" id="btnSimpan" class="btn btn-success">
                         <i class="fas fa-save"></i> Simpan Perubahan
                     </button>
                     <a href="{{ route('profile.index') }}" class="btn btn-secondary">
@@ -172,3 +183,94 @@
         </div>
     </div>
 @endsection
+@push('js')
+    <script>
+        $(document).ready(function() {
+            // Preview image saat upload foto profil
+            $('#profile_picture').change(function() {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#preview-image').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(this.files[0]);
+            });
+
+            // Modal konfirmasi saat simpan perubahan
+            // AJAX form submission
+            $('#btnSimpan').click(function(e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: 'Simpan Perubahan?',
+                    text: "Anda yakin ingin menyimpan perubahan data profil?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Simpan!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = $('#profileForm')[0];
+                        const formData = new FormData(form);
+
+                        // Tambahkan method PUT
+                        formData.append('_method', 'PUT');
+
+                        $.ajax({
+                            url: $(form).attr('action'),
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                // Update foto profil jika ada
+                                if (response.foto_profile) {
+                                    $('#preview-image').attr('src', response
+                                        .foto_profile);
+                                }
+
+                                Swal.fire({
+                                    title: 'Sukses!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#28a745',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = response
+                                            .redirect; // Ini yang harus ditambahkan
+                                    }
+                                });
+                            },
+                            error: function(xhr) {
+                                const errors = xhr.responseJSON.errors;
+                                const errorMessages = [];
+
+                                // Reset error state
+                                $('.is-invalid').removeClass('is-invalid');
+                                $('.invalid-feedback').remove();
+
+                                // Tampilkan error untuk setiap field
+                                Object.keys(errors).forEach(function(field) {
+                                    const input = $('[name="' + field + '"]');
+                                    input.addClass('is-invalid');
+                                    input.after(
+                                        '<div class="invalid-feedback">' +
+                                        errors[field][0] + '</div>');
+                                    errorMessages.push(errors[field][0]);
+                                });
+
+                                Swal.fire({
+                                    title: 'Gagal!',
+                                    html: errorMessages.join('<br>'),
+                                    icon: 'error',
+                                    confirmButtonColor: '#dc3545',
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+@endpush

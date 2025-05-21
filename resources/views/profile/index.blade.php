@@ -41,7 +41,7 @@
                             <p><strong>No. HP:</strong> {{ $detail->no_telp }}</p>
                             <p><strong>Alamat:</strong> {{ $detail->alamat }}</p>
                         @elseif($user->role === 'dosen')
-                            <p><strong>Program Studi:</strong> {{ $detail->programStudi->nama ?? '-' }}</p>
+                            <p><strong>Program Studi:</strong> {{ $detail->programStudi->nama_prodi ?? '-' }}</p>
                             <p><strong>No. HP:</strong> {{ $detail->no_telp }}</p>
                         @endif
                         <p><strong>Email:</strong> {{ $user->email }}</p>

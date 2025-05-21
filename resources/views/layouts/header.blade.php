@@ -15,7 +15,7 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
         <!-- Navbar Search -->
-        <li class="nav-item">
+        {{-- <li class="nav-item">
             <a class="nav-link" data-widget="navbar-search" href="#" role="button">
                 <i class="fas fa-search"></i>
             </a>
@@ -35,7 +35,7 @@
                     </div>
                 </form>
             </div>
-        </li>
+        </li> --}}
 
         <!-- Messages Dropdown Menu -->
         {{-- <li class="nav-item dropdown">
@@ -102,7 +102,7 @@
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
                 <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge">15</span>
+                <span class="badge badge-warning navbar-badge"></span>
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                 <span class="dropdown-item dropdown-header">15 Notifications</span>
@@ -126,13 +126,30 @@
             </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{url('logout')}}" role="button">
+            <a class="nav-link" href="{{ url('logout') }}" role="button">
                 <i class="fas fa-sign-out-alt" style="color: red;"></i>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="" role="button">
-                <i class="fas fa-thin fa-user""></i>
+            <a class="nav-link d-flex align-items-center" href="{{ url('/profile') }}" role="button">
+                <div class="d-flex align-items-center" style="position: relative; width: 28px; height: 28px;">
+                    <img src="
+                    @if (Auth::user()->role === 'mahasiswa' && Auth::user()->mahasiswa && Auth::user()->mahasiswa->foto_profile) {{ asset('storage/' . Auth::user()->mahasiswa->foto_profile) }}
+                    @elseif(Auth::user()->role === 'dosen' && Auth::user()->dosen && Auth::user()->dosen->foto_profile){{ asset('storage/' . Auth::user()->dosen->foto_profile) }}
+                    @elseif(Auth::user()->role === 'admin' && Auth::user()->admin && Auth::user()->admin->foto_profile){{ asset('storage/' . Auth::user()->admin->foto_profile) }}
+                    @else{{ asset('images/default-profile.png') }} @endif"
+                        alt="Profile"
+                        class="img-fluid"
+                        style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 50%;
+                    border: 2px solid #fff;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    transition: transform 0.2s;
+                 ">
+                </div>
             </a>
         </li>
     </ul>
