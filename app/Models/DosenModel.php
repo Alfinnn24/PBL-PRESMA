@@ -17,7 +17,7 @@ class DosenModel extends Model
 
     public function programStudi(): BelongsTo
     {
-        return $this->belongsTo(ProgramStudiModel::class);
+        return $this->belongsTo(ProgramStudiModel::class, 'program_studi_id', 'id');
     }
 
     public function pembimbingMahasiswa(): HasMany
