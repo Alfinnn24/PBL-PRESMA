@@ -133,6 +133,7 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
         Route::get('/lomba/{id}/detail', [RekomendasiLombaController::class, 'getDetail']);
         Route::post('/{id}/approve_ajax', [RekomendasiLombaController::class, 'approve']);
         Route::post('/{id}/reject_ajax', [RekomendasiLombaController::class, 'reject']);
+        Route::get('/dosen/{id}/detail', [RekomendasiLombaController::class, 'getDetail']);
     });
 
     Route::get('/tes-rekomendasi/topsis', [TesRekomendasi::class, 'prosesSemuaLombaDenganTopsis']); //jangan dipake dulu masih belum stabil

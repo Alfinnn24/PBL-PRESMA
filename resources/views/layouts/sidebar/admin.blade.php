@@ -54,7 +54,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'rekomlomba' ? 'active' : '' }}">
+            <a href="{{ url('/rekomendasi') }}"
+                class="nav-link {{ $activeMenu == 'rekomendasiLomba' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-futbol"></i>
                 <p>Rekomandasi Lomba</p>
             </a>
