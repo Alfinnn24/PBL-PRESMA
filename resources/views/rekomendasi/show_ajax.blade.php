@@ -72,7 +72,7 @@
                         <td>{{ $lomba->periode->nama }}</td>
                     </tr>
                     <tr>
-                        <th>Pembuat Lomba</th>
+                        <th>Penambah Lomba</th>
                         <td>{{ $lomba->creator->fullName }}</td>
                     </tr>
                     <tr>

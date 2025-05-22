@@ -63,10 +63,12 @@ class RekomendasiLombaController extends Controller
         // Filter berdasarkan kecocokan (tinggi/sedang/rendah)
         if ($request->kecocokan) {
             if ($request->kecocokan == 'tinggi') {
-                $rekomendasi->where('skor', '>=', 0.7);
+                $rekomendasi->where('skor', '>=', 0.85);
             } elseif ($request->kecocokan == 'sedang') {
-                $rekomendasi->whereBetween('skor', [0.4, 0.699]);
+                $rekomendasi->whereBetween('skor', [0.7, 0.84]);
             } elseif ($request->kecocokan == 'rendah') {
+                $rekomendasi->whereBetween('skor', [0.5, 0.69]);
+            } elseif ($request->kecocokan == 'srendah') {
                 $rekomendasi->where('skor', '<', 0.4);
             }
         }
@@ -82,14 +84,31 @@ class RekomendasiLombaController extends Controller
             ->addColumn('status', function ($data) {
                 return ucfirst($data->status);
             })
+            ->addColumn('hasil_rekomendasi', function ($data) {
+                $skor = $data->skor;
+                if ($skor >= 0.85) {
+                    return 'Sangat Direkomendasikan';
+                } elseif ($skor >= 0.7) {
+                    return 'Direkomendasikan';
+                } elseif ($skor >= 0.4) {
+                    return 'Cukup Direkomendasikan';
+                } else {
+                    return 'Tidak Direkomendasikan';
+                }
+            })
             ->addColumn('aksi', function ($data) {
                 $detailUrl = url('/rekomendasi/' . $data->lomba_id . '/show_ajax');
 
                 $disabledApprove = '';
+                $tolakApprove = '';
 
                 // Cek jika status sudah 'approve'
                 if ($data->status == 'Disetujui') {
                     $disabledApprove = 'disabled';
+                }
+
+                if ($data->status == 'Ditolak') {
+                    $tolakApprove = 'disabled';
                 }
 
                 // Hitung jumlah peserta yang sudah disetujui pada lomba ini
@@ -109,7 +128,7 @@ class RekomendasiLombaController extends Controller
                     <button class="btn btn-sm btn-success" onclick="ubahStatus(' . $data->id . ', \'approve\')" ' . $disabledApprove . '>
                         <i class="fas fa-check-circle"></i> Setujui
                     </button>
-                    <button class="btn btn-sm btn-danger" onclick="ubahStatus(' . $data->id . ', \'reject\')">
+                    <button class="btn btn-sm btn-danger" onclick="ubahStatus(' . $data->id . ', \'reject\') " ' . $tolakApprove . '>
                         <i class="fas fa-times-circle"></i> Tolak
                     </button>';
             })

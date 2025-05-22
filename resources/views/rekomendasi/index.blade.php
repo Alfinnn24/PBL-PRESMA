@@ -25,9 +25,10 @@
                     <label>Kecocokan</label>
                     <select id="filter_kecocokan" class="form-control">
                         <option value="">- Semua -</option>
-                        <option value="tinggi">Tinggi (≥ 0.7)</option>
-                        <option value="sedang">Sedang (0.4 - 0.69)</option>
-                        <option value="rendah">Rendah (< 0.4)</option>
+                        <option value="tinggi">Sangat direkomendasikan</option>
+                        <option value="sedang">Direkomendasikan</option>
+                        <option value="rendah">Cukup direkomendasikan</option>
+                        <option value="srendah">Tidak direkomendasikan</option>
                     </select>
                 </div>
             </div>
@@ -40,6 +41,7 @@
                         <th>Lomba</th>
                         <th>Status</th>
                         <th>Skor</th>
+                        <th>Hasil Rekomendasi</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -83,6 +85,7 @@
                     { data: 'lomba' },
                     { data: 'status', className: "text-capitalize" },
                     { data: 'skor', className: "text-center" },
+                    { data: 'hasil_rekomendasi' },
                     { data: 'aksi', className: "text-center", orderable: false, searchable: false }
                 ]
             });
