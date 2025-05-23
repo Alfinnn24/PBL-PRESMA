@@ -86,14 +86,10 @@ class LombaController extends Controller
     {
         $bidang_keahlian = BidangKeahlianModel::select('id', 'keahlian')->distinct()->get();
         $periode = PeriodeModel::select('id', 'nama')->distinct()->get();
-        $user = UserModel::select('id', 'username')->where('role', 'admin')->distinct()->get();
-        $is_verified = ['Pending', 'Disetujui', 'Ditolak'];
     
         return view('admin.lomba.create_ajax', [
             'bidang_keahlian' => $bidang_keahlian,
             'periode' => $periode,
-            'user' => $user,
-            'is_verified' => $is_verified
         ]);
     }
 
@@ -150,7 +146,7 @@ class LombaController extends Controller
         // Siapkan data untuk disimpan
         $data = $request->all();
         $data['created_by'] = $adminId; // Diisi otomatis
-        $data['is_verified'] = 'Setujui'; // Default
+        $data['is_verified'] = 'Disetujui'; // Default
 
         // Simpan
         LombaModel::create($data);
@@ -180,14 +176,12 @@ class LombaController extends Controller
     // Ambil data bidang_keahlian, periode, dan user
     $bidang_keahlian = BidangKeahlianModel::select('id', 'keahlian')->distinct()->get();
     $periode = PeriodeModel::select('id', 'nama')->distinct()->get();
-    $user = UserModel::select('id', 'username')->where('role', 'admin')->distinct()->get();
 
     // Kirim data ke view
     return view('admin.lomba.edit_ajax', [
         'lomba' => $lomba, 
         'bidang_keahlian' => $bidang_keahlian,
         'periode' => $periode,
-        'user' => $user,
     ]);
 }
 
@@ -214,8 +208,7 @@ class LombaController extends Controller
                 'link_registrasi'    => 'nullable|url|max:255',                  
                 'tanggal_mulai'      => 'required|date|after_or_equal:today',    
                 'tanggal_selesai'    => 'required|date|after:tanggal_mulai',    
-                'periode_id'         => 'required|exists:periode,id',            
-                'created_by'         => 'required|exists:user,id',                                    
+                'periode_id'         => 'required|exists:periode,id',                                              
             ];       
 
             $validator = Validator::make($request->all(), $rules); 
@@ -238,7 +231,6 @@ class LombaController extends Controller
                 ->where('tanggal_mulai', $request->tanggal_mulai)
                 ->where('tanggal_selesai', $request->tanggal_selesai)
                 ->where('periode_id', $request->periode_id)
-                ->where('created_by', $request->created_by)
                 ->exists();
 
             if ($duplicate) {
@@ -249,7 +241,7 @@ class LombaController extends Controller
             }
      
             // Proses update
-            $check->update($request->only(['nama', 'penyelenggara', 'tingkat', 'bidang_keahlian_id', 'persyaratan', 'jumlah_peserta', 'link_registrasi', 'tanggal_mulai', 'tanggal_selesai', 'periode_id', 'created_by', 'is_verified'])); 
+            $check->update($request->only(['nama', 'penyelenggara', 'tingkat', 'bidang_keahlian_id', 'persyaratan', 'jumlah_peserta', 'link_registrasi', 'tanggal_mulai', 'tanggal_selesai', 'periode_id'])); 
             return response()->json([ 
                 'status'  => true, 
                 'message' => 'Data berhasil diupdate' 
@@ -297,24 +289,30 @@ class LombaController extends Controller
         return view('admin.lomba.show_ajax', ['lomba' =>$lomba]);
     }
 
-    public function approve_ajax($id)
+    public function approve(Request $request, string $id)
 {
     $lomba = LombaModel::find($id);
-    if ($lomba) {
-        $lomba->update(['is_verified' => 'Disetujui']);
-        return response()->json(['status' => true, 'message' => 'Lomba disetujui']);
+    if (!$lomba) {
+        return response()->json(['status' => 'error', 'message' => 'Lomba tidak ditemukan'], 404);
     }
-    return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
+
+    $lomba->is_verified = 'Disetujui';
+    $lomba->save();
+
+    return response()->json(['status' => 'success', 'message' => 'Lomba disetujui']);
 }
 
-public function reject_ajax($id)
+public function reject(Request $request, string $id)
 {
     $lomba = LombaModel::find($id);
-    if ($lomba) {
-        $lomba->update(['is_verified' => 'Ditolak']);
-        return response()->json(['status' => true, 'message' => 'Lomba ditolak']);
+    if (!$lomba) {
+        return response()->json(['status' => 'error', 'message' => 'Lomba tidak ditemukan'], 404);
     }
-    return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
+
+    $lomba->is_verified = 'Ditolak';
+    $lomba->save();
+
+    return response()->json(['status' => 'success', 'message' => 'Lomba ditolak']);
 }
 
 }

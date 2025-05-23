@@ -107,17 +107,6 @@
                 <small id="error-periode_id" class="error-text form-text text-danger"></small>
             </div>
 
-            <div class="form-group">
-                <label>Admin Pembuat Lomba</label>
-                <select name="created_by" id="created_by" class="form-control" required>
-                    <option value="">- Pilih Admin -</option>
-                    @foreach($user as $item)
-                       <option value="{{ $item->id }}" {{ $lomba->created_by == $item->id ? 'selected' : '' }}>{{ $item->username }}</option>
-                    @endforeach
-                </select>
-                <small id="error-created_by" class="error-text form-text text-danger"></small>
-            </div>
-
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
@@ -167,9 +156,6 @@ $(document).ready(function() {
                 date: true
             },
               periode_id: {
-                required: true
-            },
-              created_by: {
                 required: true
             }
         },

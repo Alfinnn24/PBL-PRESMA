@@ -73,7 +73,7 @@
                         </tr>
                         <tr>
                             <th class="text-right col-3">Admin Pembuat Lomba:</th>
-                            <td class="col-9">{{ $lomba->creator->username }}</td>
+                            <td class="col-9">{{ $lomba->creator->admin->nama_lengkap ?? 'Tidak Diketahui' }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Status Lomba:</th>
