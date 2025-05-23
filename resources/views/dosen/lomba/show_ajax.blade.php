@@ -12,7 +12,7 @@
                 <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                 Data yang anda cari tidak ditemukan
             </div>
-            <a href="{{ url('/lomba') }}" class="btn btn-warning">Kembali</a>
+            <a href="{{ url('/dosen/lomba') }}" class="btn btn-warning">Kembali</a>
         </div>
     </div>
 </div>
@@ -83,8 +83,6 @@
         </div>
         <div class="modal-footer">
             <button type="button" data-dismiss="modal" class="btn btn-primary">Tutup</button>
-            <button type="button" onclick="ubahStatus({{ $lomba->id }}, 'approve')" class="btn btn-success">Setujui</button>
-            <button type="button" onclick="ubahStatus({{ $lomba->id }}, 'reject')" class="btn btn-danger">Tolak</button>
         </div>
     </div>
 </div>

@@ -5,8 +5,7 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('lomba/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah
-                    Lomba</button>
+                <button onclick="modalAction('{{ url('dosen/lomba/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Lomba</button>
             </div>
         </div>
         <div class="card-body">
@@ -57,6 +56,8 @@
                         <th>Penyelenggara Lomba</th>
                         <th>Tingkat Lomba</th>
                         <th>Bidang Keahlian Lomba</th>
+                        <th>Tanggal Mulai Lomba</th>
+                        <th>Tanggal Selesai Lomba</th>
                         <th>Status Lomba</th>
                         <th>Aksi</th>
                     </tr>
@@ -85,7 +86,7 @@
                 //scrollX: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{ url('lomba/list') }}",
+                    "url": "{{ url('dosen/lomba/list') }}",
                     "dataType": "json",
                     "type": "POST",
                     data: function(d) {
@@ -136,6 +137,20 @@
                         width: "150px"
                     },
                     {
+                        data: "tanggal_mulai",
+                        className: "text-center",
+                        orderable: true,
+                        searchable: true,
+                        width: "150px"
+                    },
+                    {
+                        data: "tanggal_selesai",
+                        className: "text-center",
+                        orderable: true,
+                        searchable: true,
+                        width: "150px"
+                    },
+                    {
                         data: "is_verified",
                         className: "text-center",
                         orderable: true,
@@ -158,45 +173,6 @@
             });
 
         });
-
-
-    function ubahStatus(id, aksi) {
-        const url = `{{ url('lomba') }}/${id}/${aksi}`;
-        const title = aksi === 'approve' ? 'Setujui Lomba?' : 'Tolak Lomba?';
-        const icon = aksi === 'approve' ? 'success' : 'warning';
-        const confirmText = aksi === 'approve' ? 'Ya, Setujui!' : 'Ya, Tolak!';
-
-        // Tutup modal jika sedang terbuka
-        $('#myModal').modal('hide');
-
-        setTimeout(() => {
-            Swal.fire({
-                title: title,
-                icon: icon,
-                showCancelButton: true,
-                confirmButtonText: confirmText,
-                cancelButtonText: 'Batal',
-                confirmButtonColor: aksi === 'approve' ? '#28a745' : '#d33'
-            }).then(result => {
-                if (result.isConfirmed) {
-                    $.post(url, {
-                        _token: '{{ csrf_token() }}'
-                    }, function (res) {
-                        Swal.fire('Berhasil', res.message, 'success');
-                        if (typeof tableLomba !== 'undefined') {
-                            tableLomba.ajax.reload(null, false);
-                        }
-                    }).fail(function (xhr) {
-                        let errorMsg = 'Terjadi kesalahan saat memproses data.';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMsg = xhr.responseJSON.message;
-                        }
-                        Swal.fire('Gagal', errorMsg, 'error');
-                    });
-                }
-            });
-        }, 500);
-    }
 
     </script>
 @endpush
