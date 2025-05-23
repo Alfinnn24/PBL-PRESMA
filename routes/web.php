@@ -11,6 +11,7 @@ use App\Http\Controllers\LombaController;
 use App\Http\Controllers\ProgramStudiController;
 use App\Http\Controllers\TesRekomendasi;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DosenBimbinganController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -140,4 +141,18 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
 
     Route::get('/tes-rekomendasi/topsis', [TesRekomendasi::class, 'prosesSemuaLombaDenganTopsis']); //jangan dipake dulu masih belum stabil
     Route::get('/tes-topsis/{idLomba}', [TesRekomendasi::class, 'lihatHasilTopsis']);
+});
+
+
+
+
+Route::middleware(['auth', 'authorize:dosen'])->prefix('dosen')->group(function () {
+    // Halaman daftar mahasiswa bimbingan
+    Route::get('/bimbingan', [DosenBimbinganController::class, 'index'])->name('dosen.bimbingan.index');
+
+    // Detail prestasi mahasiswa bimbingan
+    Route::get('/bimbingan/{nim}', [DosenBimbinganController::class, 'show'])->name('dosen.bimbingan.show');
+
+    // Endpoint DataTables AJAX untuk daftar mahasiswa bimbingan
+    Route::post('/bimbingan/list', [DosenBimbinganController::class, 'list'])->name('dosen.bimbingan.list');
 });

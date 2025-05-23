@@ -9,7 +9,7 @@
         </li>
 
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'datamhs' ? 'active' : '' }}">
+            <a href="{{ url('/dosen/bimbingan') }}" class="nav-link {{ $activeMenu == 'datamhs' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-user"></i>
                 <p>Mahasiswa bimbingan</p>
             </a>
