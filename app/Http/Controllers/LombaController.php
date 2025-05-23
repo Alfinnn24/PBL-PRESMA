@@ -27,23 +27,21 @@ class LombaController extends Controller
         $activeMenu = 'lomba';
         $bidang_keahlian = BidangKeahlianModel::all();
         $periode = PeriodeModel::all();
-        $user = UserModel::where('role', 'admin')->get();
         
         return view('admin.lomba.index', [
             'breadcrumb' => $breadcrumb, 
             'page' => $page, 
             'activeMenu' => $activeMenu,
             'bidang_keahlian' => $bidang_keahlian,
-            'periode' => $periode,
-            'user' => $user
+            'periode' => $periode
         ]);
     }
 
     public function list(Request $request)
 {
+
     $lomba = LombaModel::join('bidang_keahlian', 'lomba.bidang_keahlian_id', '=', 'bidang_keahlian.id')
         ->join('periode', 'lomba.periode_id', '=', 'periode.id')
-        ->join('user', 'lomba.created_by', '=', 'user.id')
         ->select(
             'lomba.id',
             'lomba.nama',
@@ -56,7 +54,6 @@ class LombaController extends Controller
             'lomba.tanggal_mulai',
             'lomba.tanggal_selesai',
             'periode.nama as periode_id',
-            'user.username as username',
             'lomba.is_verified'
         )
         ->when($request->bidang_keahlian, function ($query) use ($request) {
@@ -64,22 +61,15 @@ class LombaController extends Controller
         })
         ->when($request->nama, function ($query) use ($request) {
             $query->where('lomba.periode_id', $request->nama);
-        })
-        ->when($request->user, function ($query) use ($request) {
-            $query->where('lomba.created_by', $request->user);
-        });
+        }); // <--- titik koma di sini WAJIB
 
     return DataTables::of($lomba)
         ->addIndexColumn()
-        // filter manual untuk kolom alias (relasi)
         ->filterColumn('keahlian', function($query, $keyword) {
             $query->where('bidang_keahlian.keahlian', 'like', "%{$keyword}%");
         })
         ->filterColumn('periode_nama', function($query, $keyword) {
             $query->where('periode.nama', 'like', "%{$keyword}%");
-        })
-        ->filterColumn('username', function($query, $keyword) {
-            $query->where('user.username', 'like', "%{$keyword}%");
         })
         ->addColumn('aksi', function ($lomba) {
             $btn  = '<button onclick="modalAction(\''.url('/lomba/' . $lomba->id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
@@ -91,76 +81,88 @@ class LombaController extends Controller
         ->make(true);
 }
 
+
     public function create_ajax() 
     {
         $bidang_keahlian = BidangKeahlianModel::select('id', 'keahlian')->distinct()->get();
         $periode = PeriodeModel::select('id', 'nama')->distinct()->get();
         $user = UserModel::select('id', 'username')->where('role', 'admin')->distinct()->get();
+        $is_verified = ['Pending', 'Disetujui', 'Ditolak'];
+    
         return view('admin.lomba.create_ajax', [
             'bidang_keahlian' => $bidang_keahlian,
             'periode' => $periode,
             'user' => $user,
+            'is_verified' => $is_verified
         ]);
     }
 
     public function store_ajax(Request $request)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'nama'               => 'required|string|max:100',
-                'penyelenggara'      => 'required|string|max:255',
-                'tingkat'            => 'required|string|max:50',
-                'bidang_keahlian_id' => 'required|exists:bidang_keahlian,id',  
-                'persyaratan'        => 'nullable|string|max:500',               
-                'jumlah_peserta'     => 'nullable|integer|min:1',                
-                'link_registrasi'    => 'nullable|url|max:255',                  
-                'tanggal_mulai'      => 'required|date|after_or_equal:today',    
-                'tanggal_selesai'    => 'required|date|after:tanggal_mulai',    
-                'periode_id'         => 'required|exists:periode,id',            
-                'created_by'         => 'required|exists:user,id',             
-                'is_verified'        => 'required|boolean',                       
-            ];            
+{
+    if ($request->ajax() || $request->wantsJson()) {
+        $rules = [
+            'nama'               => 'required|string|max:100',
+            'penyelenggara'      => 'required|string|max:255',
+            'tingkat'            => 'required|string|max:50',
+            'bidang_keahlian_id' => 'required|exists:bidang_keahlian,id',
+            'persyaratan'        => 'nullable|string|max:500',
+            'jumlah_peserta'     => 'nullable|integer|min:1',
+            'link_registrasi'    => 'nullable|url|max:255',
+            'tanggal_mulai'      => 'required|date|after_or_equal:today',
+            'tanggal_selesai'    => 'required|date|after:tanggal_mulai',
+            'periode_id'         => 'required|exists:periode,id',
+        ];
 
-            $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), $rules);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField'=> $validator->errors(),
-                ]);
-            }
-
-            // Pengecekan data duplikat
-            $exists = LombaModel::where('nama', $request->nama)
-               ->where('penyelenggara', $request->penyelenggara)
-               ->where('tingkat', $request->tingkat)
-               ->where('bidang_keahlian_id', $request->bidang_keahlian_id)
-               ->where('persyaratan', $request->persyaratan)
-               ->where('jumlah_peserta', $request->jumlah_peserta)
-               ->where('link_registrasi', $request->link_registrasi)
-               ->where('tanggal_mulai', $request->tanggal_mulai)
-               ->where('tanggal_selesai', $request->tanggal_selesai)
-               ->where('periode_id', $request->periode_id)
-               ->where('created_by', $request->created_by)
-               ->where('is_verified', $request->is_verified)
-               ->exists();
-
-            if ($exists) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Data dengan kombinasi data lomba tersebut sudah ada.',
-                ]);
-            }
-
-            LombaModel::create($request->all());
+        if ($validator->fails()) {
             return response()->json([
-                'status'=> true,
-                'message'=> 'Data lomba berhasil disimpan'
+                'status' => false,
+                'message' => 'Validasi Gagal',
+                'msgField'=> $validator->errors(),
             ]);
         }
-        redirect('/');
+
+        // Ambil ID user login (admin)
+        $adminId = auth()->id(); // atau auth()->user()->id
+
+        // Pengecekan data duplikat
+        $exists = LombaModel::where('nama', $request->nama)
+            ->where('penyelenggara', $request->penyelenggara)
+            ->where('tingkat', $request->tingkat)
+            ->where('bidang_keahlian_id', $request->bidang_keahlian_id)
+            ->where('persyaratan', $request->persyaratan)
+            ->where('jumlah_peserta', $request->jumlah_peserta)
+            ->where('link_registrasi', $request->link_registrasi)
+            ->where('tanggal_mulai', $request->tanggal_mulai)
+            ->where('tanggal_selesai', $request->tanggal_selesai)
+            ->where('periode_id', $request->periode_id)
+            ->where('created_by', $adminId) // Gunakan adminId di sini
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data dengan kombinasi data lomba tersebut sudah ada.',
+            ]);
+        }
+
+        // Siapkan data untuk disimpan
+        $data = $request->all();
+        $data['created_by'] = $adminId; // Diisi otomatis
+        $data['is_verified'] = 'Setujui'; // Default
+
+        // Simpan
+        LombaModel::create($data);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data lomba berhasil disimpan'
+        ]);
     }
+
+    return redirect('/');
+}
 
     public function edit_ajax($id)
     {
@@ -213,8 +215,7 @@ class LombaController extends Controller
                 'tanggal_mulai'      => 'required|date|after_or_equal:today',    
                 'tanggal_selesai'    => 'required|date|after:tanggal_mulai',    
                 'periode_id'         => 'required|exists:periode,id',            
-                'created_by'         => 'required|exists:user,id',             
-                'is_verified'        => 'required|boolean',                       
+                'created_by'         => 'required|exists:user,id',                                    
             ];       
 
             $validator = Validator::make($request->all(), $rules); 
@@ -238,7 +239,6 @@ class LombaController extends Controller
                 ->where('tanggal_selesai', $request->tanggal_selesai)
                 ->where('periode_id', $request->periode_id)
                 ->where('created_by', $request->created_by)
-                ->where('is_verified', $request->is_verified)
                 ->exists();
 
             if ($duplicate) {
@@ -296,4 +296,25 @@ class LombaController extends Controller
         $lomba = LombaModel::find($id);
         return view('admin.lomba.show_ajax', ['lomba' =>$lomba]);
     }
+
+    public function approve_ajax($id)
+{
+    $lomba = LombaModel::find($id);
+    if ($lomba) {
+        $lomba->update(['is_verified' => 'Disetujui']);
+        return response()->json(['status' => true, 'message' => 'Lomba disetujui']);
+    }
+    return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
+}
+
+public function reject_ajax($id)
+{
+    $lomba = LombaModel::find($id);
+    if ($lomba) {
+        $lomba->update(['is_verified' => 'Ditolak']);
+        return response()->json(['status' => true, 'message' => 'Lomba ditolak']);
+    }
+    return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
+}
+
 }
