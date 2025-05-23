@@ -44,13 +44,12 @@
             </div>
 
             <div class="form-group">
-                <label>Tingkat</label>
-                <select name="tingkat" id="tingkat" class="form-control" required>
-                    <option value="">- Pilih Tingkat -</option>
-                    <option value="Kota" {{ $lomba->tingkat == 'Kota' ? 'selected' : '' }}>Kota/Kabupaten</option>
-                    <option value="Provinsi" {{ $lomba->tingkat == 'Provinsi' ? 'selected' : '' }}>Provinsi</option>
-                    <option value="Nasional" {{ $lomba->tingkat == 'Nasional' ? 'selected' : '' }}>Nasional</option>
-                    <option value="Internasional" {{ $lomba->tingkat == 'Internasional' ? 'selected' : '' }}>Internasional</option>
+               <label>Tingkat</label>
+               <select name="tingkat" id="tingkat" class="form-control" required>
+                   <option value="">- Pilih Tingkat Lomba -</option>
+                    @foreach($tingkat_lomba as $item)
+                       <option value="{{ $item }}" {{ $lomba->tingkat == $item ? 'selected' : '' }}>{{ $item }}</option>
+                    @endforeach
                 </select>
                 <small id="error-tingkat" class="error-text form-text text-danger"></small>
             </div>
