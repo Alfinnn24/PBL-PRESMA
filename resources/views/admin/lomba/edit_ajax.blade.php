@@ -118,15 +118,6 @@
                 <small id="error-created_by" class="error-text form-text text-danger"></small>
             </div>
 
-            <div class="form-group">
-                <label>Status Verifikasi</label>
-                <select name="is_verified" id="is_verified" class="form-control" required>
-                    <option value="">- Pilih Status -</option>
-                    <option value="0" {{ $lomba->is_verified == 0 ? 'selected' : '' }}>Belum Valid</option>
-                    <option value="1" {{ $lomba->is_verified == 1 ? 'selected' : '' }}>Valid</option>
-                </select>
-                <small id="error-is_verified" class="error-text form-text text-danger"></small>
-            </div>
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
@@ -179,9 +170,6 @@ $(document).ready(function() {
                 required: true
             },
               created_by: {
-                required: true
-            },
-              is_verified: {
                 required: true
             }
         },

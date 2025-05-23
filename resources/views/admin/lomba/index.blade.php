@@ -43,20 +43,10 @@
                             </select>
                             <small class="form-text text-muted">Bidang Keahlian</small>
                         </div>
-
-                        {{-- Filter User --}}
-                        <div class="col-3">
-                            <select class="form-control" id="user" name="user">
-                                <option value="">- Semua -</option>
-                                @foreach ($user as $item)
-                                    <option value="{{ $item->id }}">{{ $item->username }}</option>
-                                @endforeach
-                            </select>
-                            <small class="form-text text-muted">Created By</small>
-                        </div>
                     </div>
                 </div>
             </div>
+            <div style="overflow-x:auto;">
             <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_lomba"
                 style="width:100%">
                 <thead>
@@ -67,10 +57,12 @@
                         <th>Penyelenggara Lomba</th>
                         <th>Tingkat Lomba</th>
                         <th>Bidang Keahlian Lomba</th>
+                        <th>Status Lomba</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
             </table>
+        </div>
         </div>
     </div>
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
@@ -87,9 +79,32 @@
                 $('#myModal').modal('show');
             });
         }
+
+        function ubahStatus(id, action) {
+            fetch(`/lomba/${id}/${action}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if(data.status) {
+                    location.reload(); // refresh halaman supaya status baru tampil
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal mengubah status');
+            });
+        }
+
         var dataLomba;
         $(document).ready(function() {
             var dataLomba = $('#table_lomba').DataTable({
+                //scrollX: true,
                 serverSide: true,
                 ajax: {
                     "url": "{{ url('lomba/list') }}",
@@ -99,6 +114,7 @@
                         d.nama = $('#nama').val(); // nama periode
                         d.bidang_keahlian = $('#bidang_keahlian').val(); // bidang keahlian
                         d.user = $('#user').val(); // user (created_by)
+                        d.is_verified = $('#is_verified').val(); // is_verified (status)
                     }
                 },
                 columns: [{
@@ -144,17 +160,24 @@
                         width: "150px"
                     },
                     {
+                        data: "is_verified",
+                        className: "text-center",
+                        orderable: true,
+                        searchable: true,
+                        width: "150px"
+                    },
+                    {
                         data: "aksi",
                         className: "text-center",
                         orderable: false,
                         searchable: false,
-                        width: "180px"
+                        width: "200px"
                     }
                 ]
 
             });
 
-            $('#nama, #bidang_keahlian, #user').on('change', function() {
+            $('#nama, #bidang_keahlian, #user, #is_verified').on('change', function() {
                 dataLomba.ajax.reload(); // reload datatable ketika filter berubah
             });
 
