@@ -105,7 +105,7 @@ class RekomendasiLombaController extends Controller
             ->addColumn('aksi', function ($data) use ($user) {
                 if ($user->role === 'admin') {
                     $editUrl = url('/rekomendasi/' . $data->id . '/edit_ajax');
-                    $deleteUrl = url('/rekomendasi/' . $data->id . '/confirm_ajax');
+                    $deleteUrl = url('/rekomendasi/' . $data->id . '/delete_ajax');
                     $detailUrl = url('/rekomendasi/' . $data->lomba_id . '/show_ajax');
 
                     return '
@@ -115,7 +115,7 @@ class RekomendasiLombaController extends Controller
                     <button class="btn btn-sm btn-warning" onclick="modalAction(\'' . $editUrl . '\')">
                         Edit
                     </button>
-                    <button class="btn btn-sm btn-danger" onclick="hapusData(' . $data->id . ')">
+                    <button class="btn btn-sm btn-danger" onclick="modalAction(\'' . $deleteUrl . '\')">
                         Hapus
                     </button>';
                 } else {
@@ -192,7 +192,7 @@ class RekomendasiLombaController extends Controller
         }
 
         $rekomendasi = RekomendasiLombaModel::findOrFail($id);
-        $rekomendasi->dosen_id = $request->dosen_id;
+        $rekomendasi->dosen_pembimbing_id = $request->dosen_id;
         $rekomendasi->save();
 
         return response()->json([
@@ -204,7 +204,7 @@ class RekomendasiLombaController extends Controller
 
     public function confirm_ajax($id)
     {
-        $rekomendasi = RekomendasiLombaModel::findOrFail($id);
+        $rekomendasi = RekomendasiLombaModel::with(['lomba', 'mahasiswa', 'dosen'])->findOrFail($id);
         return view('admin.rekomendasi.confirm_ajax', compact('rekomendasi'));
     }
 
