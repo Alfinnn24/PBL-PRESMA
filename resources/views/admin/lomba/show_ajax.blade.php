@@ -73,18 +73,18 @@
                 </tr>
                 <tr>
                     <th>Admin Pembuat Lomba</th>
-                    <td>{{ $lomba->creator->username }}</td>
+                    <td>{{ $lomba->creator->admin->nama_lengkap ?? 'Tidak Diketahui'  }}</td>
                 </tr>
                 <tr>
                     <th>Status Lomba</th>
-                    <td>{{ $lomba->is_verified ? 'Valid' : ' Belum Valid' }}</td>
+                    <td>{{ $lomba->is_verified }}</td>
                 </tr>
             </table>
         </div>
         <div class="modal-footer">
             <button type="button" data-dismiss="modal" class="btn btn-primary">Tutup</button>
-            <button onclick="ubahStatus({{ $prestasi->id }}, 'approve')" class="btn btn-success">Setujui</button>
-            <button onclick="ubahStatus({{ $prestasi->id }}, 'reject')" class="btn btn-danger">Tolak</button>
+            <button type="button" onclick="ubahStatus({{ $lomba->id }}, 'approve')" class="btn btn-success">Setujui</button>
+            <button type="button" onclick="ubahStatus({{ $lomba->id }}, 'reject')" class="btn btn-danger">Tolak</button>
         </div>
     </div>
 </div>

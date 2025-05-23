@@ -79,28 +79,6 @@
                 $('#myModal').modal('show');
             });
         }
-
-        function ubahStatus(id, action) {
-            fetch(`/lomba/${id}/${action}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                if(data.status) {
-                    location.reload(); // refresh halaman supaya status baru tampil
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Gagal mengubah status');
-            });
-        }
-
         var dataLomba;
         $(document).ready(function() {
             var dataLomba = $('#table_lomba').DataTable({
@@ -182,5 +160,45 @@
             });
 
         });
+
+
+    function ubahStatus(id, aksi) {
+        const url = `{{ url('lomba') }}/${id}/${aksi}`;
+        const title = aksi === 'approve' ? 'Setujui Lomba?' : 'Tolak Lomba?';
+        const icon = aksi === 'approve' ? 'success' : 'warning';
+        const confirmText = aksi === 'approve' ? 'Ya, Setujui!' : 'Ya, Tolak!';
+
+        // Tutup modal jika sedang terbuka
+        $('#myModal').modal('hide');
+
+        setTimeout(() => {
+            Swal.fire({
+                title: title,
+                icon: icon,
+                showCancelButton: true,
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Batal',
+                confirmButtonColor: aksi === 'approve' ? '#28a745' : '#d33'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    $.post(url, {
+                        _token: '{{ csrf_token() }}'
+                    }, function (res) {
+                        Swal.fire('Berhasil', res.message, 'success');
+                        if (typeof tableLomba !== 'undefined') {
+                            tableLomba.ajax.reload(null, false);
+                        }
+                    }).fail(function (xhr) {
+                        let errorMsg = 'Terjadi kesalahan saat memproses data.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        }
+                        Swal.fire('Gagal', errorMsg, 'error');
+                    });
+                }
+            });
+        }, 500);
+    }
+
     </script>
 @endpush
