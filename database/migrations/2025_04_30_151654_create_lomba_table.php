@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->date('tanggal_selesai');
             $table->foreignId('periode_id')->constrained('periode')->onDelete('cascade');
             $table->foreignId('created_by')->constrained('user')->onDelete('cascade');
-            $table->boolean('is_verified');
+            $table->enum('is_verified', ['Ditolak', 'Disetujui', 'Pending']);
             $table->timestamps();
         });
     }

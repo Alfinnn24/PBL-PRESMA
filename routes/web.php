@@ -88,6 +88,8 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::put('/{id}/update_ajax', [LombaController::class, 'update_ajax']);    // Menyimpan perubahan data lomba Ajax
         Route::get('/{id}/delete_ajax', [LombaController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete lomba Ajax
         Route::delete('/{id}/delete_ajax', [LombaController::class, 'delete_ajax']); // Untuk hapus data lomba Ajax
+        Route::post('/{id}/approve_ajax', [LombaController::class, 'approve']);
+        Route::post('/{id}/reject_ajax', [LombaController::class, 'reject']);
 
     });
 

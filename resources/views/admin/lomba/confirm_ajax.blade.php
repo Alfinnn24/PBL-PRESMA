@@ -77,7 +77,7 @@
                         </tr>
                         <tr>
                             <th class="text-right col-3">Status Lomba:</th>
-                            <td class="col-9">{{ $lomba->is_verified ? 'Valid' : ' Belum Valid' }}</td>
+                            <td class="col-9">{{ $lomba->is_verified }}</td>
                         </tr>
                     </table>
         </div>
