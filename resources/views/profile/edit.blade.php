@@ -172,13 +172,16 @@
                         <input type="password" name="password_confirmation" class="form-control">
                     </div>
 
-                    <button type="button" id="btnSimpan" class="btn btn-success">
-                        <i class="fas fa-save"></i> Simpan Perubahan
-                    </button>
+
+                </form>
+                <div class="d-flex justify-content-end" style="gap: 10px;">
                     <a href="{{ route('profile.index') }}" class="btn btn-secondary">
                         Batal
                     </a>
-                </form>
+                    <button type="button" id="btnSimpan" class="btn btn-success">
+                        <i class="fas fa-save"></i> Simpan Perubahan
+                    </button>
+                </div>
             </div>
         </div>
     </div>
