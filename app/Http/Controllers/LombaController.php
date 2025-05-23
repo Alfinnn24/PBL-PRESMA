@@ -86,10 +86,12 @@ class LombaController extends Controller
     {
         $bidang_keahlian = BidangKeahlianModel::select('id', 'keahlian')->distinct()->get();
         $periode = PeriodeModel::select('id', 'nama')->distinct()->get();
+        $tingkat_lomba = ['Kota/Kabupaten', 'Provinsi', 'Nasional', 'Internasional'];
     
         return view('admin.lomba.create_ajax', [
             'bidang_keahlian' => $bidang_keahlian,
             'periode' => $periode,
+            'tingkat_lomba' => $tingkat_lomba,
         ]);
     }
 
@@ -104,7 +106,7 @@ class LombaController extends Controller
             'persyaratan'        => 'nullable|string|max:500',
             'jumlah_peserta'     => 'nullable|integer|min:1',
             'link_registrasi'    => 'nullable|url|max:255',
-            'tanggal_mulai'      => 'required|date|after_or_equal:today',
+            'tanggal_mulai'      => 'required|date',
             'tanggal_selesai'    => 'required|date|after:tanggal_mulai',
             'periode_id'         => 'required|exists:periode,id',
         ];
@@ -176,12 +178,15 @@ class LombaController extends Controller
     // Ambil data bidang_keahlian, periode, dan user
     $bidang_keahlian = BidangKeahlianModel::select('id', 'keahlian')->distinct()->get();
     $periode = PeriodeModel::select('id', 'nama')->distinct()->get();
+    $tingkat_lomba = ['Kota/Kabupaten', 'Provinsi', 'Nasional', 'Internasional'];
+
 
     // Kirim data ke view
     return view('admin.lomba.edit_ajax', [
         'lomba' => $lomba, 
         'bidang_keahlian' => $bidang_keahlian,
         'periode' => $periode,
+        'tingkat_lomba' => $tingkat_lomba
     ]);
 }
 
@@ -206,7 +211,7 @@ class LombaController extends Controller
                 'persyaratan'        => 'nullable|string|max:500',               
                 'jumlah_peserta'     => 'nullable|integer|min:1',                
                 'link_registrasi'    => 'nullable|url|max:255',                  
-                'tanggal_mulai'      => 'required|date|after_or_equal:today',    
+                'tanggal_mulai'      => 'required|date',    
                 'tanggal_selesai'    => 'required|date|after:tanggal_mulai',    
                 'periode_id'         => 'required|exists:periode,id',                                              
             ];       

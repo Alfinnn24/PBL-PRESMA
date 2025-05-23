@@ -23,11 +23,10 @@
             <div class="form-group">
                 <label>Tingkat</label>
                 <select name="tingkat" id="tingkat" class="form-control" required>
-                    <option value="">- Pilih Tingkat -</option>
-                    <option value="Kota">Kota/Kabupaten</option>
-                    <option value="Provinsi">Provinsi</option>
-                    <option value="Nasional">Nasional</option>
-                    <option value="Internasional">Internasional</option>
+                    <option value="">- Pilih Tingkat Lomba -</option>
+                @foreach($tingkat_lomba as $item)
+                    <option value="{{ $item }}">{{ $item }}</option>
+                @endforeach
                 </select>
                 <small id="error-tingkat" class="error-text form-text text-danger"></small>
             </div>
