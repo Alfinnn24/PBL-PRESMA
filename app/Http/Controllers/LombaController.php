@@ -290,7 +290,7 @@ class LombaController extends Controller
 
     public function show_ajax(string $id)
     {
-        $lomba = LombaModel::find($id);
+        $lomba = LombaModel::with(['creator.dosen', 'creator.admin'])->find($id);
         return view('admin.lomba.show_ajax', ['lomba' =>$lomba]);
     }
 

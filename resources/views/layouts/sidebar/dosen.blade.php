@@ -21,7 +21,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'datalomba' ? 'active' : '' }}">
+            <a href="{{ url('dosen/lomba') }}" class="nav-link {{ $activeMenu == 'lomba_dosen' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-folder-open"></i>
                 <p>Data Lomba</p>
             </a>

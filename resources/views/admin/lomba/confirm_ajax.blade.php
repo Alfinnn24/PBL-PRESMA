@@ -72,8 +72,8 @@
                             <td class="col-9">{{ $lomba->periode->nama }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Admin Pembuat Lomba:</th>
-                            <td class="col-9">{{ $lomba->creator->admin->nama_lengkap ?? 'Tidak Diketahui' }}</td>
+                            <th class="text-right col-3">Pembuat Lomba:</th>
+                            <td class="col-9">{{ $lomba->creator->full_name ?? 'Tidak Diketahui' }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Status Lomba:</th>

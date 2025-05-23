@@ -12,6 +12,7 @@ use App\Http\Controllers\ProgramStudiController;
 use App\Http\Controllers\TesRekomendasi;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DosenBimbinganController;
+use App\Http\Controllers\DosenLombaController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -146,7 +147,8 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
 
 
 
-Route::middleware(['auth', 'authorize:dosen'])->prefix('dosen')->group(function () {
+// Route untuk dosen
+Route::middleware(['authorize:dosen'])->group(function () {
     // Halaman daftar mahasiswa bimbingan
     Route::get('/bimbingan', [DosenBimbinganController::class, 'index'])->name('dosen.bimbingan.index');
 
@@ -155,4 +157,13 @@ Route::middleware(['auth', 'authorize:dosen'])->prefix('dosen')->group(function 
 
     // Endpoint DataTables AJAX untuk daftar mahasiswa bimbingan
     Route::post('/bimbingan/list', [DosenBimbinganController::class, 'list'])->name('dosen.bimbingan.list');
+
+    Route::group(['prefix' => 'dosen/lomba'], function () {
+        Route::get('/', [DosenLombaController::class, 'index']);                          // menampilkan halaman awal lomba dosen
+        Route::post('/list', [DosenLombaController::class, 'list']);                      // datatables
+        Route::get('/create_ajax', [DosenLombaController::class, 'create_ajax']);         // form tambah ajax
+        Route::post('/ajax', [DosenLombaController::class, 'store_ajax']);                // simpan data lomba
+        Route::get('/{id}/show_ajax', [DosenLombaController::class, 'show_ajax']);
+
+    });
 });
