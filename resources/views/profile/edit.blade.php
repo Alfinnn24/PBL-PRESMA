@@ -157,9 +157,79 @@
                             </div>
                         </div>
                     @endif
+                    {{-- Pengalaman --}}
+                    @if ($user->role === 'mahasiswa')
+                        <hr>
+                        <div class="form-group">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Pengalaman (Opsional)</h5>
+                                <button type="button" class="btn btn-sm btn-primary" id="tambahPengalaman">
+                                    <i class="fas fa-plus"></i> Tambah Pengalaman
+                                </button>
+                            </div>
 
+                            <div id="pengalamanContainer">
+                                @if (count(old('pengalaman', $detail->pengalaman)) > 0)
+                                    {{-- Tampilkan existing data --}}
+                                    @foreach (old('pengalaman', $detail->pengalaman) as $index => $p)
+                                        <div class="pengalaman-item mb-3">
+                                            <input type="hidden" name="pengalaman_ids[]"
+                                                value="{{ $detail->pengalaman[$index]->id ?? '' }}">
+                                            <div class="form-row">
+                                                <div class="col-md-8">
+                                                    <input type="text" name="pengalaman[]" class="form-control"
+                                                        value="{{ $p->pengalaman ?? '' }}"
+                                                        placeholder="Contoh: Mengikuti kompetisi robotik nasional">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <select name="kategori[]" class="form-control">
+                                                        <option value="">Pilih Kategori</option>
+                                                        @foreach ($bidangKeahlian as $keahlian)
+                                                            <option value="{{ $keahlian->keahlian }}"
+                                                                {{ ($p->kategori ?? '') == $keahlian->keahlian ? 'selected' : '' }}>
+                                                                {{ $keahlian->keahlian }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-danger btn-sm hapus-pengalaman">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    {{-- Template kosong untuk tambah baru --}}
+                                    <div class="pengalaman-item mb-3">
+                                        <div class="form-row">
+                                            <div class="col-md-8">
+                                                <input type="text" name="pengalaman[]" class="form-control"
+                                                    placeholder="Contoh: Mengikuti kompetisi robotik nasional">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <select name="kategori[]" class="form-control">
+                                                    <option value="">Pilih Kategori</option>
+                                                    @foreach ($bidangKeahlian as $keahlian)
+                                                        <option value="{{ $keahlian->keahlian }}">
+                                                            {{ $keahlian->keahlian }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <button type="button" class="btn btn-danger btn-sm hapus-pengalaman">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
                     <hr>
-
                     <div class="form-group">
                         <label>Password <small class="text-muted">(kosongkan jika tidak diubah)</small></label>
                         <input type="password" name="password"
@@ -196,6 +266,23 @@
                     $('#preview-image').attr('src', e.target.result);
                 }
                 reader.readAsDataURL(this.files[0]);
+            });
+            // Tambah pengalaman
+            $('#tambahPengalaman').click(function() {
+                const template = $('.pengalaman-item').first().clone();
+                template.find('input').val('');
+                template.find('select').val('');
+                template.find('.invalid-feedback').remove();
+                template.find('.is-invalid').removeClass('is-invalid');
+                template.show().appendTo('#pengalamanContainer');
+            });
+            // Hapus pengalaman
+            $('#pengalamanContainer').on('click', '.hapus-pengalaman', function() {
+                if ($('.pengalaman-item').length) {
+                    $(this).closest('.pengalaman-item').remove();
+                } else {
+                    Swal.fire('Peringatan!', 'Minimal harus ada 1 pengalaman', 'warning');
+                }
             });
 
             // Modal konfirmasi saat simpan perubahan

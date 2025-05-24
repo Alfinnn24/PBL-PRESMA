@@ -41,27 +41,27 @@
 
                 {{-- personal information --}}
                 <div class="row text-left" style="margin-top: 10px; margin-left: 30px">
-                    <h5>Personal Information</h5>
+                    <h5><strong>Personal Information</strong></h5>
                 </div>
                 <div class="row text-left">
                     {{-- Baris 1 --}}
                     <div class="row" style="margin-right: 30px; margin-left: 30px">
                         {{-- Kolom 1 --}}
-                        <div class="col"  style="margin-right: 100px;">
+                        <div class="col" style="margin-right: 100px;">
                             @if ($user->role === 'mahasiswa')
-                                <p><strong>Program Studi:</strong> {{ $detail->programStudi->nama_prodi ?? '-' }}</p>
-                                <p><strong>Angkatan:</strong> {{ $detail->angkatan }}</p>
+                                <p><strong>Program Studi:</strong> <br>{{ $detail->programStudi->nama_prodi ?? '-' }}</p>
+                                <p><strong>Angkatan:</strong> <br>{{ $detail->angkatan }}</p>
                             @elseif($user->role === 'dosen')
-                                <p><strong>Program Studi:</strong> {{ $detail->programStudi->nama_prodi ?? '-' }}</p>
+                                <p><strong>Program Studi:</strong> <br>{{ $detail->programStudi->nama_prodi ?? '-' }}</p>
                             @elseif($user->role === 'admin')
-                                <p><strong>Email:</strong> {{ $user->email }}</p>
+                                <p><strong>Email:</strong> <br>{{ $user->email }}</p>
                             @endif
                         </div>
                         {{-- Kolom 2 --}}
                         <div class="col" style="margin-right: 100px;">
                             @if ($user->role === 'mahasiswa')
                                 <p><strong>No. HP:</strong> {{ $detail->no_telp }}</p>
-                                <p><strong>Alamat:</strong> {{ $detail->alamat }}</p>
+                                <p><strong>Alamat:</strong> <br>{{ $detail->alamat }}</p>
                             @elseif($user->role === 'dosen')
                                 <p><strong>No. HP:</strong> {{ $detail->no_telp }}</p>
                             @endif
@@ -69,13 +69,31 @@
                         {{-- Kolom 3 --}}
                         <div class="col" style="margin-right: 100px">
                             @if ($user->role === 'mahasiswa')
-                                <p><strong>Email:</strong> {{ $user->email }}</p>
+                                <p><strong>Email:</strong> <br>{{ $user->email }}</p>
                             @elseif($user->role === 'dosen')
-                                <p><strong>Email:</strong> {{ $user->email }}</p>
+                                <p><strong>Email:</strong> <br>{{ $user->email }}</p>
                             @endif
                         </div>
                     </div>
                 </div>
+                <hr>
+                @if ($user->role === 'mahasiswa' && $detail->pengalaman())
+                    <div class="row text-left" style="margin-top: 20px; margin-left: 30px">
+                        <h5><strong>Pengalaman</strong></h5>
+                    </div>
+                    <div class="row text-left">
+                        <div class="row" style="margin-right: 30px; margin-left: 30px">
+                            <div class="col" style="margin-right: 100px;">
+                                @foreach ($detail->pengalaman as $pengalaman)
+                                    <p>
+                                        <strong>{{ ucfirst($pengalaman->bidangKeahlian->keahlian ?? 'Kategori Tidak Ditemukan') }}:</strong><br>
+                                        {{ $pengalaman->pengalaman }}
+                                    </p>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

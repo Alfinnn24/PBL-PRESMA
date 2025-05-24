@@ -12,6 +12,8 @@ use App\Models\AdminModel;
 use App\Models\DosenModel;
 use App\Models\MahasiswaModel;
 use App\Models\ProgramStudiModel;
+use App\Models\BidangKeahlianModel;
+use App\Models\PengalamanModel;
 
 class ProfileController extends Controller
 {
@@ -33,6 +35,10 @@ class ProfileController extends Controller
         $user = UserModel::findOrFail(Auth::id());
         $detail = $this->getDetailModel($user);
 
+        if ($user->role === 'mahasiswa' && $detail->exists) {
+            $detail->load('pengalaman.bidangKeahlian');
+        }
+
         $breadcrumb = (object) [
             'title' => 'Profil Pengguna',
             'list' => ['Home', 'Profil']
@@ -52,6 +58,10 @@ class ProfileController extends Controller
     {
         $user = UserModel::findOrFail(Auth::id());
         $detail = $this->getDetailModel($user);
+        if ($user->role === 'mahasiswa' && $detail->exists) {
+            $detail->load('pengalaman.bidangKeahlian');
+        }
+        $bidangKeahlian = BidangKeahlianModel::all();
         $prodi = ProgramStudiModel::all();
 
         $breadcrumb = (object) [
@@ -65,7 +75,7 @@ class ProfileController extends Controller
 
         $activeMenu = 'profile';
 
-        return view('profile.edit', compact('user', 'detail', 'prodi', 'breadcrumb', 'page', 'activeMenu'));
+        return view('profile.edit', compact('user', 'detail', 'prodi', 'breadcrumb', 'page', 'activeMenu', 'bidangKeahlian'));
     }
 
     // Update the user's profile.
@@ -73,7 +83,9 @@ class ProfileController extends Controller
     {
         $user   = UserModel::findOrFail(Auth::id());
         $detail = $this->getDetailModel($user);
-
+        $cleanedData = $this->cleanExperienceData($request);
+        // bersiin data pengalaman
+        $request->merge($cleanedData);
         // Validation
         $rules = [
             'nama_lengkap' => 'required|string|max:100',
@@ -96,6 +108,10 @@ class ProfileController extends Controller
                 ],
                 'alamat'            => ['required'],
                 'program_studi_id'  => ['required'],
+                'pengalaman' => 'sometimes|array|',
+                'pengalaman.*' => 'required_with:kategori.*|string|max:255',
+                'kategori' => 'sometimes|array',
+                'kategori.*' => 'required_with:pengalaman.*|exists:bidang_keahlian,keahlian',
             ]);
         } elseif ($user->role === 'dosen') {
             $rules = array_merge($rules, [
@@ -174,6 +190,36 @@ class ProfileController extends Controller
             // Simpan update ke model detail
             $detail->update($dataDetail);
 
+            // Handle pengalaman (hanya untuk mahasiswa)
+            if ($user->role === 'mahasiswa') {
+                // Hapus semua pengalaman jika tidak ada data baru
+                if (!empty($request->pengalaman)) {
+                    // Hapus yang tidak ada di request
+                    $existingIds = collect($request->input('pengalaman_ids', []))->filter();
+                    $detail->pengalaman()->whereNotIn('id', $existingIds)->delete();
+
+                    // Simpan data baru
+                    foreach ($request->pengalaman as $index => $pengalaman) {
+                        $pengalamanId = $request->pengalaman_ids[$index] ?? null;
+                        $kategori = $request->kategori[$index] ?? null;
+
+                        if (!empty($pengalaman) && !empty($kategori)) {
+                            PengalamanModel::updateOrCreate(
+                                ['id' => $pengalamanId],
+                                [
+                                    'mahasiswa_nim' => $detail->nim,
+                                    'pengalaman' => $pengalaman,
+                                    'kategori' => $kategori
+                                ]
+                            );
+                        }
+                    }
+                } else {
+                    // Jika tidak ada pengalaman di request, hapus semua
+                    $detail->pengalaman()->delete();
+                }
+            }
+
             return response()->json([
                 'message' => 'Profil berhasil diperbarui.',
                 'foto_profile' => $detail->foto_profile ? asset('storage/' . $detail->foto_profile) : null,
@@ -184,5 +230,27 @@ class ProfileController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
+    }
+    private function cleanExperienceData(Request $request): array
+    {
+        $cleaned = [
+            'pengalaman' => [],
+            'kategori' => [],
+            'pengalaman_ids' => []
+        ];
+
+        foreach ($request->pengalaman ?? [] as $index => $pengalaman) {
+            $kategori = $request->kategori[$index] ?? null;
+            $pengalamanId = $request->pengalaman_ids[$index] ?? null;
+
+            // Hanya simpan jika kedua field terisi
+            if (!empty(trim($pengalaman)) && !empty($kategori)) {
+                $cleaned['pengalaman'][] = $pengalaman;
+                $cleaned['kategori'][] = $kategori;
+                $cleaned['pengalaman_ids'][] = $pengalamanId;
+            }
+        }
+
+        return $cleaned;
     }
 }
