@@ -102,6 +102,96 @@
                     </tr>
                 </table>
 
+                <h5 class="mt-4">Sertifikasi Mahasiswa</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nama Sertifikasi</th>
+                            <th>Kategori</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($rekomendasi->mahasiswa->sertifikasis as $sertifikat)
+                            <tr>
+                                <td>{{ $sertifikat->judul }}</td>
+                                <td>{{ $sertifikat->kategori }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3">Tidak ada data sertifikasi</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
+                <h5 class="mt-4">Bidang Keahlian Mahasiswa</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nama Keahlian</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($rekomendasi->mahasiswa->bidangKeahlian as $keahlian)
+                            <tr>
+                                <td>{{ $keahlian->bidangKeahlian->keahlian }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td>Tidak ada data keahlian</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
+                <h5 class="mt-4">Pengalaman Mahasiswa</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nama Pengalaman</th>
+                            <th>Kategori</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($rekomendasi->mahasiswa->pengalaman as $pengalaman)
+                            <tr>
+                                <td>{{ $pengalaman->pengalaman }}</td>
+                                <td>{{ $pengalaman->kategori }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3">Tidak ada data pengalaman</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
+                <h5 class="mt-4">Prestasi Mahasiswa</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nama Prestasi</th>
+                            <th>Penyelenggara</th>
+                            <th>Tingkat</th>
+                            <th>Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($rekomendasi->mahasiswa->prestasi as $prestasi)
+                            <tr>
+                                <td>{{ $prestasi->prestasi->nama_prestasi }}</td>
+                                <td>{{ $prestasi->prestasi->lomba->penyelenggara }}</td>
+                                <td>{{ $prestasi->prestasi->lomba->tingkat }}</td>
+                                <td>{{ $prestasi->prestasi->lomba->tanggal_selesai }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4">Tidak ada data prestasi</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
                 <h5 class="mt-4">Informasi Dosen Pembimbing</h5>
                 <table class="table table-bordered">
                     <tr>
@@ -132,6 +222,30 @@
                                 Dosen belum ditentukan
                             @endif
                         </td>
+                </table>
+
+                <h5 class="mt-4">Bidang Minat Dosen</h5>
+                <table class="table table-bordered">
+                    @if ($rekomendasi->dosen)
+                        <thead>
+                            <tr>
+                                <th>Nama Minat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @forelse($rekomendasi->dosen->bidangMinat as $detailMinat)
+                            <tr>
+                                <td>{{ $detailMinat->bidangMinat->bidang_minat ?? 'Tidak tersedia' }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td>Tidak ada data minat</td>
+                            </tr>
+                        @endforelse
+                        </tbody>
+                    @else
+                        Dosen belum ditentukan
+                    @endif
                 </table>
             </div>
             <div class="modal-footer">

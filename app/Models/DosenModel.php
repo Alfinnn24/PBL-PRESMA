@@ -39,12 +39,7 @@ class DosenModel extends Model
     // Relasi langsung ke bidang minat (banyak ke banyak)
     public function bidangMinat()
     {
-        return $this->belongsToMany(
-            BidangMinatModel::class,
-            'detail_bidang_minat',
-            'dosen_id',
-            'id_minat'
-        );
+        return $this->hasMany(DetailBidangMinatModel::class, 'dosen_id');
     }
 }
 

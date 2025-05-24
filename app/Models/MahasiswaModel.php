@@ -54,16 +54,9 @@ class MahasiswaModel extends Model
     }
 
     // Relasi ke BidangKeahlian
-    public function bidangKeahlian()
+    public function bidangKeahlian(): HasMany
     {
-        return $this->belongsToMany(
-            BidangKeahlianModel::class,
-            'detail_bidang_keahlian',
-            'mahasiswa_nim',
-            'id_keahlian',
-            'nim',
-            'id'
-        );
+        return $this->hasMany(DetailBidangKeahlianModel::class, 'mahasiswa_nim', 'nim');
     }
 
     // Relasi ke PengalamanModel

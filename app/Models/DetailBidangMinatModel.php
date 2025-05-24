@@ -14,9 +14,9 @@ class DetailBidangMinatModel extends Model
     {
         return $this->belongsTo(BidangMinatModel::class, 'id_minat');
     }
-    public function mahasiswa(): BelongsTo
+    public function dosen(): BelongsTo
     {
-        return $this->belongsTo(MahasiswaModel::class, 'mahasiswa_nim', 'nim');
+        return $this->belongsTo(DosenModel::class, 'dosen_id', 'nim');
     }
 }
 
