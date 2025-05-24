@@ -126,7 +126,8 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
 
     Route::group(['prefix' => 'rekomendasi'], function () {
         Route::get('/', [RekomendasiLombaController::class, 'index']);                          // menampilkan halaman awal prestasi
-        Route::post('/list', [RekomendasiLombaController::class, 'list']);                      // menampilkan data prestasi dalam bentuk json untuk datatables
+        Route::post('/list', [RekomendasiLombaController::class, 'list']);
+        Route::get('/list-all', [RekomendasiLombaController::class, 'listAll']);                      // menampilkan data prestasi dalam bentuk json untuk datatables
         Route::get('/create_ajax', [RekomendasiLombaController::class, 'create_ajax']);         // Menampilkan halaman form tambah prestasi Ajax
         Route::post('/ajax', [RekomendasiLombaController::class, 'store_ajax']);                // Menyimpan data prestasi baru Ajax
         Route::get('/{id}/show_ajax', [RekomendasiLombaController::class, 'show_ajax']);        // menampilkan detail prestasi Ajax

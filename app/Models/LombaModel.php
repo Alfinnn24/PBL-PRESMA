@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LombaModel extends Model
 {
@@ -23,6 +24,12 @@ class LombaModel extends Model
     {
         return $this->belongsTo(BidangKeahlianModel::class, 'bidang_keahlian_id');
     }
+
+    public function rekomendasi(): HasMany
+    {
+        return $this->hasMany(RekomendasiLombaModel::class, 'lomba_id', 'id');
+    }
+
 }
 
 ?>
