@@ -58,6 +58,12 @@
                             <input type="text" class="form-control" id="no_telp"
                                 value="{{ $rekomendasi->dosen->no_telp ?? '-' }}" readonly>
                         </div>
+                        <div class="form-group">
+                            <label>Bidang Minat</label>
+                            <input type="text" class="form-control" id="bidang_minat"
+                                value="{{ $rekomendasi->dosen && $rekomendasi->dosen->bidangMinat ? $rekomendasi->dosen->bidangMinat->map(fn($minat) => $minat->bidangMinat->bidang_minat)->implode(', ') : '-' }}"
+                                readonly>
+                        </div>
                     </div>
 
                 </div>
@@ -130,6 +136,7 @@
                             $('#nidn').val(res.data.nidn || '-');
                             $('#prodi').val(res.data.program_studi || '-');
                             $('#no_telp').val(res.data.no_telp || '-');
+                            $('#bidang_minat').val(res.data.bidang_minat || '-');
                         } else {
                             $('#info-dosen').addClass('d-none');
                         }

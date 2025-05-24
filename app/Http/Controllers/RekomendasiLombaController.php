@@ -204,7 +204,14 @@ class RekomendasiLombaController extends Controller
             $lomba = LombaModel::with('creator.mahasiswa', 'creator.dosen', 'creator.admin')->find($id);
             return view('rekomendasi.show_ajax', ['lomba' => $lomba]);
         } elseif ($user->role == 'admin') {
-            $rekomendasi = RekomendasiLombaModel::with(['mahasiswa', 'lomba', 'dosen'])->find($id);
+            $rekomendasi = RekomendasiLombaModel::with([
+                'mahasiswa.sertifikasis',
+                'mahasiswa.bidangKeahlian',
+                'mahasiswa.pengalaman',
+                'mahasiswa.prestasi',
+                'mahasiswa.prestasi.prestasi.lomba',
+                'dosen.bidangMinat.bidangMinat',
+            ])->findOrFail($id);
             $lomba = LombaModel::with('creator.mahasiswa', 'creator.dosen', 'creator.admin')->find($rekomendasi->lomba_id);
             return view('admin.rekomendasi.show_ajax', compact('rekomendasi', 'lomba'));
         }
@@ -297,7 +304,7 @@ class RekomendasiLombaController extends Controller
 
     public function getDetail($id)
     {
-        $dosen = DosenModel::with('programStudi')->find($id);
+        $dosen = DosenModel::with(['programStudi', 'bidangMinat.bidangMinat'])->find($id);
         if ($dosen) {
             return response()->json([
                 'status' => true,
@@ -305,6 +312,7 @@ class RekomendasiLombaController extends Controller
                     'nidn' => $dosen->nidn,
                     'program_studi' => $dosen->programStudi->nama_prodi ?? '-',
                     'no_telp' => $dosen->no_telp,
+                    'bidang_minat' => $dosen->bidangMinat->pluck('bidangMinat.bidang_minat')->implode(', ') ?: '-',
                 ]
             ]);
         } else {
