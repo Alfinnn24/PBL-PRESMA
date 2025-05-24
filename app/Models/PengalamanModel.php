@@ -19,6 +19,9 @@ class PengalamanModel extends Model
     {
         return $this->belongsTo(MahasiswaModel::class, 'mahasiswa_nim', 'nim');
     }
-}
 
-?>
+    public function bidangKeahlian(): BelongsTo
+    {
+        return $this->belongsTo(BidangKeahlianModel::class, 'kategori', 'keahlian');
+    }
+}
