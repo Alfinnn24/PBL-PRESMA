@@ -14,6 +14,7 @@ use App\Models\MahasiswaModel;
 use App\Models\ProgramStudiModel;
 use App\Models\BidangKeahlianModel;
 use App\Models\PengalamanModel;
+use App\Models\SertifikasiModel;
 
 class ProfileController extends Controller
 {
@@ -36,7 +37,7 @@ class ProfileController extends Controller
         $detail = $this->getDetailModel($user);
 
         if ($user->role === 'mahasiswa' && $detail->exists) {
-            $detail->load('pengalaman.bidangKeahlian');
+            $detail->load('pengalaman.bidangKeahlian', 'sertifikasis.bidangKeahlian');
         }
 
         $breadcrumb = (object) [
@@ -59,7 +60,7 @@ class ProfileController extends Controller
         $user = UserModel::findOrFail(Auth::id());
         $detail = $this->getDetailModel($user);
         if ($user->role === 'mahasiswa' && $detail->exists) {
-            $detail->load('pengalaman.bidangKeahlian');
+            $detail->load('pengalaman.bidangKeahlian', 'sertifikasis.bidangKeahlian');
         }
         $bidangKeahlian = BidangKeahlianModel::all();
         $prodi = ProgramStudiModel::all();
@@ -84,8 +85,9 @@ class ProfileController extends Controller
         $user   = UserModel::findOrFail(Auth::id());
         $detail = $this->getDetailModel($user);
         $cleanedData = $this->cleanExperienceData($request);
+        $cleanedCertification = $this->cleanCertificationData($request);
         // bersiin data pengalaman
-        $request->merge($cleanedData);
+        $request->merge($cleanedData, $cleanedCertification);
         // Validation
         $rules = [
             'nama_lengkap' => 'required|string|max:100',
@@ -112,6 +114,15 @@ class ProfileController extends Controller
                 'pengalaman.*' => 'required_with:kategori.*|string|max:255',
                 'kategori' => 'sometimes|array',
                 'kategori.*' => 'required_with:pengalaman.*|exists:bidang_keahlian,keahlian',
+                // sertifikasi
+                'sertifikasi_judul' => 'sometimes|array',
+                'sertifikasi_judul.*' => 'required_with:sertifikasi_kategori.*|string|max:255',
+                'sertifikasi_kategori' => 'sometimes|array',
+                'sertifikasi_kategori.*' => 'required_with:sertifikasi_judul.*|exists:bidang_keahlian,keahlian',
+                'sertifikat' => 'sometimes|array',
+                'sertifikat.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'sertifikasi_ids' => 'sometimes|array',
+                'sertifikasi_ids.*' => 'nullable|exists:sertifikasi,id',
             ]);
         } elseif ($user->role === 'dosen') {
             $rules = array_merge($rules, [
@@ -141,6 +152,9 @@ class ProfileController extends Controller
             'angkatan.max' => 'Tahun angkatan tidak boleh lebih dari tahun saat ini.',
             // no-telp
             'no_telp.digits_between' => 'Nomor telepon harus antara 10 sampai 15 digit.',
+            'sertifikat.*.file' => 'File harus berupa PDF.',
+            'sertifikat.*.mimes' => 'Format file harus PDF.',
+            'sertifikat.*.max' => 'Ukuran file tidak boleh lebih dari 2MB.',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -219,7 +233,50 @@ class ProfileController extends Controller
                     $detail->pengalaman()->delete();
                 }
             }
+            if ($user->role === 'mahasiswa') {
+                // Handle sertifikasi
+                if (!empty($request->sertifikasi_judul)) {
+                    $existingSertifikasiIds = collect($request->input('sertifikasi_ids', []))->filter();
+                    $detail->sertifikasis()->whereNotIn('id', $existingSertifikasiIds)->delete();
 
+                    foreach ($request->sertifikasi_judul as $index => $judul) {
+                        $sertifikasiId = $request->sertifikasi_ids[$index] ?? null;
+                        $kategori = $request->sertifikasi_kategori[$index] ?? null;
+                        $sertifikatFile = $request->file('sertifikat')[$index] ?? null;
+
+                        if (!empty($judul) && !empty($kategori)) {
+                            $data = [
+                                'mahasiswa_nim' => $detail->nim,
+                                'judul' => $judul,
+                                'kategori' => $kategori,
+                            ];
+
+                            // Handle file upload
+                            if ($sertifikatFile) {
+                                // Hapus file lama jika ada
+                                if ($sertifikasiId) {
+                                    $existingSertifikasi = SertifikasiModel::find($sertifikasiId);
+                                    if ($existingSertifikasi && Storage::exists('public/' . $existingSertifikasi->path)) {
+                                        Storage::delete('public/' . $existingSertifikasi->path);
+                                    }
+                                }
+                                $path = $sertifikatFile->store('sertifikat', 'public');
+                                $data['path'] = $path;
+                            }
+
+                            // Hanya update/create jika ada file atau data existing
+                            if ($sertifikatFile || $sertifikasiId) {
+                                SertifikasiModel::updateOrCreate(
+                                    ['id' => $sertifikasiId],
+                                    $data
+                                );
+                            }
+                        }
+                    }
+                } else {
+                    $detail->sertifikasis()->delete();
+                }
+            }
             return response()->json([
                 'message' => 'Profil berhasil diperbarui.',
                 'foto_profile' => $detail->foto_profile ? asset('storage/' . $detail->foto_profile) : null,
@@ -248,6 +305,28 @@ class ProfileController extends Controller
                 $cleaned['pengalaman'][] = $pengalaman;
                 $cleaned['kategori'][] = $kategori;
                 $cleaned['pengalaman_ids'][] = $pengalamanId;
+            }
+        }
+
+        return $cleaned;
+    }
+    private function cleanCertificationData(Request $request): array
+    {
+        $cleaned = [
+            'sertifikasi_judul' => [],
+            'sertifikasi_kategori' => [],
+            'sertifikasi_ids' => []
+        ];
+
+        foreach ($request->sertifikasi_judul ?? [] as $index => $judul) {
+            $kategori = $request->sertifikasi_kategori[$index] ?? null;
+            $sertifikasiId = $request->sertifikasi_ids[$index] ?? null;
+
+            // Hanya simpan jika kedua field terisi
+            if (!empty(trim($judul)) && !empty($kategori)) {
+                $cleaned['sertifikasi_judul'][] = $judul;
+                $cleaned['sertifikasi_kategori'][] = $kategori;
+                $cleaned['sertifikasi_ids'][] = $sertifikasiId;
             }
         }
 
