@@ -6,17 +6,24 @@ use App\Models\LombaModel;
 use App\Models\MahasiswaModel;
 use App\Models\DosenModel;
 use App\Models\RekomendasiLombaModel;
-use App\Services\FuzzySpkService;
+use App\Services\TopsisSpkService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
 class RekomendasiLombaController extends Controller
 {
+    protected $topsisService;
+    public function __construct(TopsisSpkService $rekomendasiService)
+    {
+        $this->topsisService = $rekomendasiService;
+    }
     // Menampilkan rekomendasi lomba yang sesuai dengan mahasiswa/dosen
     public function index(Request $request)
     {
         $user = auth()->user();
+
+        $this->topsisService->prosesSemuaLombaDenganTopsis();
 
         $breadcrumb = (object) [
             'title' => 'Rekomendasi Lomba',
@@ -365,5 +372,4 @@ class RekomendasiLombaController extends Controller
             ]);
         }
     }
-
 }
