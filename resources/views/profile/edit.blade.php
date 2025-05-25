@@ -232,6 +232,95 @@
                             </div>
                         </div>
                     @endif
+                    {{-- Sertifikasi --}}
+                    @if ($user->role === 'mahasiswa')
+                        <hr>
+                        <div class="form-group">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5><strong>Sertifikasi (Opsional)</strong></h5>
+                                <button type="button" class="btn btn-sm btn-primary" id="tambahSertifikasi">
+                                    <i class="fas fa-plus"></i> Tambah Sertifikasi
+                                </button>
+                            </div>
+
+                            <div id="sertifikasiContainer">
+                                @if (count(old('sertifikasi_judul', $detail->sertifikasis)) > 0)
+                                    @foreach (old('sertifikasi_judul', $detail->sertifikasis) as $index => $judul)
+                                        <div class="sertifikasi-item mb-3">
+                                            <input type="hidden" name="sertifikasi_ids[]"
+                                                value="{{ $detail->sertifikasis[$index]->id ?? '' }}">
+                                            <div class="form-row">
+                                                <div class="col-md-4">
+                                                    <input type="text" name="sertifikasi_judul[]" class="form-control"
+                                                        value="{{ old('sertifikasi_judul')[$index] ?? ($judul->judul ?? '') }}"
+                                                        placeholder="Judul Sertifikasi">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <select name="sertifikasi_kategori[]" class="form-control">
+                                                        <option value="">Pilih Kategori</option>
+                                                        @foreach ($bidangKeahlian as $keahlian)
+                                                            <option value="{{ $keahlian->keahlian }}"
+                                                                {{ (old('sertifikasi_kategori')[$index] ?? ($detail->sertifikasis[$index]->kategori ?? '')) == $keahlian->keahlian ? 'selected' : '' }}>
+                                                                {{ $keahlian->keahlian }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="custom-file">
+                                                        <input type="file" name="sertifikat[]"
+                                                            class="custom-file-input"
+                                                            id="sertifikatFile{{ $index }}">
+                                                        <label class="custom-file-label"
+                                                            for="sertifikatFile{{ $index }}">
+                                                            {{ $detail->sertifikasis[$index]->path ? basename($detail->sertifikasis[$index]->path) : 'PDF/PNG/JPG/JPEG' }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-1 text-center">
+                                                    <button type="button"
+                                                        class="btn btn-danger btn-sm hapus-sertifikasi">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    {{-- Template Kosong --}}
+                                    <div class="sertifikasi-item mb-3">
+                                        <div class="form-row">
+                                            <div class="col-md-4">
+                                                <input type="text" name="sertifikasi_judul[]" class="form-control"
+                                                    placeholder="Judul Sertifikasi">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <select name="sertifikasi_kategori[]" class="form-control">
+                                                    <option value="">Pilih Kategori</option>
+                                                    @foreach ($bidangKeahlian as $keahlian)
+                                                        <option value="{{ $keahlian->keahlian }}">
+                                                            {{ $keahlian->keahlian }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="custom-file">
+                                                    <input type="file" name="sertifikat[]" class="custom-file-input"
+                                                        id="sertifikatFile0">
+                                                    <label class="custom-file-label" for="sertifikatFile0">PDF/PNG/JPG/JPEG</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <button type="button" class="btn btn-danger btn-sm hapus-sertifikasi">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
                     <hr>
                     <div class="form-group">
                         <i class="fa-solid fa-key fa-sm"></i> <label>Password <small class="text-muted">(kosongkan jika
@@ -288,7 +377,32 @@
                     Swal.fire('Peringatan!', 'Minimal harus ada 1 pengalaman', 'warning');
                 }
             });
+            // Tambah Sertifikasi
+            $('#tambahSertifikasi').click(function() {
+                const template = $('.sertifikasi-item').first().clone();
+                template.find('input[type="text"]').val('');
+                template.find('select').val('');
+                template.find('input[type="file"]').val('');
+                template.find('label.custom-file-label').text('PDF/PNG/JPG/JPEG');
+                template.find('input[name="sertifikasi_ids[]"]').val('');
+                template.appendTo('#sertifikasiContainer');
+            });
 
+            // Hapus Sertifikasi
+            $('#sertifikasiContainer').on('click', '.hapus-sertifikasi', function() {
+                if ($('.sertifikasi-item').length) {
+                    $(this).closest('.sertifikasi-item').remove();
+                } else {
+                    Swal.fire('Peringatan!', 'Minimal harus ada 1 sertifikasi (boleh kosong semua field).',
+                        'warning');
+                }
+            });
+
+            // Update nama file saat memilih file
+            $('#sertifikasiContainer').on('change', 'input[type="file"]', function() {
+                const fileName = $(this).val().split('\\').pop();
+                $(this).next('label').text(fileName);
+            });
             // Modal konfirmasi saat simpan perubahan
             // AJAX form submission
             $('#btnSimpan').click(function(e) {

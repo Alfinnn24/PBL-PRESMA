@@ -49,10 +49,16 @@
                         {{-- Kolom 1 --}}
                         <div class="col" style="margin-right: 200px;">
                             @if ($user->role === 'mahasiswa')
-                                <p><i class="fa-solid fa-book"></i> <strong>Program Studi:</strong> <br>{{ $detail->programStudi->nama_prodi ?? '-' }}</p>
-                                <p><i class="fa-solid fa-calendar-days"></i> <strong>Angkatan:</strong> <br>{{ $detail->angkatan }}</p>
+                                <p><i class="fa-solid fa-book"></i> <strong>Program Studi:</strong>
+                                    <br>{{ $detail->programStudi->nama_prodi ?? '-' }}
+                                </p>
+                                <p><i class="fa-solid fa-calendar-days"></i> <strong>Angkatan:</strong>
+                                    <br>{{ $detail->angkatan }}
+                                </p>
                             @elseif($user->role === 'dosen')
-                                <p><i class="fa-solid fa-book"></i> <strong>Program Studi:</strong> <br>{{ $detail->programStudi->nama_prodi ?? '-' }}</p>
+                                <p><i class="fa-solid fa-book"></i> <strong>Program Studi:</strong>
+                                    <br>{{ $detail->programStudi->nama_prodi ?? '-' }}
+                                </p>
                             @elseif($user->role === 'admin')
                                 <p><i class="fa-solid fa-at"></i> <strong>Email:</strong> <br>{{ $user->email }}</p>
                             @endif
@@ -60,10 +66,14 @@
                         {{-- Kolom 2 --}}
                         <div class="col" style="margin-right: 200px;">
                             @if ($user->role === 'mahasiswa')
-                                <p><i class="fa-solid fa-mobile-screen-button"></i> <strong>No. HP:</strong> {{ $detail->no_telp }}</p>
-                                <p><i class="fa-solid fa-location-dot"></i> <strong>Alamat:</strong> <br>{{ $detail->alamat }}</p>
+                                <p><i class="fa-solid fa-mobile-screen-button"></i> <strong>No. HP:</strong>
+                                    {{ $detail->no_telp }}</p>
+                                <p><i class="fa-solid fa-location-dot"></i> <strong>Alamat:</strong>
+                                    <br>{{ $detail->alamat }}
+                                </p>
                             @elseif($user->role === 'dosen')
-                                <p><i class="fa-solid fa-mobile-screen-button"></i> <strong>No. HP:</strong> {{ $detail->no_telp }}</p>
+                                <p><i class="fa-solid fa-mobile-screen-button"></i> <strong>No. HP:</strong>
+                                    {{ $detail->no_telp }}</p>
                             @endif
                         </div>
                         {{-- Kolom 3 --}}
@@ -86,7 +96,8 @@
                             <div class="col" style="margin-right: 100px;">
                                 @foreach ($detail->pengalaman as $pengalaman)
                                     <p>
-                                        <i class="fa-solid fa-seedling"></i> <strong>{{ ucfirst($pengalaman->bidangKeahlian->keahlian ?? 'Kategori Tidak Ditemukan') }}:</strong><br>
+                                        <i class="fa-solid fa-seedling"></i>
+                                        <strong>{{ ucfirst($pengalaman->bidangKeahlian->keahlian ?? 'Kategori Tidak Ditemukan') }}:</strong><br>
                                         {{ $pengalaman->pengalaman }}
                                     </p>
                                 @endforeach
@@ -94,6 +105,63 @@
                         </div>
                     </div>
                 @endif
+                @if ($user->role === 'mahasiswa' && $detail->sertifikasis && $detail->sertifikasis())
+                    <hr>
+                    <div class="row text-left" style="margin-top: 20px; margin-left: 30px">
+                        <h5><strong>Sertifikasi</strong> <i class="fa-solid fa-award fa-sm"></i></h5>
+                    </div>
+                    <div class="row text-left">
+                        <div class="row" style="margin-right: 30px; margin-left: 30px">
+                            <div class="col" style="margin-right: 100px;">
+                                @foreach ($detail->sertifikasis as $sertifikasi)
+                                    <div class="mb-3">
+                                        <p>
+                                            <i class="fa-solid fa-certificate"></i>
+                                            <strong>{{ $sertifikasi->judul }}</strong><br>
+                                            <span class="text-muted">
+                                                Bidang Keahlian:
+                                                {{ $sertifikasi->bidangKeahlian->keahlian ?? 'Kategori Tidak Ditemukan' }}
+                                            </span><br>
+                                            @if ($sertifikasi->path)
+                                                <a href="{{ asset('storage/' . $sertifikasi->path) }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-primary mt-1">
+                                                    <i class="fa-solid fa-file-pdf"></i> Lihat Sertifikat
+                                                </a>
+                                            @else
+                                                <span class="text-danger">Tidak ada file sertifikat</span>
+                                            @endif
+                                        </p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+                {{-- @if ($user->role === 'mahasiswa' && $detail->sertifikasis->isNotEmpty())
+                    <div class="row text-left" style="margin-top: 20px; margin-left: 30px">
+                        <h5><strong>Sertifikasi</strong> <i class="fa-solid fa-certificate fa-sm"></i></h5>
+                    </div>
+                    <div class="row text-left">
+                        <div class="row" style="margin-right: 30px; margin-left: 30px">
+                            <div class="col" style="margin-right: 100px;">
+                                @foreach ($detail->sertifikasis as $sertifikasi)
+                                    <p>
+                                        <i class="fa-solid fa-award"></i>
+                                        <strong>{{ ucfirst($sertifikasi->bidangKeahlian->keahlian ?? 'Kategori Tidak Ditemukan') }}:</strong><br>
+                                        {{ $sertifikasi->judul }}
+                                        @if ($sertifikasi->path)
+                                            <br>
+                                            <a href="{{ asset('storage/' . $sertifikasi->path) }}" target="_blank"
+                                                class="btn btn-link btn-sm">
+                                                <i class="fa-regular fa-file-pdf"></i> Lihat Sertifikat
+                                            </a>
+                                        @endif
+                                    </p>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif --}}
             </div>
         </div>
     </div>
