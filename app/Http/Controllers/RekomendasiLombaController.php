@@ -119,7 +119,7 @@ class RekomendasiLombaController extends Controller
             }
 
             $disetujui = $rekomendasi->where('status', 'Disetujui')->sortByDesc('skor');
-            $belumDisetujui = $rekomendasi->where('status', '!=', 'Disetujui')->sortByDesc('skor');
+            $belumDisetujui = $rekomendasi->where('status', '!=', 'Ditolak')->sortByDesc('skor');
 
             $totalNeeded = $lomba->jumlah_peserta;
             $selected = $disetujui->take($totalNeeded);
@@ -186,7 +186,7 @@ class RekomendasiLombaController extends Controller
             <button class="btn btn-sm btn-danger" onclick="modalAction(\'' . url('/rekomendasi/' . $data->id . '/delete_ajax') . '\')">Hapus</button>';
         } else {
             $disabledApprove = ($data->status == 'Disetujui' || RekomendasiLombaModel::where('lomba_id', $data->lomba_id)->where('status', 'Disetujui')->count() >= $data->lomba->jumlah_peserta) ? 'disabled' : '';
-            $tolakApprove = ($data->status == 'Ditolak') ? 'disabled' : '';
+            $tolakApprove = ($data->status == 'Ditolak') || RekomendasiLombaModel::where('lomba_id', $data->lomba_id)->where('status', 'Disetujui')->count() >= $data->lomba->jumlah_peserta ? 'disabled' : '';
 
             return '
             <button class="btn btn-sm btn-info" onclick="modalAction(\'' . url('/rekomendasi/' . $data->lomba_id . '/show_ajax') . '\')">Detail</button>

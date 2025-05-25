@@ -21,7 +21,7 @@ class TopsisSpkService
         $kategoriLomba = $lomba->bidangKeahlian->keahlian ?? 'Lainnya';
 
         // Ambil data mahasiswa dengan relasi yang diperlukan
-        $mahasiswas = MahasiswaModel::with(['sertifikasis', 'bidangKeahlian', 'pengalaman', 'prestasi'])
+        $mahasiswas = MahasiswaModel::with(['sertifikasis', 'bidangKeahlian.bidangKeahlian', 'pengalaman', 'prestasi'])
             ->whereNotIn('nim', $excludedMahasiswa)
             ->get();
 
@@ -38,7 +38,8 @@ class TopsisSpkService
             }
 
             $nilaiKeahlian = $mhs->bidangKeahlian->sum(function ($item) use ($kategoriLomba) {
-                return BidangKeahlianMatcher::getSkor($kategoriLomba, $item->keahlian);
+                $keahlian = $item->bidangKeahlian->keahlian ?? null;
+                return $keahlian ? BidangKeahlianMatcher::getSkor($kategoriLomba, $keahlian) : 0;
             });
 
             $nilaiPengalaman = $mhs->pengalaman->sum(function ($item) use ($kategoriLomba) {
