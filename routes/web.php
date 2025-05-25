@@ -106,6 +106,9 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::get('/{id}/delete_ajax', [ProgramStudiController::class, 'confirm_ajax']);     // Menampilkan form konfirmasi delete Ajax
         Route::delete('/{id}/delete_ajax', [ProgramStudiController::class, 'delete_ajax']);   // Menghapus data program studi Ajax
     });
+
+    Route::get('/tes-rekomendasi/topsis', [TesRekomendasi::class, 'prosesSemuaLombaDenganTopsis']); //jangan dipake dulu masih belum stabil
+    Route::get('/tes-topsis/{idLomba}', [TesRekomendasi::class, 'lihatHasilTopsis']);
 });
 
 
@@ -124,25 +127,6 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
         Route::get('/lomba/{id}/detail', [PrestasiController::class, 'getDetail']);
     });
 
-    Route::group(['prefix' => 'rekomendasi'], function () {
-        Route::get('/', [RekomendasiLombaController::class, 'index']);                          // menampilkan halaman awal prestasi
-        Route::post('/list', [RekomendasiLombaController::class, 'list']);
-        Route::get('/list-all', [RekomendasiLombaController::class, 'listAll']);                      // menampilkan data prestasi dalam bentuk json untuk datatables
-        Route::get('/create_ajax', [RekomendasiLombaController::class, 'create_ajax']);         // Menampilkan halaman form tambah prestasi Ajax
-        Route::post('/ajax', [RekomendasiLombaController::class, 'store_ajax']);                // Menyimpan data prestasi baru Ajax
-        Route::get('/{id}/show_ajax', [RekomendasiLombaController::class, 'show_ajax']);        // menampilkan detail prestasi Ajax
-        Route::get('/{id}/edit_ajax', [RekomendasiLombaController::class, 'edit_ajax']);        // Menampilkan halaman form edit prestasi Ajax
-        Route::put('/{id}/update_ajax', [RekomendasiLombaController::class, 'update_ajax']);    // Menyimpan perubahan data prestasi Ajax
-        Route::get('/{id}/delete_ajax', [RekomendasiLombaController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete prestasi Ajax
-        Route::delete('/{id}/delete_ajax', [RekomendasiLombaController::class, 'delete_ajax']); // Untuk hapus data prestasi Ajax
-        Route::get('/lomba/{id}/detail', [RekomendasiLombaController::class, 'getDetail']);
-        Route::post('/{id}/approve_ajax', [RekomendasiLombaController::class, 'approve']);
-        Route::post('/{id}/reject_ajax', [RekomendasiLombaController::class, 'reject']);
-        Route::get('/dosen/{id}/detail', [RekomendasiLombaController::class, 'getDetail']);
-    });
-
-    Route::get('/tes-rekomendasi/topsis', [TesRekomendasi::class, 'prosesSemuaLombaDenganTopsis']); //jangan dipake dulu masih belum stabil
-    Route::get('/tes-topsis/{idLomba}', [TesRekomendasi::class, 'lihatHasilTopsis']);
 });
 
 
@@ -165,6 +149,31 @@ Route::middleware(['authorize:dosen'])->group(function () {
         Route::get('/create_ajax', [DosenLombaController::class, 'create_ajax']);         // form tambah ajax
         Route::post('/ajax', [DosenLombaController::class, 'store_ajax']);                // simpan data lomba
         Route::get('/{id}/show_ajax', [DosenLombaController::class, 'show_ajax']);
+    });
 
+    Route::group(['prefix' => 'rekomendasi'], function () {
+        Route::post('/{id}/approve_dosen', [RekomendasiLombaController::class, 'approveDosen']);
+        Route::post('/{id}/reject_dosen', [RekomendasiLombaController::class, 'rejectDosen']);
+    });
+});
+
+// seluruh user bisa akses
+Route::middleware(['authorize:mahasiswa,admin,dosen'])->group(function () {
+
+    Route::group(['prefix' => 'rekomendasi'], function () {
+        Route::get('/', [RekomendasiLombaController::class, 'index']);                          // menampilkan halaman awal prestasi
+        Route::post('/list', [RekomendasiLombaController::class, 'list']);
+        Route::get('/list-all', [RekomendasiLombaController::class, 'listAll']);                      // menampilkan data prestasi dalam bentuk json untuk datatables
+        Route::get('/create_ajax', [RekomendasiLombaController::class, 'create_ajax']);         // Menampilkan halaman form tambah prestasi Ajax
+        Route::post('/ajax', [RekomendasiLombaController::class, 'store_ajax']);                // Menyimpan data prestasi baru Ajax
+        Route::get('/{id}/show_ajax', [RekomendasiLombaController::class, 'show_ajax']);        // menampilkan detail prestasi Ajax
+        Route::get('/{id}/edit_ajax', [RekomendasiLombaController::class, 'edit_ajax']);        // Menampilkan halaman form edit prestasi Ajax
+        Route::put('/{id}/update_ajax', [RekomendasiLombaController::class, 'update_ajax']);    // Menyimpan perubahan data prestasi Ajax
+        Route::get('/{id}/delete_ajax', [RekomendasiLombaController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete prestasi Ajax
+        Route::delete('/{id}/delete_ajax', [RekomendasiLombaController::class, 'delete_ajax']); // Untuk hapus data prestasi Ajax
+        Route::get('/lomba/{id}/detail', [RekomendasiLombaController::class, 'getDetail']);
+        Route::post('/{id}/approve_ajax', [RekomendasiLombaController::class, 'approve']);
+        Route::post('/{id}/reject_ajax', [RekomendasiLombaController::class, 'reject']);
+        Route::get('/dosen/{id}/detail', [RekomendasiLombaController::class, 'getDetail']);
     });
 });

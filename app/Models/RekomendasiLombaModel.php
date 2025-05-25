@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class RekomendasiLombaModel extends Model
 {
     protected $table = 'rekomendasi_lomba';
-    protected $fillable = ['mahasiswa_nim', 'lomba_id', 'dosen_pembimbing_id', 'status', 'skor'];
+    protected $fillable = ['mahasiswa_nim', 'lomba_id', 'dosen_pembimbing_id', 'status', 'status_dosen', 'skor'];
 
     public function mahasiswa(): BelongsTo
     {
