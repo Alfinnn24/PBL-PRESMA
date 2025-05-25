@@ -222,6 +222,17 @@
                                 Dosen belum ditentukan
                             @endif
                         </td>
+                    </tr>
+                    <tr>
+                        <th>Status persetujuan</th>
+                        <td>
+                            @if ($rekomendasi->dosen)
+                                {{ $rekomendasi->status_dosen }}
+                            @else
+                                Dosen belum ditentukan
+                            @endif
+                        </td>
+                    </tr>
                 </table>
 
                 <h5 class="mt-4">Bidang Minat Dosen</h5>
@@ -233,15 +244,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                        @forelse($rekomendasi->dosen->bidangMinat as $detailMinat)
-                            <tr>
-                                <td>{{ $detailMinat->bidangMinat->bidang_minat ?? 'Tidak tersedia' }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td>Tidak ada data minat</td>
-                            </tr>
-                        @endforelse
+                            @forelse($rekomendasi->dosen->bidangMinat as $detailMinat)
+                                <tr>
+                                    <td>{{ $detailMinat->bidangMinat->bidang_minat ?? 'Tidak tersedia' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td>Tidak ada data minat</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     @else
                         Dosen belum ditentukan
