@@ -43,10 +43,13 @@
                             <small class="form-text text-danger">{{ $message }}</small>
                         @enderror
                     </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5><strong>Personal Information</strong> <i class="fa-solid fa-pencil fa-sm"></i></h5>
+                    </div>
                     {{-- kabeh --}}
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label>Nama Lengkap</label>
+                            <i class="fa-solid fa-pen-to-square fa-sm"></i> <label>Nama Lengkap</label>
                             <input type="text" name="nama_lengkap"
                                 class="form-control @error('nama_lengkap') is-invalid @enderror"
                                 value="{{ old('nama_lengkap', $detail->nama_lengkap) }}">
@@ -55,7 +58,7 @@
                             @enderror
                         </div>
                         <div class="form-group col-md-6">
-                            <label>Email</label>
+                            <i class="fa-solid fa-at fa-sm"></i> <label>Email</label>
                             <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                                 value="{{ old('email', $user->email) }}">
                             @error('email')
@@ -67,11 +70,11 @@
                     @if ($user->role === 'mahasiswa')
                         <div class="form-row">
                             <div class="form-group col-md-4">
-                                <label>NIM</label>
+                                <i class="fa-solid fa-hashtag fa-sm"></i> <label>NIM</label>
                                 <input type="text" class="form-control" value="{{ $detail->nim }}" readonly>
                             </div>
                             <div class="form-group col-md-4">
-                                <label>Angkatan</label>
+                                <i class="fa-solid fa-calendar-days fa-sm"></i> <label>Angkatan</label>
                                 <input type="text" name="angkatan"
                                     class="form-control @error('angkatan') is-invalid @enderror"
                                     value="{{ old('angkatan', $detail->angkatan) }}" maxlength="4" pattern="\d{4}"
@@ -82,7 +85,7 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-4">
-                                <label>Program Studi</label>
+                                <i class="fa-solid fa-book fa-sm"></i> <label>Program Studi</label>
                                 <select name="program_studi_id"
                                     class="form-control @error('program_studi_id') is-invalid @enderror">
                                     <option value="">-- Pilih --</option>
@@ -100,7 +103,7 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label>No. Telp</label>
+                                <i class="fa-solid fa-mobile-screen-button fa-sm"></i> <label>No. Telp</label>
                                 <input type="text" name="no_telp"
                                     class="form-control @error('no_telp') is-invalid @enderror"
                                     value="{{ old('no_telp', $detail->no_telp) }}" maxlength="15"
@@ -111,7 +114,7 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label>Alamat</label>
+                                <i class="fa-solid fa-location-dot fa-sm"></i> <label>Alamat</label>
                                 <input type="text" name="alamat"
                                     class="form-control @error('alamat') is-invalid @enderror"
                                     value="{{ old('alamat', $detail->alamat) }}">
@@ -125,11 +128,11 @@
                     @elseif($user->role === 'dosen')
                         <div class="form-row">
                             <div class="form-group col-md-4">
-                                <label>NIDN</label>
+                                <i class="fa-solid fa-hashtag fa-sm"></i> <label>NIDN</label>
                                 <input type="text" class="form-control" value="{{ $detail->nidn }}" readonly>
                             </div>
                             <div class="form-group col-md-4">
-                                <label>Program Studi</label>
+                                <i class="fa-solid fa-book fa-sm"></i> <label>Program Studi</label>
                                 <select name="program_studi_id"
                                     class="form-control @error('program_studi_id') is-invalid @enderror">
                                     <option value="">-- Pilih --</option>
@@ -145,7 +148,7 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-4">
-                                <label>No. Telp</label>
+                                <i class="fa-solid fa-mobile-screen-button fa-sm"></i> <label>No. Telp</label>
                                 <input type="text" name="no_telp"
                                     class="form-control @error('no_telp') is-invalid @enderror"
                                     value="{{ old('no_telp', $detail->no_telp) }}" maxlength="15"
@@ -162,7 +165,7 @@
                         <hr>
                         <div class="form-group">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5>Pengalaman (Opsional)</h5>
+                                <h5><strong>Pengalaman (Opsional)</strong></h5>
                                 <button type="button" class="btn btn-sm btn-primary" id="tambahPengalaman">
                                     <i class="fas fa-plus"></i> Tambah Pengalaman
                                 </button>
@@ -231,14 +234,15 @@
                     @endif
                     <hr>
                     <div class="form-group">
-                        <label>Password <small class="text-muted">(kosongkan jika tidak diubah)</small></label>
+                        <i class="fa-solid fa-key fa-sm"></i> <label>Password <small class="text-muted">(kosongkan jika
+                                tidak diubah)</small></label>
                         <input type="password" name="password"
                             class="form-control @error('password') is-invalid @enderror">
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
 
-                        <label class="mt-2">Konfirmasi Password</label>
+                        <i class="fa-solid fa-key fa-sm"></i> <label class="mt-2">Konfirmasi Password</label>
                         <input type="password" name="password_confirmation" class="form-control">
                     </div>
 
