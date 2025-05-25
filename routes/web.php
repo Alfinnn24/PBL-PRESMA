@@ -131,9 +131,7 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
 
 
 
-
-// Route untuk dosen
-Route::middleware(['authorize:dosen'])->group(function () {
+Route::middleware(['authorize:dosen'])->prefix('dosen')->group(function () {
     // Halaman daftar mahasiswa bimbingan
     Route::get('/bimbingan', [DosenBimbinganController::class, 'index'])->name('dosen.bimbingan.index');
 
@@ -142,7 +140,7 @@ Route::middleware(['authorize:dosen'])->group(function () {
 
     // Endpoint DataTables AJAX untuk daftar mahasiswa bimbingan
     Route::post('/bimbingan/list', [DosenBimbinganController::class, 'list'])->name('dosen.bimbingan.list');
-
+});
     Route::group(['prefix' => 'dosen/lomba'], function () {
         Route::get('/', [DosenLombaController::class, 'index']);                          // menampilkan halaman awal lomba dosen
         Route::post('/list', [DosenLombaController::class, 'list']);                      // datatables
@@ -155,7 +153,6 @@ Route::middleware(['authorize:dosen'])->group(function () {
         Route::post('/{id}/approve_dosen', [RekomendasiLombaController::class, 'approveDosen']);
         Route::post('/{id}/reject_dosen', [RekomendasiLombaController::class, 'rejectDosen']);
     });
-});
 
 // seluruh user bisa akses
 Route::middleware(['authorize:mahasiswa,admin,dosen'])->group(function () {
