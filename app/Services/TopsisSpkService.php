@@ -155,4 +155,40 @@ class TopsisSpkService
 
         return $hasil;
     }
+
+    public function prosesSemuaLombaDenganTopsis()
+    {
+        $lombas = LombaModel::with('bidangKeahlian')->get();
+        $hasilAkhir = [];
+
+        foreach ($lombas as $lomba) {
+            $hasilRekomendasi = $this->prosesRekomendasi($lomba);
+
+            foreach ($hasilRekomendasi as $rekom) {
+                $hasilAkhir[] = [
+                    'lomba_id' => $lomba->id,
+                    'lomba_nama' => $lomba->nama ?? '-',
+                    'nim' => $rekom['nim'],
+                    'nama' => $rekom['nama'],
+                    'skor' => $rekom['skor'],
+                    'dosen_pembimbing_id' => null,
+                ];
+            }
+        }
+
+        foreach ($hasilAkhir as $data) {
+            RekomendasiLombaModel::updateOrCreate(
+                [
+                    'lomba_id' => $data['lomba_id'],
+                    'mahasiswa_nim' => $data['nim'],
+                ],
+                [
+                    // Jangan timpa status/dosen_pembimbing kalau sudah ada
+                    'skor' => $data['skor'],
+                ]
+            );
+        }
+
+        return $hasilAkhir;
+    }
 }
