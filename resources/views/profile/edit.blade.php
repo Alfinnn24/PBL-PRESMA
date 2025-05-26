@@ -160,6 +160,39 @@
                             </div>
                         </div>
                     @endif
+                    {{-- Bidang Minat dosen --}}
+                    @if ($user->role === 'dosen')
+                        <hr>
+                        <div class="form-group">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5><strong>Bidang Minat</strong> <i class="fa-solid fa-flask fa-sm"></i></h5>
+                            </div>
+
+                            <select name="bidang_minat_ids[]" class="form-control select2" multiple="multiple">
+                                @foreach ($bidangMinat as $bm)
+                                    <option value="{{ $bm->id }}"
+                                        {{ $detail->bidangMinat->contains('id_minat', $bm->id) ? 'selected' : '' }}>
+                                        {{ $bm->bidang_minat }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                    {{-- Bidang Keahlian --}}
+                    @if ($user->role === 'mahasiswa')
+                        <hr>
+                        <div class="form-group">
+                            <i class="fa-solid fa-star text-warning fa-sm"></i> <label>Bidang Keahlian</label>
+                            <select name="bidang_keahlian_ids[]" class="form-control select2" multiple="multiple">
+                                @foreach ($bidangKeahlian as $bk)
+                                    <option value="{{ $bk->id }}"
+                                        {{ in_array($bk->id, $detail->bidangKeahlian->pluck('id_keahlian')->toArray()) ? 'selected' : '' }}>
+                                        {{ $bk->keahlian }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
                     {{-- Pengalaman --}}
                     @if ($user->role === 'mahasiswa')
                         <hr>
@@ -307,7 +340,8 @@
                                                 <div class="custom-file">
                                                     <input type="file" name="sertifikat[]" class="custom-file-input"
                                                         id="sertifikatFile0">
-                                                    <label class="custom-file-label" for="sertifikatFile0">PDF/PNG/JPG/JPEG</label>
+                                                    <label class="custom-file-label"
+                                                        for="sertifikatFile0">PDF/PNG/JPG/JPEG</label>
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
@@ -387,7 +421,6 @@
                 template.find('input[name="sertifikasi_ids[]"]').val('');
                 template.appendTo('#sertifikasiContainer');
             });
-
             // Hapus Sertifikasi
             $('#sertifikasiContainer').on('click', '.hapus-sertifikasi', function() {
                 if ($('.sertifikasi-item').length) {
@@ -397,7 +430,17 @@
                         'warning');
                 }
             });
-
+            // bidang keahlian mahasiswa
+            $('.select2').select2({
+                placeholder: "Pilih Bidang Keahlian",
+                allowClear: true
+            });
+            // bidang minat dosen
+            $('select[name="bidang_minat_ids[]"]').select2({
+                placeholder: "Pilih Bidang Minat",
+                allowClear: true,
+                width: '100%'
+            });
             // Update nama file saat memilih file
             $('#sertifikasiContainer').on('change', 'input[type="file"]', function() {
                 const fileName = $(this).val().split('\\').pop();
