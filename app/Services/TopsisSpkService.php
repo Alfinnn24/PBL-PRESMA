@@ -33,10 +33,10 @@ class TopsisSpkService
             // Hitung nilai sertifikasi dengan matching bidang keahlian
             $nilaiSertifikasi = 0;
             foreach ($mhs->sertifikasis as $sertifikasi) {
-                $bidangSertifikasi = $sertifikasi->bidang_keahlian ?? 'Lainnya';
+                $bidangSertifikasi = $sertifikasi->bidangKeahlian->keahlian ?? $sertifikasi->kategori ?? 'Lainnya';
                 $nilaiSertifikasi += BidangKeahlianMatcher::getSkor($kategoriLomba, $bidangSertifikasi);
             }
-
+            
             $nilaiKeahlian = $mhs->bidangKeahlian->sum(function ($item) use ($kategoriLomba) {
                 $keahlian = $item->bidangKeahlian->keahlian ?? null;
                 return $keahlian ? BidangKeahlianMatcher::getSkor($kategoriLomba, $keahlian) : 0;
