@@ -253,7 +253,7 @@
                                                 <div class="col-md-4">
                                                     <input type="text" name="sertifikasi_judul[]" class="form-control"
                                                         value="{{ old('sertifikasi_judul')[$index] ?? ($judul->judul ?? '') }}"
-                                                        placeholder="Judul Sertifikasi">
+                                                        placeholder="Contoh: Sertifikasi Data Science">
                                                 </div>
                                                 <div class="col-md-3">
                                                     <select name="sertifikasi_kategori[]" class="form-control">
@@ -292,7 +292,7 @@
                                         <div class="form-row">
                                             <div class="col-md-4">
                                                 <input type="text" name="sertifikasi_judul[]" class="form-control"
-                                                    placeholder="Judul Sertifikasi">
+                                                    placeholder="Contoh: Sertifikasi Data Science">
                                             </div>
                                             <div class="col-md-3">
                                                 <select name="sertifikasi_kategori[]" class="form-control">
