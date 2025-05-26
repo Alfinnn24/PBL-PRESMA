@@ -15,6 +15,9 @@ use App\Models\ProgramStudiModel;
 use App\Models\BidangKeahlianModel;
 use App\Models\PengalamanModel;
 use App\Models\SertifikasiModel;
+use App\Models\DetailBidangKeahlianModel;
+use App\Models\BidangMinatModel;
+use App\Models\DetailBidangMinatModel;
 
 class ProfileController extends Controller
 {
@@ -37,7 +40,9 @@ class ProfileController extends Controller
         $detail = $this->getDetailModel($user);
 
         if ($user->role === 'mahasiswa' && $detail->exists) {
-            $detail->load('pengalaman.bidangKeahlian', 'sertifikasis.bidangKeahlian');
+            $detail->load('pengalaman.bidangKeahlian', 'sertifikasis.bidangKeahlian', 'bidangKeahlian.bidangKeahlian');
+        } elseif ($user->role === 'dosen') {
+            $detail->load('bidangMinat.bidangMinat'); // Tambahkan ini untuk dosen
         }
 
         $breadcrumb = (object) [
@@ -60,9 +65,12 @@ class ProfileController extends Controller
         $user = UserModel::findOrFail(Auth::id());
         $detail = $this->getDetailModel($user);
         if ($user->role === 'mahasiswa' && $detail->exists) {
-            $detail->load('pengalaman.bidangKeahlian', 'sertifikasis.bidangKeahlian');
+            $detail->load('pengalaman.bidangKeahlian', 'sertifikasis.bidangKeahlian', 'bidangKeahlian.bidangKeahlian');
+        } elseif ($user->role === 'dosen') {
+            $detail->load('bidangMinat.bidangMinat'); // Load bidang minat
         }
         $bidangKeahlian = BidangKeahlianModel::all();
+        $bidangMinat = BidangMinatModel::all();
         $prodi = ProgramStudiModel::all();
 
         $breadcrumb = (object) [
@@ -76,7 +84,7 @@ class ProfileController extends Controller
 
         $activeMenu = 'profile';
 
-        return view('profile.edit', compact('user', 'detail', 'prodi', 'breadcrumb', 'page', 'activeMenu', 'bidangKeahlian'));
+        return view('profile.edit', compact('user', 'detail', 'prodi', 'breadcrumb', 'page', 'activeMenu', 'bidangKeahlian', 'bidangMinat'));
     }
 
     // Update the user's profile.
@@ -123,11 +131,18 @@ class ProfileController extends Controller
                 'sertifikat.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
                 'sertifikasi_ids' => 'sometimes|array',
                 'sertifikasi_ids.*' => 'nullable|exists:sertifikasi,id',
+                // keahlian
+                'bidang_keahlian_ids' => 'sometimes|array',
+                'bidang_keahlian_ids.*' => 'exists:bidang_keahlian,id',
             ]);
         } elseif ($user->role === 'dosen') {
             $rules = array_merge($rules, [
                 'no_telp'           => 'required',
                 'program_studi_id'  => 'required',
+                'bidang_minat_ids' => 'sometimes|array',
+                'bidang_minat_ids.*' => 'exists:bidang_minat,id',
+                'existing_bidang_minat' => 'sometimes|array',
+                'existing_bidang_minat.*' => 'exists:detail_bidang_minat,id',
             ]);
         }
 
@@ -277,6 +292,42 @@ class ProfileController extends Controller
                     }
                 } else {
                     $detail->sertifikasis()->delete();
+                }
+            }
+            // Handle Bidang Keahlian
+            if ($user->role === 'mahasiswa') {
+                $selectedBidangIds = $request->input('bidang_keahlian_ids', []);
+                // Hapus yang tidak terpilih
+                $detail->bidangKeahlian()
+                    ->whereNotIn('id_keahlian', $selectedBidangIds)
+                    ->delete();
+
+                // Tambahkan yang baru
+                foreach ($selectedBidangIds as $bidangId) {
+                    DetailBidangKeahlianModel::firstOrCreate([
+                        'mahasiswa_nim' => $detail->nim,
+                        'id_keahlian' => $bidangId
+                    ]);
+                }
+            }
+            // Handle bidang minat
+            if ($user->role === 'dosen') {
+                // Hapus yang tidak dipilih
+                $detail->bidangMinat()
+                    ->whereNotIn('id_minat', $request->bidang_minat_ids ?? [])
+                    ->delete();
+
+                // Tambahkan yang baru
+                if (!empty($request->bidang_minat_ids)) {
+                    $existing = $detail->bidangMinat->pluck('id_minat')->toArray();
+                    $newEntries = array_diff($request->bidang_minat_ids, $existing);
+
+                    foreach ($newEntries as $minatId) {
+                        DetailBidangMinatModel::create([
+                            'dosen_id' => $detail->id,
+                            'id_minat' => $minatId
+                        ]);
+                    }
                 }
             }
             return response()->json([

@@ -86,8 +86,28 @@
                         </div>
                     </div>
                 </div>
-                <hr>
+                @if ($user->role === 'mahasiswa' && $detail->bidangKeahlian())
+                    <hr>
+                    <div class="row text-left" style="margin-top: 20px; margin-left: 30px">
+                        <h5><strong>Keahlian</strong> <i class="fa-solid fa-star fa-sm"></i></h5>
+                    </div>
+                    <div class="row text-left">
+                        <div class="row" style="margin-right: 30px; margin-left: 10px">
+                            <div class="col"">
+                                <ul>
+                                    @foreach ($detail->bidangKeahlian as $item)
+                                        <li>
+                                            {{ $item->bidangKeahlian->keahlian ?? 'Keahlian tidak ditemukan' }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+                {{-- view pengalaman mahasiswa --}}
                 @if ($user->role === 'mahasiswa' && $detail->pengalaman())
+                <hr>
                     <div class="row text-left" style="margin-top: 20px; margin-left: 30px">
                         <h5><strong>Pengalaman</strong> <i class="fa-solid fa-pencil fa-sm"></i></h5>
                     </div>
@@ -105,6 +125,7 @@
                         </div>
                     </div>
                 @endif
+                {{-- view sertifikasi mahasiswa --}}
                 @if ($user->role === 'mahasiswa' && $detail->sertifikasis && $detail->sertifikasis())
                     <hr>
                     <div class="row text-left" style="margin-top: 20px; margin-left: 30px">
@@ -137,39 +158,25 @@
                         </div>
                     </div>
                 @endif
-                {{-- @if ($user->role === 'mahasiswa' && $detail->sertifikasis->isNotEmpty())
+                {{-- view bidang minat dosen --}}
+                @if ($user->role === 'dosen' && $detail->bidangMinat->isNotEmpty())
+                    <hr>
                     <div class="row text-left" style="margin-top: 20px; margin-left: 30px">
-                        <h5><strong>Sertifikasi</strong> <i class="fa-solid fa-certificate fa-sm"></i></h5>
+                        <h5><strong>Bidang Minat</strong> <i class="fa-solid fa-flask fa-sm"></i></h5>
                     </div>
                     <div class="row text-left">
-                        <div class="row" style="margin-right: 30px; margin-left: 30px">
-                            <div class="col" style="margin-right: 100px;">
-                                @foreach ($detail->sertifikasis as $sertifikasi)
-                                    <p>
-                                        <i class="fa-solid fa-award"></i>
-                                        <strong>{{ ucfirst($sertifikasi->bidangKeahlian->keahlian ?? 'Kategori Tidak Ditemukan') }}:</strong><br>
-                                        {{ $sertifikasi->judul }}
-                                        @if ($sertifikasi->path)
-                                            <br>
-                                            <a href="{{ asset('storage/' . $sertifikasi->path) }}" target="_blank"
-                                                class="btn btn-link btn-sm">
-                                                <i class="fa-regular fa-file-pdf"></i> Lihat Sertifikat
-                                            </a>
-                                        @endif
-                                    </p>
-                                @endforeach
+                        <div class="row" style="margin-right: 30px; margin-left: 10px">
+                            <div class="col">
+                                <ul>
+                                    @foreach ($detail->bidangMinat as $minat)
+                                        <li>{{ $minat->bidangMinat->bidang_minat ?? 'Bidang minat tidak ditemukan' }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
                         </div>
                     </div>
-                @endif --}}
+                @endif
             </div>
         </div>
     </div>
 @endsection
-{{-- @if (isset($detail->minat) || isset($detail->keahlian))
-                        <div class="col-md-6">
-                            <h5>Minat &amp; Keahlian</h5>
-                            <p><strong>Minat:</strong> {{ $detail->minat ?? '-' }}</p>
-                            <p><strong>Keahlian:</strong> {{ $detail->keahlian ?? '-' }}</p>
-                        </div>
-                    @endif --}}
