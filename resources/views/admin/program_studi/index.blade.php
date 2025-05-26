@@ -17,25 +17,6 @@
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-
-            {{-- Filter Program Studi --}}
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group row">
-                        <label class="col-1 control-label col-form-label">Filter:</label>
-                        <div class="col-3">
-                            <select class="form-control" id="nama" name="nama">
-                                <option value="">- Semua -</option>
-                                @foreach ($nama as $item)
-                                    <option value="{{ $item->nama_prodi }}">{{ $item->nama_prodi }}</option>
-                                @endforeach
-                            </select>
-                            <small class="form-text text-muted">Nama Program Studi</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover table-sm display nowrap"
                     id="table_program_studi" style="width:100%">
@@ -81,7 +62,7 @@
                 });
         }
 
-        var dataProgramStudi; // global
+        var dataProgramStudi;
         $(document).ready(function() {
             dataProgramStudi = $('#table_program_studi').DataTable({
                 serverSide: true,
@@ -89,39 +70,16 @@
                     url: "{{ url('program_studi/list') }}",
                     type: "POST",
                     data: function(d) {
-                        d.nama = $('#nama').val();
+                        // Tidak ada filter yang dikirim
                     }
                 },
-                columns: [{
-                        data: "DT_RowIndex",
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: "nama_prodi",
-                        className: "text-center"
-                    },
-                    {
-                        data: "kode_prodi",
-                        className: "text-center"
-                    },
-                    {
-                        data: "jenjang",
-                        className: "text-center"
-                    },
-                    {
-                        data: "aksi",
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false
-                    }
+                columns: [
+                    { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
+                    { data: "nama_prodi", className: "text-center" },
+                    { data: "kode_prodi", className: "text-center" },
+                    { data: "jenjang", className: "text-center" },
+                    { data: "aksi", className: "text-center", orderable: false, searchable: false }
                 ]
-            });
-
-            // Reload tabel saat filter berubah
-            $('#nama').on('change', function() {
-                dataProgramStudi.ajax.reload();
             });
         });
     </script>

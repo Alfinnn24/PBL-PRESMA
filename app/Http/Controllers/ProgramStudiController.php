@@ -39,7 +39,7 @@ class ProgramStudiController extends Controller
             ->addColumn('aksi', function ($programStudi) {
                 $btn  = '<button onclick="modalAction(\'' . url('/program_studi/' . $programStudi->id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/program_studi/' . $programStudi->id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/program_studi/' . $programStudi->id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/program_studi/' . $programStudi->id . '/confirm_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])

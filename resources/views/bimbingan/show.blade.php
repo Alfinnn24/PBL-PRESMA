@@ -2,30 +2,30 @@
 
 @section('content')
     <div class="card card-outline card-primary">
-        <div class="card-header d-flex justify-content-between align-items-center px-4 py-3">
-            <h3 class="card-title mb-0">
-                Prestasi Mahasiswa: {{ $mahasiswa->nama_lengkap }} ({{ $mahasiswa->nim }})
-            </h3>
-            <a href="{{ url('/dosen/bimbingan') }}" class="btn btn-secondary btn-sm">Kembali ke Daftar</a>
+        <div class="d-flex justify-content-between align-items-center mb-3 p-2">
+            <h5>Prestasi Mahasiswa: {{ $mahasiswa->nama_lengkap }} ({{ $mahasiswa->nim }})</h5>
+            <a href="{{ url('/dosen/bimbingan') }}" class="btn btn-secondary btn-sm">← Kembali ke Daftar</a>
         </div>
         <div class="card-body">
             {{-- Filter Tahun --}}
-            <form method="GET" class="mb-3 d-flex align-items-center gap-2 flex-wrap">
-                <label for="tahun" class="mb-0 me-2">Filter Tahun:</label>
-                <select name="tahun" id="tahun" class="form-select" style="width: auto; min-width: 150px;">
+            <form method="GET">
+                <select name="tahun" onchange="this.form.submit()" class="form-select form-select-sm">
                     <option value="">-- Semua Tahun --</option>
-                    @foreach($tahunList as $tahun)
-                        <option value="{{ $tahun }}" @selected(request('tahun') == $tahun)>{{ $tahun }}</option>
+                    @foreach ($tahunList as $tahun)
+                        <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>
+                            {{ $tahun }}
+                        </option>
                     @endforeach
                 </select>
-                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
             </form>
 
             {{-- Tabel Prestasi --}}
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover table-sm mb-0">
+                <table id="table_prestasi" class="table table-bordered table-striped table-hover table-sm display nowrap"
+                    style="width:100%">
                     <thead class="table-light">
                         <tr>
+                            <th>No</th>
                             <th>Nama Prestasi</th>
                             <th>Nama Lomba</th>
                             <th>Tahun</th>
@@ -34,8 +34,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($prestasis as $detailPrestasi)
+                        @forelse($prestasis as $i => $detailPrestasi)
                             <tr>
+                                <td>{{ $prestasis->firstItem() + $i }}</td>
                                 <td>{{ $detailPrestasi->prestasi->nama_prestasi ?? '-' }}</td>
                                 <td>{{ $detailPrestasi->prestasi->lomba->nama ?? '-' }}</td>
                                 <td>{{ optional($detailPrestasi->prestasi->created_at)->format('Y') ?? '-' }}</td>
@@ -57,4 +58,28 @@
             </div>
         </div>
     </div>
+    @push('js')
+        <script>
+            $(document).ready(function () {
+                $('#table_prestasi').DataTable({
+                    paging: true,
+                    searching: false,
+                    ordering: false,
+                    info: true,
+                    responsive: true,
+                    lengthChange: false, // ← ini menonaktifkan "Show entries"
+                    language: {
+                        zeroRecords: "Tidak ada prestasi ditemukan",
+                        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                        infoEmpty: "Tidak ada data tersedia",
+                        infoFiltered: "(difilter dari total _MAX_ data)",
+                        paginate: {
+                            previous: "Previous",
+                            next: "Next"
+                        }
+                    }
+                });
+            });
+        </script>
+    @endpush
 @endsection
