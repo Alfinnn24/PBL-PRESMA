@@ -87,7 +87,7 @@ class ProfileController extends Controller
         $cleanedData = $this->cleanExperienceData($request);
         $cleanedCertification = $this->cleanCertificationData($request);
         // bersiin data pengalaman
-        $request->merge($cleanedData, $cleanedCertification);
+        $request->merge(array_merge($cleanedData, $cleanedCertification));
         // Validation
         $rules = [
             'nama_lengkap' => 'required|string|max:100',
@@ -155,6 +155,8 @@ class ProfileController extends Controller
             'sertifikat.*.file' => 'File harus berupa PDF.',
             'sertifikat.*.mimes' => 'Format file harus PDF.',
             'sertifikat.*.max' => 'Ukuran file tidak boleh lebih dari 2MB.',
+            'sertifikasi_judul.*' => 'Judul sertifikasi harus diisi.',
+            'sertifikasi_kategori.*' => 'Bidang keahlian sertifikasi harus diisi.',
         ]);
         if ($validator->fails()) {
             return response()->json([
