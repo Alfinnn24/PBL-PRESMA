@@ -33,6 +33,7 @@ class TesRekomendasi extends Controller
                     'nim' => $rekom['nim'],
                     'nama' => $rekom['nama'],
                     'skor' => $rekom['skor'],
+                    'matriks' => $rekom['matriks'] ?? [],
                     'dosen_pembimbing_id' => null,
                 ];
             }
