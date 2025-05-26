@@ -36,7 +36,7 @@ class TopsisSpkService
                 $bidangSertifikasi = $sertifikasi->bidangKeahlian->keahlian ?? $sertifikasi->kategori ?? 'Lainnya';
                 $nilaiSertifikasi += BidangKeahlianMatcher::getSkor($kategoriLomba, $bidangSertifikasi);
             }
-            
+
             $nilaiKeahlian = $mhs->bidangKeahlian->sum(function ($item) use ($kategoriLomba) {
                 $keahlian = $item->bidangKeahlian->keahlian ?? null;
                 return $keahlian ? BidangKeahlianMatcher::getSkor($kategoriLomba, $keahlian) : 0;
@@ -47,8 +47,8 @@ class TopsisSpkService
             });
 
             $nilaiPrestasi = 0;
-            foreach ($mhs->prestasi as $prestasi) {
-                $kategoriPrestasi = optional($prestasi->lomba)->kategori;
+            foreach ($mhs->prestasi as $detailPrestasi) {
+                $kategoriPrestasi = optional($detailPrestasi->prestasi->lomba->bidangKeahlian)->keahlian;
                 if ($kategoriPrestasi) {
                     $nilaiPrestasi += BidangKeahlianMatcher::getSkor($kategoriLomba, $kategoriPrestasi);
                 }
@@ -133,6 +133,7 @@ class TopsisSpkService
             $hasil[] = [
                 'nim' => $row['nim'],
                 'nama' => $row['nama'],
+                'matriks' => $matriks,
                 'skor' => round($nilaiPreferensi, 4),
             ];
         }
