@@ -25,16 +25,22 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Hapus Data Program Studi</h5>
+                <h5 class="modal-title text-danger"><i class="fas fa-exclamation-triangle"></i> Konfirmasi Penghapusan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
 
             <div class="modal-body">
-                <div class="alert alert-warning">
-                    <h5><i class="fas fa-ban"></i> Konfirmasi !!!</h5>
-                    Apakah Anda ingin menghapus data seperti di bawah ini?
+                <div class="alert alert-danger">
+                    <strong>PERINGATAN!</strong> Menghapus program studi ini akan <u>menghapus seluruh data yang terkait</u>, seperti:
+                    <ul class="mb-0">
+                        <li>Data Mahasiswa</li>
+                        <li>Data Mata Kuliah</li>
+                        <li>Data Jadwal</li>
+                        <li>Relasi lainnya dalam sistem</li>
+                    </ul>
+                    <p class="mt-2 mb-0">Lanjutkan hanya jika Anda yakin.</p>
                 </div>
 
                 <table class="table table-sm table-bordered table-striped">
@@ -47,15 +53,15 @@
                         <td class="col-9">{{ $programStudi->kode_prodi }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Jenjang Program Studi:</th>
+                        <th class="text-right col-3">Jenjang:</th>
                         <td class="col-9">{{ $programStudi->jenjang }}</td>
                     </tr>
                 </table>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-warning" data-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-danger">Ya, Hapus Sekarang</button>
             </div>
 
         </div>
@@ -76,30 +82,26 @@
                             $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil',
-                                text: response.message
+                                title: 'Berhasil Dihapus',
+                                text: response.message,
+                                timer: 1500,
+                                showConfirmButton: false
                             });
                             if(typeof dataProgramStudi !== 'undefined'){
                                 dataProgramStudi.ajax.reload();
                             }
                         }else{
-                            $('.error-text').text('');
-                            if(response.msgField){
-                                $.each(response.msgField, function(prefix, val) {
-                                    $('#error-'+prefix).text(val[0]);
-                                });
-                            }
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Terjadi Kesalahan',
+                                title: 'Gagal Menghapus',
                                 text: response.message
                             });
                         }
                     },
-                    error: function(xhr) {
+                    error: function() {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Gagal',
+                            title: 'Kesalahan Server',
                             text: 'Terjadi kesalahan saat menghapus data.'
                         });
                     }
