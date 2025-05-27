@@ -21,16 +21,16 @@
                         <option value="ditolak">Ditolak</option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label>Kecocokan</label>
-                    <select id="filter_kecocokan" class="form-control">
-                        <option value="">- Semua -</option>
-                        <option value="tinggi">Sangat direkomendasikan</option>
-                        <option value="sedang">Direkomendasikan</option>
-                        <option value="rendah">Cukup direkomendasikan</option>
-                        <option value="srendah">Tidak direkomendasikan</option>
-                    </select>
-                </div>
+                <!-- <div class="col-md-3">
+                                <label>Kecocokan</label>
+                                <select id="filter_kecocokan" class="form-control">
+                                    <option value="">- Semua -</option>
+                                    <option value="tinggi">Sangat direkomendasikan</option>
+                                    <option value="sedang">Direkomendasikan</option>
+                                    <option value="rendah">Cukup direkomendasikan</option>
+                                    <option value="srendah">Tidak direkomendasikan</option>
+                                </select>
+                            </div> -->
             </div>
 
             <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_rekomendasi"
@@ -69,7 +69,7 @@
 
         $(document).ready(function () {
             tableRekomendasi = $('#table_rekomendasi').DataTable({
-                serverSide: true,
+                serverSide: false,
                 ajax: {
                     url: "{{ url('rekomendasi/list') }}",
                     type: "POST",
@@ -81,7 +81,7 @@
                     }
                 },
                 columns: [
-                    { data: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
+                    { data: 'DT_RowIndex', className: "text-center" },
                     { data: 'lomba' },
                     { data: 'status', className: "text-capitalize" },
                     { data: 'skor', className: "text-center" },

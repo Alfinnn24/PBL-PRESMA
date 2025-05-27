@@ -10,6 +10,8 @@ class LombaModel extends Model
     protected $table = 'lomba';
     protected $fillable = ['nama', 'penyelenggara', 'tingkat', 'bidang_keahlian_id', 'persyaratan', 'jumlah_peserta', 'link_registrasi', 'tanggal_mulai', 'tanggal_selesai', 'periode_id', 'created_by', 'is_verified'];
 
+    protected $dates = ['tanggal_mulai', 'tanggal_selesai'];
+
     public function periode(): BelongsTo
     {
         return $this->belongsTo(PeriodeModel::class);
