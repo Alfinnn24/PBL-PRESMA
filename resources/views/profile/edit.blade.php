@@ -17,7 +17,7 @@
                             <label class="position-relative" for="profile_picture">
                                 <div style="width: 120px; height: 120px; position: relative;">
                                     <img id="preview-image"
-                                        src="{{ $detail->foto_profile ? asset('storage/' . $detail->foto_profile) : asset('images/default-profile.png') }}"
+                                        src="{{ $detail->foto_profile ? asset('storage/' . $detail->foto_profile) : asset('images/default-profile2.jpg') }}"
                                         alt="Foto Profil" class="rounded-circle"
                                         style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
 
