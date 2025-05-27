@@ -64,11 +64,30 @@
 
 <script>
 $(document).ready(function() {
+    $.validator.addMethod("namaFormat", function (value, element) {
+    if (!/^\d{4}\/\d{4}$/.test(value)) return false;
+
+    const [tahun1, tahun2] = value.split("/").map(Number);
+    return tahun2 === tahun1 + 1;
+}, "Format nama harus seperti 2024/2025, dan tahun harus berurutan.");
+
     $("#form-edit").validate({
         rules: {
-            nama: { required: true, minlength: 3, maxlength: 20 },
-            tahun: { required: true, digits: true, minlength: 4, maxlength: 4 },
-            semester: { required: true },
+            nama: {
+                required: true,
+                minlength: 9,
+                maxlength: 9,
+                namaFormat: true
+            },
+            tahun: {
+                required: true,
+                digits: true,
+                minlength: 4,
+                maxlength: 4
+            },
+            semester: {
+                required: true
+            }
         },
         submitHandler: function(form) {
             console.log("Data sebelum dikirim:", $(form).serialize());

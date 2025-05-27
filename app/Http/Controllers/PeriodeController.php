@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PeriodeModel;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class PeriodeController extends Controller
 {
@@ -66,9 +67,19 @@ class PeriodeController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'nama' => 'required|string|max:100',
+                'nama' => [
+                    'required',
+                    'regex:/^\d{4}\/\d{4}$/',
+                    function ($attribute, $value, $fail) {
+                        $parts = explode('/', $value);
+                        if (count($parts) !== 2 || ((int)$parts[1] !== (int)$parts[0] + 1)) {
+                            $fail('Tahun pada nama harus berurutan, contoh: 2024/2025.');
+                        }
+                    },
+                    'max:9'
+                ],
                 'tahun' => 'required|digits:4',
-                'semester' => 'required|string|max:100',
+                'semester' => 'required|in:Ganjil,Genap',
             ];
 
             $validator = Validator::make($request->all(), $rules);
