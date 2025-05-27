@@ -39,6 +39,8 @@ class DosenLombaController extends Controller
 
     public function list(Request $request)
 {
+    $dosenId = auth()->id(); // Ambil ID user login
+
     $lomba = LombaModel::join('bidang_keahlian', 'lomba.bidang_keahlian_id', '=', 'bidang_keahlian.id')
         ->join('periode', 'lomba.periode_id', '=', 'periode.id')
         ->select(
@@ -56,6 +58,7 @@ class DosenLombaController extends Controller
             'lomba.is_verified'
         )
         ->where('lomba.is_verified', 'Disetujui') // Hanya tampilkan yang disetujui
+        ->where('lomba.created_by', $dosenId)     // Filter hanya yang dibuat oleh dosen login
         ->when($request->bidang_keahlian, function ($query) use ($request) {
             $query->where('lomba.bidang_keahlian_id', $request->bidang_keahlian);
         })
