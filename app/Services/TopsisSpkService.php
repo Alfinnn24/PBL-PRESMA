@@ -159,7 +159,11 @@ class TopsisSpkService
 
     public function prosesSemuaLombaDenganTopsis()
     {
-        $lombas = LombaModel::with('bidangKeahlian')->get();
+        // Ambil hanya lomba yang disetujui
+        $lombas = LombaModel::with('bidangKeahlian')
+            ->where('is_verified', 'Disetujui')
+            ->get();
+
         $hasilAkhir = [];
 
         foreach ($lombas as $lomba) {
@@ -178,18 +182,30 @@ class TopsisSpkService
         }
 
         foreach ($hasilAkhir as $data) {
-            RekomendasiLombaModel::updateOrCreate(
-                [
+            $rekom = RekomendasiLombaModel::where('lomba_id', $data['lomba_id'])
+                ->where('mahasiswa_nim', $data['nim'])
+                ->first();
+
+            if ($rekom) {
+                // Hanya update skor jika statusnya masih Pending
+                if ($rekom->status == 'Pending') {
+                    $rekom->update([
+                        'skor' => $data['skor'],
+                    ]);
+                }
+            } else {
+                // Buat rekomendasi baru dengan status Pending
+                RekomendasiLombaModel::create([
                     'lomba_id' => $data['lomba_id'],
                     'mahasiswa_nim' => $data['nim'],
-                ],
-                [
-                    // Jangan timpa status/dosen_pembimbing kalau sudah ada
                     'skor' => $data['skor'],
-                ]
-            );
+                    'status' => 'Pending',
+                    'dosen_pembimbing_id' => null,
+                ]);
+            }
         }
 
         return $hasilAkhir;
     }
+
 }

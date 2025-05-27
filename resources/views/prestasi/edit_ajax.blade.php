@@ -58,7 +58,8 @@
                         <div class="form-group">
                             <label>Tanggal Perolehan</label>
                             <input type="date" class="form-control" id="tanggal_perolehan"
-                                value="{{ $prestasi->lomba->tanggal_selesai ?? '' }}" readonly>
+                                value="{{ \Carbon\Carbon::parse($prestasi->lomba->tanggal_selesai)->format('d/m/Y') ?? '' }}"
+                                readonly>
                         </div>
                         <div class="form-group">
                             <label>Tingkat Lomba</label>

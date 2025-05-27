@@ -79,8 +79,6 @@
                     </tr>
                     <tr>
                         <th>Tanggal Lomba</th>
-                    <tr>
-                        <th>Tanggal Lomba</th>
                         <td>{{ \Carbon\Carbon::parse($prestasi->lomba->tanggal_mulai)->format('d/m/Y') }} s.d.
                             {{ \Carbon\Carbon::parse($prestasi->lomba->tanggal_selesai)->format('d/m/Y') }}
                         </td>
