@@ -47,22 +47,21 @@
                 </div>
             </div>
             <div style="overflow-x:auto;">
-            <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_lomba"
-                style="width:100%">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Periode Lomba</th>
-                        <th>Nama Lomba</th>
-                        <th>Penyelenggara Lomba</th>
-                        <th>Tingkat Lomba</th>
-                        <th>Bidang Keahlian Lomba</th>
-                        <th>Status Lomba</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
+                <table class="table modern-table display nowrap" id="table_lomba" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Periode Lomba</th>
+                            <th>Nama Lomba</th>
+                            <th>Penyelenggara Lomba</th>
+                            <th>Tingkat Lomba</th>
+                            <th>Bidang Keahlian Lomba</th>
+                            <th>Status Lomba</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
@@ -70,6 +69,7 @@
 @endsection
 
 @push('css')
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
 @endpush
 
 @push('js')
@@ -160,43 +160,42 @@
         });
 
 
-    function ubahStatus(id, aksi) {
-        const url = `{{ url('lomba') }}/${id}/${aksi}`;
-        const title = aksi === 'approve' ? 'Setujui Lomba?' : 'Tolak Lomba?';
-        const icon = aksi === 'approve' ? 'success' : 'warning';
-        const confirmText = aksi === 'approve' ? 'Ya, Setujui!' : 'Ya, Tolak!';
+        function ubahStatus(id, aksi) {
+            const url = `{{ url('lomba') }}/${id}/${aksi}`;
+            const title = aksi === 'approve' ? 'Setujui Lomba?' : 'Tolak Lomba?';
+            const icon = aksi === 'approve' ? 'success' : 'warning';
+            const confirmText = aksi === 'approve' ? 'Ya, Setujui!' : 'Ya, Tolak!';
 
-        // Tutup modal jika sedang terbuka
-        $('#myModal').modal('hide');
+            // Tutup modal jika sedang terbuka
+            $('#myModal').modal('hide');
 
-        setTimeout(() => {
-            Swal.fire({
-                title: title,
-                icon: icon,
-                showCancelButton: true,
-                confirmButtonText: confirmText,
-                cancelButtonText: 'Batal',
-                confirmButtonColor: aksi === 'approve' ? '#28a745' : '#d33'
-            }).then(result => {
-                if (result.isConfirmed) {
-                    $.post(url, {
-                        _token: '{{ csrf_token() }}'
-                    }, function (res) {
-                        Swal.fire('Berhasil', res.message, 'success');
-                        if (typeof tableLomba !== 'undefined') {
-                            tableLomba.ajax.reload(null, false);
-                        }
-                    }).fail(function (xhr) {
-                        let errorMsg = 'Terjadi kesalahan saat memproses data.';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMsg = xhr.responseJSON.message;
-                        }
-                        Swal.fire('Gagal', errorMsg, 'error');
-                    });
-                }
-            });
-        }, 500);
-    }
-
+            setTimeout(() => {
+                Swal.fire({
+                    title: title,
+                    icon: icon,
+                    showCancelButton: true,
+                    confirmButtonText: confirmText,
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: aksi === 'approve' ? '#28a745' : '#d33'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        $.post(url, {
+                            _token: '{{ csrf_token() }}'
+                        }, function(res) {
+                            Swal.fire('Berhasil', res.message, 'success');
+                            if (typeof tableLomba !== 'undefined') {
+                                tableLomba.ajax.reload(null, false);
+                            }
+                        }).fail(function(xhr) {
+                            let errorMsg = 'Terjadi kesalahan saat memproses data.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMsg = xhr.responseJSON.message;
+                            }
+                            Swal.fire('Gagal', errorMsg, 'error');
+                        });
+                    }
+                });
+            }, 500);
+        }
     </script>
 @endpush

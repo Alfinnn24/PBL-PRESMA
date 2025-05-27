@@ -4,7 +4,7 @@
     <div class="container-fluid">
         {{-- background profile BG --}}
         <div class="profile-header"
-            style="background: url('{{ asset('images/bgprofile.png') }}') center/cover no-repeat; height: 200px;">
+            style="background: url('{{ asset('images/polinemas.png') }}') center/cover no-repeat; height: 200px;">
         </div>
 
         {{-- Foto Profil & nama nim --}}

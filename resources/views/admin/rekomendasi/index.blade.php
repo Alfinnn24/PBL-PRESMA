@@ -39,7 +39,7 @@
                         </div> -->
             </div>
 
-            <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_rekomendasi"
+            <table class="table modern-table display nowrap" id="table_rekomendasi"
                 style="width:100%">
                 <thead>
                     <tr>
@@ -61,7 +61,9 @@
         data-keyboard="false" aria-hidden="true">
     </div>
 @endsection
-
+@push('css')
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
+@endpush
 @push('js')
     <script>
         function modalAction(url = '') {

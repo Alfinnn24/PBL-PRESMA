@@ -18,7 +18,7 @@
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover table-sm display nowrap"
+                <table class="table modern-table display nowrap"
                     id="table_program_studi" style="width:100%">
                     <thead>
                         <tr>
@@ -43,7 +43,9 @@
         </div>
     </div>
 @endsection
-
+@push('css')
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
+@endpush
 @push('js')
     <script>
         // Fungsi AJAX untuk memuat konten ke dalam modal

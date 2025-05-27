@@ -47,7 +47,7 @@
                 </div>
             </div>
 
-            <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_prestasi"
+            <table class="table modern-table display nowrap" id="table_prestasi"
                 style="width:100%">
                 <thead>
                     <tr>
@@ -71,6 +71,7 @@
 
 @push('css')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
 @endpush
 
 @push('js')

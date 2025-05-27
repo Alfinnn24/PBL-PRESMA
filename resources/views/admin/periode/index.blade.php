@@ -33,8 +33,7 @@
                     </div>
                 </div>
             </div>
-            <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_periode"
-                style="width:100%">
+            <table class="table modern-table display nowrap" id="table_periode" style="width:100%">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -52,6 +51,7 @@
 @endsection
 
 @push('css')
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
 @endpush
 
 @push('js')
