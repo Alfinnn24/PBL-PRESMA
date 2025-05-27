@@ -137,7 +137,7 @@
                     @if (Auth::user()->role === 'mahasiswa' && Auth::user()->mahasiswa && Auth::user()->mahasiswa->foto_profile) {{ asset('storage/' . Auth::user()->mahasiswa->foto_profile) }}
                     @elseif(Auth::user()->role === 'dosen' && Auth::user()->dosen && Auth::user()->dosen->foto_profile){{ asset('storage/' . Auth::user()->dosen->foto_profile) }}
                     @elseif(Auth::user()->role === 'admin' && Auth::user()->admin && Auth::user()->admin->foto_profile){{ asset('storage/' . Auth::user()->admin->foto_profile) }}
-                    @else{{ asset('images/default-profile.png') }} @endif"
+                    @else{{ asset('images/default-profile2.jpg') }} @endif"
                         alt="Profile"
                         class="img-fluid"
                         style="

@@ -12,7 +12,7 @@
             <div class="d-flex align-items-end" style="margin-left: 50px; gap: 30px;">
                 {{-- Foto Profil --}}
                 <div style="width: 150px; height: 150px; z-index: 2; position: relative;">
-                    <img src="{{ $detail->foto_profile ? asset('storage/' . $detail->foto_profile) : asset('images/default-profile.png') }}"
+                    <img src="{{ $detail->foto_profile ? asset('storage/' . $detail->foto_profile) : asset('images/default-profile2.jpg') }}"
                         alt="Foto Profil" class="rounded-circle"
                         style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
                 </div>
