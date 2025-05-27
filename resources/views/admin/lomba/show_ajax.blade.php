@@ -83,8 +83,6 @@
         </div>
         <div class="modal-footer">
             <button type="button" data-dismiss="modal" class="btn btn-primary">Tutup</button>
-            <button type="button" onclick="ubahStatus({{ $lomba->id }}, 'approve')" class="btn btn-success">Setujui</button>
-            <button type="button" onclick="ubahStatus({{ $lomba->id }}, 'reject')" class="btn btn-danger">Tolak</button>
         </div>
     </div>
 </div>

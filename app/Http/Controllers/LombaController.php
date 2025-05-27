@@ -294,30 +294,4 @@ class LombaController extends Controller
         return view('admin.lomba.show_ajax', ['lomba' =>$lomba]);
     }
 
-    public function approve(Request $request, string $id)
-{
-    $lomba = LombaModel::find($id);
-    if (!$lomba) {
-        return response()->json(['status' => 'error', 'message' => 'Lomba tidak ditemukan'], 404);
-    }
-
-    $lomba->is_verified = 'Disetujui';
-    $lomba->save();
-
-    return response()->json(['status' => 'success', 'message' => 'Lomba disetujui']);
-}
-
-public function reject(Request $request, string $id)
-{
-    $lomba = LombaModel::find($id);
-    if (!$lomba) {
-        return response()->json(['status' => 'error', 'message' => 'Lomba tidak ditemukan'], 404);
-    }
-
-    $lomba->is_verified = 'Ditolak';
-    $lomba->save();
-
-    return response()->json(['status' => 'success', 'message' => 'Lomba ditolak']);
-}
-
 }
