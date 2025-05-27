@@ -5,7 +5,8 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('dosen/lomba/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Lomba</button>
+                <button onclick="modalAction('{{ url('dosen/lomba/create_ajax') }}')"
+                    class="btn btn-sm btn-success mt-1">Tambah Lomba</button>
             </div>
         </div>
         <div class="card-body">
@@ -46,24 +47,24 @@
                 </div>
             </div>
             <div style="overflow-x:auto;">
-            <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_lomba"
-                style="width:100%">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Periode Lomba</th>
-                        <th>Nama Lomba</th>
-                        <th>Penyelenggara Lomba</th>
-                        <th>Tingkat Lomba</th>
-                        <th>Bidang Keahlian Lomba</th>
-                        <th>Tanggal Mulai Lomba</th>
-                        <th>Tanggal Selesai Lomba</th>
-                        <th>Status Lomba</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
+                <table class="table modern-table display nowrap" id="table_lomba"
+                    style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Periode Lomba</th>
+                            <th>Nama Lomba</th>
+                            <th>Penyelenggara Lomba</th>
+                            <th>Tingkat Lomba</th>
+                            <th>Bidang Keahlian Lomba</th>
+                            <th>Tanggal Mulai Lomba</th>
+                            <th>Tanggal Selesai Lomba</th>
+                            <th>Status Lomba</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
@@ -71,6 +72,7 @@
 @endsection
 
 @push('css')
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
 @endpush
 
 @push('js')
@@ -173,6 +175,5 @@
             });
 
         });
-
     </script>
 @endpush

@@ -22,19 +22,18 @@
                     </select>
                 </div>
                 <!-- <div class="col-md-3">
-                                            <label>Kecocokan</label>
-                                            <select id="filter_kecocokan" class="form-control">
-                                                <option value="">- Semua -</option>
-                                                <option value="tinggi">Sangat direkomendasikan</option>
-                                                <option value="sedang">Direkomendasikan</option>
-                                                <option value="rendah">Cukup direkomendasikan</option>
-                                                <option value="srendah">Tidak direkomendasikan</option>
-                                            </select>
-                                        </div> -->
+                                                <label>Kecocokan</label>
+                                                <select id="filter_kecocokan" class="form-control">
+                                                    <option value="">- Semua -</option>
+                                                    <option value="tinggi">Sangat direkomendasikan</option>
+                                                    <option value="sedang">Direkomendasikan</option>
+                                                    <option value="rendah">Cukup direkomendasikan</option>
+                                                    <option value="srendah">Tidak direkomendasikan</option>
+                                                </select>
+                                            </div> -->
             </div>
 
-            <table class="table table-bordered table-striped table-hover table-sm display nowrap" id="table_rekomendasi"
-                style="width:100%">
+            <table class="table modern-table display nowrap" id="table_rekomendasi" style="width:100%">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -55,45 +54,68 @@
         data-keyboard="false" aria-hidden="true">
     </div>
 @endsection
-
+@push('css')
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
+@endpush
 @push('js')
     <script>
         function modalAction(url = '') {
             $('#myModal').modal('hide').removeData('bs.modal');
             $('#myModal').html('');
-            $('#myModal').load(url, function () {
+            $('#myModal').load(url, function() {
                 $('#myModal').modal('show');
             });
         }
 
         var tableRekomendasi;
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             tableRekomendasi = $('#table_rekomendasi').DataTable({
                 serverSide: true,
                 ajax: {
                     url: "{{ url('rekomendasi/list') }}",
                     type: "POST",
                     dataType: "json",
-                    data: function (d) {
+                    data: function(d) {
                         d.status = $('#filter_status').val();
                         d.kecocokan = $('#filter_kecocokan').val();
                         d._token = '{{ csrf_token() }}';
                         d._ts = Date.now();
                     }
                 },
-                columns: [
-                    { data: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
-                    { data: 'lomba' },
-                    { data: 'kategori' },
-                    { data: 'penyelenggara' },
-                    { data: 'tingkat', className: "text-capitalize" },
-                    { data: 'statusDosen', className: "text-capitalize" },
-                    { data: 'aksi', className: "text-center", orderable: false, searchable: false }
+                columns: [{
+                        data: 'DT_RowIndex',
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'lomba'
+                    },
+                    {
+                        data: 'kategori'
+                    },
+                    {
+                        data: 'penyelenggara'
+                    },
+                    {
+                        data: 'tingkat',
+                        className: "text-capitalize"
+                    },
+                    {
+                        data: 'statusDosen',
+                        className: "text-capitalize"
+                    },
+                    {
+                        data: 'aksi',
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    }
                 ]
             });
 
-            $('#filter_status, #filter_kecocokan').on('change', function () {
+            $('#filter_status, #filter_kecocokan').on('change', function() {
                 tableRekomendasi.ajax.reload();
             });
         });
@@ -125,10 +147,10 @@
 
                         $.post(url, {
                             _token: '{{ csrf_token() }}'
-                        }, function (res) {
+                        }, function(res) {
                             Swal.fire('Berhasil', res.message, 'success');
                             tableRekomendasi.ajax.reload(null, false);
-                        }).fail(function () {
+                        }).fail(function() {
                             Swal.fire('Gagal', 'Terjadi kesalahan saat memproses data.', 'error');
                         });
 
