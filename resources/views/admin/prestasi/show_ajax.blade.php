@@ -79,7 +79,9 @@
                     </tr>
                     <tr>
                         <th>Tanggal Lomba</th>
-                        <td>{{ $prestasi->lomba->tanggal_mulai }} s.d. {{ $prestasi->lomba->tanggal_selesai }}</td>
+                        <td>{{ \Carbon\Carbon::parse($prestasi->lomba->tanggal_mulai)->format('d/m/Y') }} s.d.
+                            {{ \Carbon\Carbon::parse($prestasi->lomba->tanggal_selesai)->format('d/m/Y') }}
+                        </td>
                     </tr>
                     <tr>
                         <th>Link Registrasi</th>

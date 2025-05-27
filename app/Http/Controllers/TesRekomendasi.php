@@ -10,7 +10,7 @@ use App\Services\TopsisSpkService;
 
 class TesRekomendasi extends Controller
 {
-    protected $topsisService;
+    public $topsisService;
 
     public function __construct(TopsisSpkService $topsisService)
     {
@@ -19,7 +19,10 @@ class TesRekomendasi extends Controller
 
     public function prosesSemuaLombaDenganTopsis()
     {
-        $lombas = LombaModel::with('bidangKeahlian')->get();
+        // Ambil hanya lomba yang disetujui
+        $lombas = LombaModel::with('bidangKeahlian')
+            ->where('is_verified', 'Disetujui')
+            ->get();
 
         $hasilAkhir = [];
 
@@ -33,37 +36,36 @@ class TesRekomendasi extends Controller
                     'nim' => $rekom['nim'],
                     'nama' => $rekom['nama'],
                     'skor' => $rekom['skor'],
-                    'matriks' => $rekom['matriks'] ?? [],
+                    'matriks' => $rekom['matriks'],
                     'dosen_pembimbing_id' => null,
                 ];
             }
         }
 
-        // Simpan hasil rekomendasi ke dalam tabel rekomendasi_lomba
         foreach ($hasilAkhir as $data) {
-            RekomendasiLombaModel::updateOrCreate(
-                [
+            $rekom = RekomendasiLombaModel::where('lomba_id', $data['lomba_id'])
+                ->where('mahasiswa_nim', $data['nim'])
+                ->first();
+
+            if ($rekom) {
+                // Hanya update skor jika statusnya masih Pending
+                if ($rekom->status == 'Pending') {
+                    $rekom->update([
+                        'skor' => $data['skor'],
+                    ]);
+                }
+            } else {
+                // Buat rekomendasi baru dengan status Pending
+                RekomendasiLombaModel::create([
                     'lomba_id' => $data['lomba_id'],
                     'mahasiswa_nim' => $data['nim'],
-                ],
-                [
-                    'nama' => $data['nama'],
                     'skor' => $data['skor'],
-                    'dosen_pembimbing_id' => $data['dosen_pembimbing_id'],
                     'status' => 'Pending',
-                ]
-            );
+                    'dosen_pembimbing_id' => null,
+                ]);
+            }
         }
 
         return response()->json($hasilAkhir);
-    }
-
-    public function lihatHasilTopsis($idLomba)
-    {
-        $lomba = LombaModel::with('bidangKeahlian')->findOrFail($idLomba);
-
-        $hasilRekomendasi = $this->topsisService->prosesRekomendasi($lomba);
-
-        return response()->json($hasilRekomendasi);
     }
 }
