@@ -14,6 +14,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DosenBimbinganController;
 use App\Http\Controllers\DosenLombaController;
 use App\Http\Controllers\VerifikasiLombaController;
+use App\Http\Controllers\NotificationController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -35,7 +37,7 @@ Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('register', [AuthController::class, 'postregister']);
 
 Route::middleware(['auth'])->group(function () { // artinya semua route di dalam group ini harus login dulu
-// jangan lupa nanti dimodifikasi sesusai dengan kebutuhan, terus kasih comment kalau sekiranya butuh
+    // jangan lupa nanti dimodifikasi sesusai dengan kebutuhan, terus kasih comment kalau sekiranya butuh
     Route::get('/', [WelcomeController::class, 'index']);
     // Route::get('/rekomendasi', [RekomendasiLombaController::class, 'index'])->name('rekomendasi.index');
     // Route::post('/rekomendasi/{id}', [RekomendasiLombaController::class, 'updateStatus'])->name('rekomendasi.updateStatus');
@@ -78,7 +80,6 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::post('/{id}/approve_ajax', [PrestasiController::class, 'approve_ajax']);
         Route::post('/{id}/reject_ajax', [PrestasiController::class, 'reject_ajax']);
         Route::get('/mahasiswa/search', [PrestasiController::class, 'search']);
-
     });
 
     Route::group(['prefix' => 'verifikasi_lomba'], function () {
@@ -127,14 +128,15 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
         Route::post('/list', [PrestasiController::class, 'list']);                      // menampilkan data prestasi dalam bentuk json untuk datatables
         Route::get('/create_ajax', [PrestasiController::class, 'create_ajax']);         // Menampilkan halaman form tambah prestasi Ajax
         Route::post('/ajax', [PrestasiController::class, 'store_ajax']);                // Menyimpan data prestasi baru Ajax
-        Route::get('/{id}/show_ajax', [PrestasiController::class, 'show_ajax']);        // menampilkan detail prestasi Ajax
+        Route::get('/{id}/show_ajax', [PrestasiController::class, 'show_ajax'])->name('prestasi.show_ajax');        // menampilkan detail prestasi Ajax
         Route::get('/{id}/edit_ajax', [PrestasiController::class, 'edit_ajax']);        // Menampilkan halaman form edit prestasi Ajax
         Route::put('/{id}/update_ajax', [PrestasiController::class, 'update_ajax']);    // Menyimpan perubahan data prestasi Ajax
         Route::get('/{id}/delete_ajax', [PrestasiController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete prestasi Ajax
         Route::delete('/{id}/delete_ajax', [PrestasiController::class, 'delete_ajax']); // Untuk hapus data prestasi Ajax
         Route::get('/lomba/{id}/detail', [PrestasiController::class, 'getDetail']);
-    });
+        Route::get('/{id}/show', [PrestasiController::class, 'show'])->name('prestasi.show');
 
+    });
 });
 
 Route::middleware(['authorize:dosen'])->prefix('dosen')->group(function () {
@@ -174,5 +176,12 @@ Route::middleware(['authorize:mahasiswa,admin,dosen'])->group(function () {
         Route::post('/{id}/approve_ajax', [RekomendasiLombaController::class, 'approve']);
         Route::post('/{id}/reject_ajax', [RekomendasiLombaController::class, 'reject']);
         Route::get('/dosen/{id}/detail', [RekomendasiLombaController::class, 'getDetail']);
+    });
+
+    Route::middleware('auth')->group(function () {
+        Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifikasi.index');
+        Route::get('/notifikasi/read/{id}', [NotificationController::class, 'read'])->name('notifikasi.read');
+        Route::get('/notifikasi/unreaded', [NotificationController::class, 'getUnreaded'])->name('notifikasi.unreaded');
+        Route::post('/notifikasi/readall', [NotificationController::class, 'readall'])->name('notifikasi.readall');
     });
 });
