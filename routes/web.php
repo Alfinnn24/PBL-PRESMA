@@ -13,7 +13,9 @@ use App\Http\Controllers\TesRekomendasi;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DosenBimbinganController;
 use App\Http\Controllers\DosenLombaController;
+use App\Http\Controllers\VerifikasiLombaController;
 use App\Http\Controllers\NotificationController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -80,6 +82,15 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::get('/mahasiswa/search', [PrestasiController::class, 'search']);
     });
 
+    Route::group(['prefix' => 'verifikasi_lomba'], function () {
+        Route::get('/', [VerifikasiLombaController::class, 'index']);                          // menampilkan halaman awal verifikasi lomba
+        Route::post('/list', [VerifikasiLombaController::class, 'list']);                      // menampilkan data lomba dalam bentuk json untuk datatables
+        Route::get('/{id}/show_ajax', [VerifikasiLombaController::class, 'show_ajax']);        // menampilkan detail lomba Ajax
+        Route::post('/{id}/approve', [VerifikasiLombaController::class, 'approve']);
+        Route::post('/{id}/reject', [VerifikasiLombaController::class, 'reject']);
+
+    });
+
     Route::group(['prefix' => 'lomba'], function () {
         Route::get('/', [LombaController::class, 'index']);                          // menampilkan halaman awal lomba
         Route::post('/list', [LombaController::class, 'list']);                      // menampilkan data lomba dalam bentuk json untuk datatables
@@ -90,8 +101,7 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::put('/{id}/update_ajax', [LombaController::class, 'update_ajax']);    // Menyimpan perubahan data lomba Ajax
         Route::get('/{id}/delete_ajax', [LombaController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete lomba Ajax
         Route::delete('/{id}/delete_ajax', [LombaController::class, 'delete_ajax']); // Untuk hapus data lomba Ajax
-        Route::post('/{id}/approve', [LombaController::class, 'approve']);
-        Route::post('/{id}/reject', [LombaController::class, 'reject']);
+
     });
 
     Route::group(['prefix' => 'program_studi'], function () {

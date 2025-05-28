@@ -53,7 +53,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'veriflomba' ? 'active' : '' }}">
+            <a href="{{ url('/verifikasi_lomba') }}" class="nav-link {{ $activeMenu == 'verifikasi_lomba' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-check"></i>
                 <p>Verifikasi Lomba</p>
             </a>
