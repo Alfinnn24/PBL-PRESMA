@@ -8,17 +8,23 @@ use App\Models\MahasiswaModel;
 use App\Models\DetailPrestasiModel;
 use App\Models\PeriodeModel;
 use App\Models\BidangKeahlianModel;
+use App\Models\UserModel;
+use App\Notifications\UserNotification;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 
 class PrestasiController extends Controller
 {
     public function index()
     {
         $user = auth()->user();
-
+        // $notifications = $user->unreadNotifications->map(function ($notification) {
+        //     return $notification->data;
+        // });
+        // dd($notifications);
         $breadcrumb = (object) [
             'title' => 'Data Prestasi',
             'list' => ['Home', 'Prestasi']
@@ -191,11 +197,26 @@ class PrestasiController extends Controller
             ]);
         }
 
+        // Jika user bukan admin
+        if ($user->role != 'admin') {
+            // Kirim notifikasi ke admin
+            $userAdmin = UserModel::where('role', 'admin')->get();
+            Notification::send($userAdmin, new UserNotification((object) [
+                'title' => 'Pengajuan Prestasi Baru',
+                // 'message' =>  $userName . ' telah mengajukan prestasi untuk disetujui.',
+                'message' =>  $user->mahasiswa->nama_lengkap . ' telah mengajukan prestasi untuk disetujui.',
+                'linkTitle' => 'Lihat Detail',
+                // 'link' => url('/prestasi/' . $prestasi->id .'/show_ajax')
+                'link' => route('prestasi.show', ['id' => $prestasi->id])
+            ]));
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Prestasi berhasil ditambahkan'
         ]);
     }
+
 
 
     public function show_ajax($id)
@@ -206,6 +227,36 @@ class PrestasiController extends Controller
             return view('admin.prestasi.show_ajax', compact('prestasi'));
         } else {
             return view('prestasi.show_ajax', compact('prestasi'));
+        }
+    }
+
+    public function show($id)
+    {
+        $user = auth()->user();
+
+        $prestasi = PrestasiModel::with([
+            'lomba.bidangKeahlian',
+            'detailPrestasi.mahasiswa.programStudi',
+            'creator.mahasiswa',
+            'creator.dosen',
+            'creator.admin'
+        ])->findOrFail($id);
+
+        $breadcrumb = (object) [
+            'title' => 'Detail Prestasi',
+            'list' => ['Home', 'Prestasi', 'Detail']
+        ];
+
+        $page = (object) [
+            'title' => 'Detail Prestasi Mahasiswa'
+        ];
+
+        $activeMenu = 'verifprestasi';
+
+        if ($user->role === 'admin') {
+            return view('admin.prestasi.show', compact('prestasi', 'breadcrumb', 'page', 'activeMenu'));
+        } else {
+            return view('prestasi.show', compact('prestasi', 'breadcrumb', 'page', 'activeMenu'));
         }
     }
 
@@ -353,6 +404,4 @@ class PrestasiController extends Controller
             ]
         ]);
     }
-
-
 }

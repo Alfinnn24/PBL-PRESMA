@@ -128,12 +128,14 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
         Route::post('/list', [PrestasiController::class, 'list']);                      // menampilkan data prestasi dalam bentuk json untuk datatables
         Route::get('/create_ajax', [PrestasiController::class, 'create_ajax']);         // Menampilkan halaman form tambah prestasi Ajax
         Route::post('/ajax', [PrestasiController::class, 'store_ajax']);                // Menyimpan data prestasi baru Ajax
-        Route::get('/{id}/show_ajax', [PrestasiController::class, 'show_ajax']);        // menampilkan detail prestasi Ajax
+        Route::get('/{id}/show_ajax', [PrestasiController::class, 'show_ajax'])->name('prestasi.show_ajax');        // menampilkan detail prestasi Ajax
         Route::get('/{id}/edit_ajax', [PrestasiController::class, 'edit_ajax']);        // Menampilkan halaman form edit prestasi Ajax
         Route::put('/{id}/update_ajax', [PrestasiController::class, 'update_ajax']);    // Menyimpan perubahan data prestasi Ajax
         Route::get('/{id}/delete_ajax', [PrestasiController::class, 'confirm_ajax']);   // Untuk tampilkan form confirm delete prestasi Ajax
         Route::delete('/{id}/delete_ajax', [PrestasiController::class, 'delete_ajax']); // Untuk hapus data prestasi Ajax
         Route::get('/lomba/{id}/detail', [PrestasiController::class, 'getDetail']);
+        Route::get('/{id}/show', [PrestasiController::class, 'show'])->name('prestasi.show');
+
     });
 });
 
