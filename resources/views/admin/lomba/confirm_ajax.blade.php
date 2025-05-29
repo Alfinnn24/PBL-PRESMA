@@ -69,7 +69,7 @@
                         </tr>
                         <tr>
                             <th class="text-right col-3">Periode Lomba:</th>
-                            <td class="col-9">{{ $lomba->periode->nama }}</td>
+                            <td class="col-9">{{ $lomba->periode->display_name }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Pembuat Lomba:</th>
