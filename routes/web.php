@@ -129,10 +129,12 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
 
 
 // route untuk dosen
-Route::middleware(['authorize:dosen'])->prefix('dosen')->group(function () {
-    Route::get('/bimbingan', [DosenBimbinganController::class, 'index'])->name('dosen.bimbingan.index'); // Halaman daftar mahasiswa bimbingan
-    Route::get('/bimbingan/{nim}', [DosenBimbinganController::class, 'show'])->name('dosen.bimbingan.show'); // Detail prestasi mahasiswa bimbingan
-    Route::post('/bimbingan/list', [DosenBimbinganController::class, 'list'])->name('dosen.bimbingan.list'); // Endpoint DataTables AJAX untuk daftar mahasiswa bimbingan
+Route::middleware(['authorize:dosen'])->group(function () {
+    Route::group(['prefix' => 'dosen'], function () {
+        Route::get('/bimbingan', [DosenBimbinganController::class, 'index'])->name('dosen.bimbingan.index'); // Halaman daftar mahasiswa bimbingan
+        Route::get('/bimbingan/{nim}', [DosenBimbinganController::class, 'show'])->name('dosen.bimbingan.show'); // Detail prestasi mahasiswa bimbingan
+        Route::post('/bimbingan/list', [DosenBimbinganController::class, 'list'])->name('dosen.bimbingan.list'); // Endpoint DataTables AJAX untuk daftar mahasiswa bimbingan
+    });
 
     Route::group(['prefix' => 'dosen/lomba'], function () {
         Route::get('/', [DosenLombaController::class, 'index']);                          // menampilkan halaman awal lomba dosen

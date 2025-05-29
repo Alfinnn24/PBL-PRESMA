@@ -26,8 +26,8 @@ class TopsisSpkService
             foreach ($mhs->sertifikasis as $sertifikasi) {
                 $bidang = $sertifikasi->kategori ?? 'Lainnya';
                 $nilaiSertifikasi += BidangKeahlianMatcher::getSkor($kategoriLomba, $bidang);
-                \Log::info("Lomba {$kategoriLomba} Kategori {$bidang}");
-                \Log::info("Nilai sertifikasi {$mhs->nama_lengkap}: {$nilaiSertifikasi}");
+                // \Log::info("Lomba {$kategoriLomba} Kategori {$bidang}");
+                // \Log::info("Nilai sertifikasi {$mhs->nama_lengkap}: {$nilaiSertifikasi}");
             }
 
             $nilaiKeahlian = 0;
@@ -35,8 +35,8 @@ class TopsisSpkService
                 $keahlian = $item->bidangKeahlian->keahlian ?? null;
                 if ($keahlian) {
                     $nilaiKeahlian += BidangKeahlianMatcher::getSkor($kategoriLomba, $keahlian);
-                    \Log::info("Lomba {$kategoriLomba} Kategori {$keahlian}");
-                    \Log::info("Nilai keahlian {$mhs->nama_lengkap}: {$nilaiKeahlian}");
+                    // \Log::info("Lomba {$kategoriLomba} Kategori {$keahlian}");
+                    // \Log::info("Nilai keahlian {$mhs->nama_lengkap}: {$nilaiKeahlian}");
                 }
             }
 
@@ -44,8 +44,8 @@ class TopsisSpkService
             foreach ($mhs->pengalaman as $item) {
                 $kategoriItem = $item->kategori ?? 'Lainnya';
                 $nilaiPengalaman += BidangKeahlianMatcher::getSkor($kategoriLomba, $kategoriItem);
-                \Log::info("Lomba {$kategoriLomba} Kategori {$kategoriItem}");
-                \Log::info("Nilai pengalaman {$mhs->nama_lengkap}: {$nilaiPengalaman}");
+                // \Log::info("Lomba {$kategoriLomba} Kategori {$kategoriItem}");
+                // \Log::info("Nilai pengalaman {$mhs->nama_lengkap}: {$nilaiPengalaman}");
             }
 
             $nilaiPrestasi = 0;
@@ -57,8 +57,8 @@ class TopsisSpkService
                     $kategoriPrestasi = optional($prestasi->lomba->bidangKeahlian)->keahlian;
                     if ($kategoriPrestasi) {
                         $nilaiPrestasi += BidangKeahlianMatcher::getSkor($kategoriLomba, $kategoriPrestasi);
-                        \Log::info("Lomba {$kategoriLomba} Kategori {$kategoriPrestasi}");
-                        \Log::info("Nilai prestasi {$mhs->nama_lengkap}: {$nilaiPrestasi}");
+                        // \Log::info("Lomba {$kategoriLomba} Kategori {$kategoriPrestasi}");
+                        // \Log::info("Nilai prestasi {$mhs->nama_lengkap}: {$nilaiPrestasi}");
                     }
                 }
             }
@@ -86,7 +86,7 @@ class TopsisSpkService
             // ]);
         }
 
-        \Log::info('Matriks keputusan awal', $matriks);
+        // \Log::info('Matriks keputusan awal', $matriks);
 
         if (count($matriks) === 0)
             return [];
@@ -105,7 +105,7 @@ class TopsisSpkService
         $akarJumlahKuadrat = array_map(fn($x) => sqrt($x ?: 1), $jumlahKuadrat); // Hindari pembagian 0
 
 
-        \Log::info('Akar jumlah kuadrat', $akarJumlahKuadrat);
+        // \Log::info('Akar jumlah kuadrat', $akarJumlahKuadrat);
 
         $normalisasi = [];
         foreach ($matriks as $row) {
@@ -118,16 +118,16 @@ class TopsisSpkService
                     array_keys($row['nilai'])
                 ),
             ];
-            \Log::info('Normalisasi', [
-                'nim' => $row['nim'],
-                'nama' => $row['nama'],
-                'nilai' => [
-                    'sertifikasi' => $normalisasi[array_key_last($normalisasi)]['nilai'][0],
-                    'keahlian' => $normalisasi[array_key_last($normalisasi)]['nilai'][1],
-                    'pengalaman' => $normalisasi[array_key_last($normalisasi)]['nilai'][2],
-                    'prestasi' => $normalisasi[array_key_last($normalisasi)]['nilai'][3],
-                ],
-            ]);
+            // \Log::info('Normalisasi', [
+            //     'nim' => $row['nim'],
+            //     'nama' => $row['nama'],
+            //     'nilai' => [
+            //         'sertifikasi' => $normalisasi[array_key_last($normalisasi)]['nilai'][0],
+            //         'keahlian' => $normalisasi[array_key_last($normalisasi)]['nilai'][1],
+            //         'pengalaman' => $normalisasi[array_key_last($normalisasi)]['nilai'][2],
+            //         'prestasi' => $normalisasi[array_key_last($normalisasi)]['nilai'][3],
+            //     ],
+            // ]);
         }
 
         // Matriks terbobot
@@ -142,16 +142,16 @@ class TopsisSpkService
                 'nama' => $row['nama'],
                 'nilai' => $nilaiTerbobot,
             ];
-            \Log::info('Matriks terbobot', [
-                'nim' => $row['nim'],
-                'nama' => $row['nama'],
-                'nilai' => [
-                    'sertifikasi' => $nilaiTerbobot[0],
-                    'keahlian' => $nilaiTerbobot[1],
-                    'pengalaman' => $nilaiTerbobot[2],
-                    'prestasi' => $nilaiTerbobot[3],
-                ],
-            ]);
+            // \Log::info('Matriks terbobot', [
+            //     'nim' => $row['nim'],
+            //     'nama' => $row['nama'],
+            //     'nilai' => [
+            //         'sertifikasi' => $nilaiTerbobot[0],
+            //         'keahlian' => $nilaiTerbobot[1],
+            //         'pengalaman' => $nilaiTerbobot[2],
+            //         'prestasi' => $nilaiTerbobot[3],
+            //     ],
+            // ]);
         }
 
         // Solusi ideal
@@ -164,8 +164,8 @@ class TopsisSpkService
             $solusiIdealNegatif[$j] = min($nilaiKolom);
         }
 
-        \Log::info('Solusi ideal positif', $solusiIdealPositif);
-        \Log::info('Solusi ideal negatif', $solusiIdealNegatif);
+        // \Log::info('Solusi ideal positif', $solusiIdealPositif);
+        // \Log::info('Solusi ideal negatif', $solusiIdealNegatif);
         // Hitung skor preferensi
         $hasil = [];
         foreach ($matriksTerbobot as $row) {
@@ -187,11 +187,11 @@ class TopsisSpkService
                 'nama' => $row['nama'],
                 'skor' => round($nilaiPreferensi, 4),
             ];
-            \Log::info('Hasil preferensi', [
-                'nim' => $row['nim'],
-                'nama' => $row['nama'],
-                'skor' => $nilaiPreferensi,
-            ]);
+            // \Log::info('Hasil preferensi', [
+            //     'nim' => $row['nim'],
+            //     'nama' => $row['nama'],
+            //     'skor' => $nilaiPreferensi,
+            // ]);
         }
 
         usort($hasil, fn($a, $b) => $b['skor'] <=> $a['skor']);

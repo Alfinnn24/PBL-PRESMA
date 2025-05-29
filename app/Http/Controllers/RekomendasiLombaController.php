@@ -333,10 +333,10 @@ class RekomendasiLombaController extends Controller
         $rekomendasi->status = 'Disetujui';
         $rekomendasi->save();
 
-        // Jika dosen juga sudah menyetujui, insert ke dosen_pembimbing
+        // Tambahkan ke dosen_pembimbing jika dosen juga sudah menyetujui
         if ($rekomendasi->status_dosen === 'Disetujui') {
             $exists = \DB::table('dosen_pembimbing')
-                ->where('dosen_id', $rekomendasi->dosen_id)
+                ->where('dosen_id', $rekomendasi->dosen_pembimbing_id)
                 ->where('mahasiswa_nim', $rekomendasi->mahasiswa_nim)
                 ->exists();
 
@@ -352,6 +352,7 @@ class RekomendasiLombaController extends Controller
 
         return response()->json(['status' => 'success', 'message' => 'Rekomendasi lomba disetujui']);
     }
+
 
     public function reject(Request $request, string $id)
     {
@@ -370,21 +371,20 @@ class RekomendasiLombaController extends Controller
         RekomendasiLombaModel::where('lomba_id', $rekomendasi->lomba_id)
             ->update(['status_dosen' => 'Disetujui']);
 
-        // Ambil semua rekomendasi lomba yg sudah disetujui mahasiswa juga
+        // Ambil semua rekomendasi lomba dengan status mahasiswa 'Disetujui'
         $disetujuiMahasiswa = RekomendasiLombaModel::where('lomba_id', $rekomendasi->lomba_id)
             ->where('status', 'Disetujui')
             ->get();
 
         foreach ($disetujuiMahasiswa as $item) {
-            // Cek apakah sudah ada di tabel dosen_pembimbing
             $exists = \DB::table('dosen_pembimbing')
-                ->where('dosen_id', $item->dosen_id)
+                ->where('dosen_id', $item->dosen_pembimbing_id)
                 ->where('mahasiswa_nim', $item->mahasiswa_nim)
                 ->exists();
 
             if (!$exists) {
                 \DB::table('dosen_pembimbing')->insert([
-                    'dosen_id' => $item->dosen_id,
+                    'dosen_id' => $item->dosen_pembimbing_id,
                     'mahasiswa_nim' => $item->mahasiswa_nim,
                     'created_at' => now(),
                     'updated_at' => now(),
