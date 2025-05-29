@@ -95,7 +95,7 @@
                             $('#myModal').modal('hide');
                             if (response.status) {
                                 Swal.fire({ icon: 'success', title: 'Berhasil', text: response.message });
-                                dataRekomendasi.ajax.reload(); // Sesuaikan dengan nama variabel DataTable kamu
+                                tableRekomendasi.ajax.reload(); // Sesuaikan dengan nama variabel DataTable kamu
                             } else {
                                 $('.error-text').text('');
                                 if (response.msgField) {
