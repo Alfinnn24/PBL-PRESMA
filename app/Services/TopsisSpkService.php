@@ -50,13 +50,19 @@ class TopsisSpkService
 
             $nilaiPrestasi = 0;
             foreach ($mhs->prestasi as $detailPrestasi) {
-                $kategoriPrestasi = optional($detailPrestasi->prestasi->lomba->bidangKeahlian)->keahlian;
-                if ($kategoriPrestasi) {
-                    $nilaiPrestasi += BidangKeahlianMatcher::getSkor($kategoriLomba, $kategoriPrestasi);
-                    \Log::info("Lomba {$kategoriLomba} Kategori {$kategoriPrestasi}");
-                    \Log::info("Nilai prestasi {$mhs->nama_lengkap}: {$nilaiPrestasi}");
+                $prestasi = $detailPrestasi->prestasi;
+
+                // Cek apakah prestasi ada dan sudah disetujui
+                if ($prestasi && $prestasi->status === 'Disetujui') {
+                    $kategoriPrestasi = optional($prestasi->lomba->bidangKeahlian)->keahlian;
+                    if ($kategoriPrestasi) {
+                        $nilaiPrestasi += BidangKeahlianMatcher::getSkor($kategoriLomba, $kategoriPrestasi);
+                        \Log::info("Lomba {$kategoriLomba} Kategori {$kategoriPrestasi}");
+                        \Log::info("Nilai prestasi {$mhs->nama_lengkap}: {$nilaiPrestasi}");
+                    }
                 }
             }
+
 
             $matriks[] = [
                 'nim' => $mhs->nim,
