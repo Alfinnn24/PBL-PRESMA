@@ -69,7 +69,7 @@
                 </tr>
                 <tr>
                     <th>Periode Lomba</th>
-                    <td>{{ $lomba->periode->nama }}</td>
+                    <td>{{ $lomba->periode->display_name }}</td>
                 </tr>
                 <tr>
                     <th>Pembuat Lomba</th>

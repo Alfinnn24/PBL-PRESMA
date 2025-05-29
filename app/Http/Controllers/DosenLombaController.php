@@ -26,7 +26,10 @@ class DosenLombaController extends Controller
         
         $activeMenu = 'lomba_dosen';
         $bidang_keahlian = BidangKeahlianModel::all();
-        $periode = PeriodeModel::all();
+        $periode = PeriodeModel::all()->map(function($item) {
+            $item->display_name = $item->nama . ' ' . $item->semester;
+            return $item;
+        });        
         
         return view('dosen.lomba.index', [
             'breadcrumb' => $breadcrumb, 
@@ -54,7 +57,7 @@ class DosenLombaController extends Controller
             'lomba.link_registrasi',
             'lomba.tanggal_mulai',
             'lomba.tanggal_selesai',
-            'periode.nama as periode_id',
+            \DB::raw("CONCAT(periode.nama, ' ', periode.semester) as periode_display_name"),
             'lomba.is_verified'
         )
         ->whereIn('lomba.is_verified', ['Disetujui', 'Pending', 'Ditolak']) // tampilkan yang disetujui, pending, ditolak
@@ -84,7 +87,10 @@ class DosenLombaController extends Controller
 public function create_ajax() 
 {
     $bidang_keahlian = BidangKeahlianModel::select('id', 'keahlian')->distinct()->get();
-    $periode = PeriodeModel::select('id', 'nama')->distinct()->get();
+    $periode = PeriodeModel::select('id', 'nama', 'semester')->distinct()->get()->map(function($item) {
+        $item->display_name = $item->nama . ' ' . $item->semester;
+        return $item;
+    });
     $tingkat_lomba = ['Kota/Kabupaten', 'Provinsi', 'Nasional', 'Internasional'];
 
     return view('dosen.lomba.create_ajax', [
