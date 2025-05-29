@@ -26,7 +26,10 @@ class VerifikasiLombaController extends Controller
         
         $activeMenu = 'verifikasi_lomba';
         $bidang_keahlian = BidangKeahlianModel::all();
-        $periode = PeriodeModel::all();
+        $periode = PeriodeModel::all()->map(function($item) {
+            $item->display_name = $item->nama . ' ' . $item->semester;
+            return $item;
+        });   
         
         return view('admin.verifikasi_lomba.index', [
             'breadcrumb' => $breadcrumb, 
@@ -51,7 +54,7 @@ class VerifikasiLombaController extends Controller
             'lomba.link_registrasi',
             'lomba.tanggal_mulai',
             'lomba.tanggal_selesai',
-            'periode.nama as periode_id',
+            \DB::raw("CONCAT(periode.nama, ' ', periode.semester) as periode_display_name"),
             'lomba.is_verified'
         )
         ->where('lomba.is_verified', 'Pending');
