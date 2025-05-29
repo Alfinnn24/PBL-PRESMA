@@ -26,7 +26,10 @@ class LombaController extends Controller
         
         $activeMenu = 'lomba';
         $bidang_keahlian = BidangKeahlianModel::all();
-        $periode = PeriodeModel::all();
+        $periode = PeriodeModel::all()->map(function($item) {
+            $item->display_name = $item->nama . ' ' . $item->semester;
+            return $item;
+        });        
         
         return view('admin.lomba.index', [
             'breadcrumb' => $breadcrumb, 
@@ -53,7 +56,7 @@ class LombaController extends Controller
             'lomba.link_registrasi',
             'lomba.tanggal_mulai',
             'lomba.tanggal_selesai',
-            'periode.nama as periode_id',
+            \DB::raw("CONCAT(periode.nama, ' ', periode.semester) as periode_display_name"),
             'lomba.is_verified'
         )
         ->when($request->bidang_keahlian, function ($query) use ($request) {
@@ -85,7 +88,10 @@ class LombaController extends Controller
     public function create_ajax() 
     {
         $bidang_keahlian = BidangKeahlianModel::select('id', 'keahlian')->distinct()->get();
-        $periode = PeriodeModel::select('id', 'nama')->distinct()->get();
+        $periode = PeriodeModel::select('id', 'nama', 'semester')->distinct()->get()->map(function($item) {
+            $item->display_name = $item->nama . ' ' . $item->semester;
+            return $item;
+        });
         $tingkat_lomba = ['Kota/Kabupaten', 'Provinsi', 'Nasional', 'Internasional'];
     
         return view('admin.lomba.create_ajax', [
@@ -177,7 +183,10 @@ class LombaController extends Controller
 
     // Ambil data bidang_keahlian, periode, dan user
     $bidang_keahlian = BidangKeahlianModel::select('id', 'keahlian')->distinct()->get();
-    $periode = PeriodeModel::select('id', 'nama')->distinct()->get();
+    $periode = PeriodeModel::select('id', 'nama', 'semester')->distinct()->get()->map(function($item) {
+        $item->display_name = $item->nama . ' ' . $item->semester;
+        return $item;
+    });
     $tingkat_lomba = ['Kota/Kabupaten', 'Provinsi', 'Nasional', 'Internasional'];
 
 

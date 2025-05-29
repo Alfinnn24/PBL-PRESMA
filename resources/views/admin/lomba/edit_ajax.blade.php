@@ -100,7 +100,7 @@
                 <select name="periode_id" id="periode_id" class="form-control" required>
                     <option value="">- Pilih Periode -</option>
                     @foreach($periode as $item)
-                        <option value="{{ $item->id }}" {{ $lomba->periode_id == $item->id ? 'selected' : '' }}>{{ $item->nama }}</option>
+                        <option value="{{ $item->id }}" {{ $lomba->periode_id == $item->id ? 'selected' : '' }}>{{ $item->display_name }}</option>
                     @endforeach
                 </select>
                 <small id="error-periode_id" class="error-text form-text text-danger"></small>
