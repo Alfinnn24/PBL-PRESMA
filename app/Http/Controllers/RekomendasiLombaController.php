@@ -27,12 +27,12 @@ class RekomendasiLombaController extends Controller
         $this->topsisService->prosesSemuaLombaDenganTopsis();
 
         $breadcrumb = (object) [
-            'title' => 'Rekomendasi Lomba',
+            'title' => 'Data Lomba',
             'list' => ['Lomba', 'Rekomendasi']
         ];
 
         $page = (object) [
-            'title' => 'Daftar rekomendasi lomba berdasarkan peran pengguna'
+            'title' => 'Daftar lomba dengan skor kecocokan'
         ];
 
         $activeMenu = 'rekomendasiLomba';
@@ -231,7 +231,7 @@ class RekomendasiLombaController extends Controller
             $tolakApprove = ($data->status == 'Ditolak') || RekomendasiLombaModel::where('lomba_id', $data->lomba_id)->where('status', 'Disetujui')->count() >= $data->lomba->jumlah_peserta ? 'disabled' : '';
             return '
         <button class="btn btn-sm btn-info" onclick="modalAction(\'' . url('/rekomendasi/' . $data->lomba_id . '/show_ajax') . '\')">Detail</button>
-        <button class="btn btn-sm btn-success" onclick="ubahStatus(' . $data->id . ', \'approve\')" ' . $disabledApprove . '>Setujui</button>
+        <button class="btn btn-sm btn-success" onclick="buatPendaftaran(' . $data->lomba_id . ')" ' . $disabledApprove . '>Daftar</button>
         <button class="btn btn-sm btn-danger" onclick="ubahStatus(' . $data->id . ', \'reject\')" ' . $tolakApprove . '>Tolak</button>';
         }
     }
