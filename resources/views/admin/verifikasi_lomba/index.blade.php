@@ -96,7 +96,7 @@
                         width: "40px"
                     },
                     {
-                        data: "periode_id",
+                        data: "periode_display_name",
                         className: "text-center",
                         orderable: true,
                         searchable: true,
