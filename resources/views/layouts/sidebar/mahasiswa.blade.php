@@ -20,16 +20,17 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'pendaftaranlomba' ? 'active' : '' }}">
-                <i class="nav-icon fas fa-solid fa-folder-open"></i>
-                <p>Pendaftaran Lomba</p>
-            </a>
-        </li>
-        <li class="nav-item">
             <a href="{{ url('/rekomendasi') }}"
                 class="nav-link {{ $activeMenu == 'rekomendasiLomba' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-trophy"></i>
-                <p>Rekomendasi Lomba</p>
+                <p>Daftar Lomba</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url('/pendaftaran') }}"
+                class="nav-link {{ $activeMenu == 'pendaftaranlomba' ? 'active' : '' }}">
+                <i class="nav-icon fas fa-solid fa-folder-open"></i>
+                <p>History Lomba</p>
             </a>
         </li>
         {{-- <li class="nav-item">
