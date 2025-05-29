@@ -57,7 +57,7 @@ class DosenLombaController extends Controller
             'periode.nama as periode_id',
             'lomba.is_verified'
         )
-        ->where('lomba.is_verified', 'Disetujui') // Hanya tampilkan yang disetujui
+        ->whereIn('lomba.is_verified', ['Disetujui', 'Pending', 'Ditolak']) // tampilkan yang disetujui, pending, ditolak
         ->where('lomba.created_by', $dosenId)     // Filter hanya yang dibuat oleh dosen login
         ->when($request->bidang_keahlian, function ($query) use ($request) {
             $query->where('lomba.bidang_keahlian_id', $request->bidang_keahlian);
@@ -165,13 +165,12 @@ public function show_ajax(string $id)
 {
     $lomba = LombaModel::with(['creator.dosen', 'creator.admin'])->find($id);
 
-    // Optional: Batasi hanya menampilkan yang sudah disetujui
-    if (!$lomba || $lomba->is_verified !== 'Disetujui') {
+    if (!$lomba || !in_array($lomba->is_verified, ['Disetujui', 'Pending', 'Ditolak'])) {
         return response()->json([
             'status' => false,
-            'message' => 'Lomba tidak ditemukan atau belum disetujui.'
+            'message' => 'Lomba tidak ditemukan atau statusnya tidak valid.'
         ]);
-    }
+    }    
 
     return view('dosen.lomba.show_ajax', ['lomba' => $lomba]);
 }
