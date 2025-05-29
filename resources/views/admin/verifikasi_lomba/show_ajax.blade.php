@@ -61,11 +61,11 @@
                 </tr>
                 <tr>
                     <th>Tanggal Mulai Lomba</th>
-                    <td>{{ $lomba->tanggal_mulai }}</td>
+                    <td>{{ \Carbon\Carbon::parse($lomba->tanggal_mulai)->format('d-m-Y') }}</td>
                 </tr>
                 <tr>
                     <th>Tanggal Selesai Lomba</th>
-                    <td>{{ $lomba->tanggal_selesai }}</td>
+                    <td>{{ \Carbon\Carbon::parse($lomba->tanggal_selesai)->format('d-m-Y') }}</td>
                 </tr>
                 <tr>
                     <th>Periode Lomba</th>
