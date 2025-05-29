@@ -176,6 +176,16 @@ class RekomendasiLombaController extends Controller
             }
         }
 
+        $orderColumnIndex = $request->input('order.0.column');
+        $orderDir = $request->input('order.0.dir');
+        $orderColumnName = $request->input("columns.$orderColumnIndex.data");
+
+        if ($orderColumnName && in_array($orderColumnName, ['lomba', 'mahasiswa', 'status', 'hasil_rekomendasi', 'dosen'])) {
+            $flatList = $flatList->sortBy(function ($item) use ($orderColumnName) {
+                return strtolower($item[$orderColumnName] ?? '');
+            }, SORT_REGULAR, $orderDir === 'desc')->values();
+        }
+
         $totalRecords = $flatList->count();
 
         // Ambil data sesuai offset dan limit DataTables
