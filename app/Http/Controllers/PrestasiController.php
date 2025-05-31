@@ -203,10 +203,8 @@ class PrestasiController extends Controller
             $userAdmin = UserModel::where('role', 'admin')->get();
             Notification::send($userAdmin, new UserNotification((object) [
                 'title' => 'Pengajuan Prestasi Baru',
-                // 'message' =>  $userName . ' telah mengajukan prestasi untuk disetujui.',
                 'message' =>  $user->mahasiswa->nama_lengkap . ' telah mengajukan prestasi untuk disetujui.',
                 'linkTitle' => 'Lihat Detail',
-                // 'link' => url('/prestasi/' . $prestasi->id .'/show_ajax')
                 'link' => route('prestasi.show', ['id' => $prestasi->id])
             ]));
         }
@@ -356,6 +354,8 @@ class PrestasiController extends Controller
         $prestasi->status = 'Disetujui';
         $prestasi->save();
 
+        $this->sendNotifikasiMahasiswa($prestasi, 'Disetujui');
+
         return response()->json(['success' => 'Prestasi berhasil disetujui']);
     }
 
@@ -372,7 +372,36 @@ class PrestasiController extends Controller
         $prestasi->catatan = $catatan;
         $prestasi->save();
 
+        $this->sendNotifikasiMahasiswa($prestasi, 'Ditolak', $catatan);
+        
         return response()->json(['success' => 'Prestasi berhasil ditolak']);
+    }
+    private function sendNotifikasiMahasiswa(PrestasiModel $prestasi, string $status, string $catatan = null)
+    {
+        // Dapatkan semua mahasiswa yang terlibat dalam prestasi ini
+        $mahasiswas = $prestasi->detailPrestasi()->with('mahasiswa.user')->get()
+            ->pluck('mahasiswa.user')
+            ->filter();
+
+        // Jika tidak ada relasi detail, coba melalui creator
+        if ($mahasiswas->isEmpty() && $prestasi->creator) {
+            $mahasiswas = collect([$prestasi->creator]);
+        }
+
+        foreach ($mahasiswas as $user) {
+            if ($user) {
+                $message = $status === 'Disetujui'
+                    ? 'Prestasi Anda "' . $prestasi->nama_prestasi . '" telah disetujui'
+                    : 'Prestasi Anda "' . $prestasi->nama_prestasi . '" ditolak. Catatan: ' . $catatan;
+
+                Notification::send($user, new UserNotification((object) [
+                    'title' => 'Prestasi ' . $status,
+                    'message' => $message,
+                    'linkTitle' => 'Lihat Detail',
+                    'link' => route('prestasi.show', ['id' => $prestasi->id])
+                ]));
+            }
+        }
     }
 
     public function search(Request $request)

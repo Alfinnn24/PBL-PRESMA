@@ -33,7 +33,7 @@ class NotificationController extends Controller
                     return isset($row->data['link']) ? url($row->data['link']) : '#';
                 })
                 ->addColumn('created_at', function ($row) {
-                    return $row->created_at ? $row->created_at->format('Y-m-d H:i:s') : null;
+                    return $row->created_at ? $row->created_at->format('d-m-Y') : null;
                 })
                 ->rawColumns(['judul', 'pesan'])
                 ->make(true);
@@ -53,9 +53,11 @@ class NotificationController extends Controller
     }
     public function read($id)
     {
-        $notification = auth()->user()->notifications()->findOrFail($id);
-        $notification->markAsRead();
+        $user = auth()->user();
+        $notification = $user->notifications()->findOrFail($id);
+        // $notification->markAsRead();
         $link = $notification->data['link'] ?? '/';
+        $notification->delete(); // Menghapus notifikasi
         return redirect($link);
     }
     public function getUnreaded()

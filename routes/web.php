@@ -175,7 +175,7 @@ Route::middleware(['authorize:mahasiswa,admin,dosen'])->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifikasi.index');
-        Route::get('/notifikasi/read/{id}', [NotificationController::class, 'read'])->name('notifikasi.read');
+        Route::get('/notifikasi/read/{notification_id}', [NotificationController::class, 'read'])->name('notifikasi.read');
         Route::get('/notifikasi/unreaded', [NotificationController::class, 'getUnreaded'])->name('notifikasi.unreaded');
         Route::post('/notifikasi/readall', [NotificationController::class, 'readall'])->name('notifikasi.readall');
     });
