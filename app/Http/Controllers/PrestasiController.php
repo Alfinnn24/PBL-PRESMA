@@ -124,7 +124,7 @@ class PrestasiController extends Controller
         $user = auth()->user();
 
         $mahasiswa = MahasiswaModel::all();
-        $lomba = LombaModel::all();
+        $lomba = LombaModel::where('is_verified', 'DIsetujui')->get();
 
         if ($user->role === 'admin') {
             return view('admin.prestasi.create_ajax', compact('mahasiswa', 'lomba'));
@@ -203,7 +203,7 @@ class PrestasiController extends Controller
             $userAdmin = UserModel::where('role', 'admin')->get();
             Notification::send($userAdmin, new UserNotification((object) [
                 'title' => 'Pengajuan Prestasi Baru',
-                'message' =>  $user->mahasiswa->nama_lengkap . ' telah mengajukan prestasi untuk disetujui.',
+                'message' => $user->mahasiswa->nama_lengkap . ' telah mengajukan prestasi untuk disetujui.',
                 'linkTitle' => 'Lihat Detail',
                 'link' => route('prestasi.show', ['id' => $prestasi->id])
             ]));
@@ -261,7 +261,7 @@ class PrestasiController extends Controller
 
     public function edit_ajax($id)
     {
-        $lomba = LombaModel::all();
+        $lomba = LombaModel::where('is_verified', 'DIsetujui')->get();
         $prestasi = PrestasiModel::with(['lomba.bidangKeahlian', 'detailPrestasi'])->findOrFail($id);
         $mahasiswa = MahasiswaModel::all();
         return view('prestasi.edit_ajax', compact('prestasi', 'mahasiswa', 'lomba'));
@@ -373,7 +373,7 @@ class PrestasiController extends Controller
         $prestasi->save();
 
         $this->sendNotifikasiMahasiswa($prestasi, 'Ditolak', $catatan);
-        
+
         return response()->json(['success' => 'Prestasi berhasil ditolak']);
     }
     private function sendNotifikasiMahasiswa(PrestasiModel $prestasi, string $status, string $catatan = null)
