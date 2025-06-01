@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="login-card-right">
-                    <img src="{{ asset('images/student2.jpg') }}" alt="Student 2">
+                    <img src="{{ asset('images/polinemas.png') }}" alt="Student 2">
                 </div>
             </div>
         </div>
