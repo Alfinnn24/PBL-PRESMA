@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LombaModel;
 use App\Models\MahasiswaModel;
 use App\Models\DosenModel;
+use App\Models\PendaftaranLombaModel;
 use App\Models\RekomendasiLombaModel;
 use App\Models\DosenPembimbingModel;
 use App\Services\TopsisSpkService;
@@ -315,6 +316,10 @@ class RekomendasiLombaController extends Controller
         }
 
         try {
+            // Hapus data dosen pembimbing yang terkait dengan mahasiswa_nim
+            DosenPembimbingModel::where('mahasiswa_nim', $rekomendasi->mahasiswa_nim)->delete();
+            PendaftaranLombaModel::where('mahasiswa_nim', $rekomendasi->mahasiswa_nim)->delete();
+
             $rekomendasi->delete();
             return response()->json([
                 'status' => true,
