@@ -70,9 +70,8 @@ class PendaftaranController extends Controller
                 return ucfirst($row->status);
             })
             ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\'' . url('/pendaftaran-lomba/' . $row->id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/pendaftaran-lomba/' . $row->id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/pendaftaran-lomba/' . $row->id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button>';
+                $btn = '<button onclick="modalAction(\'' . url('/pendaftaran/' . $row->id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/pendaftaran/' . $row->id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -185,11 +184,11 @@ class PendaftaranController extends Controller
             ]);
         }
 
-        $mahasiswa = MahasiswaModel::select('nim', 'nama')->get();
+        $mahasiswa = MahasiswaModel::select('nim', 'nama_lengkap')->get();
         $lomba = LombaModel::select('id', 'nama')->get();
         $status = ['Terdaftar', 'Selesai', 'Dibatalkan'];
 
-        return view('admin.pendaftaran_lomba.edit_ajax', [
+        return view('pendaftaran.edit_ajax', [
             'pendaftaran' => $pendaftaran,
             'mahasiswa' => $mahasiswa,
             'lomba' => $lomba,
@@ -210,8 +209,6 @@ class PendaftaranController extends Controller
             }
 
             $rules = [
-                'mahasiswa_nim' => 'required|exists:mahasiswa,nim',
-                'lomba_id' => 'required|exists:lomba,id',
                 'status' => 'required|in:Terdaftar,Selesai,Dibatalkan',
                 'hasil' => 'nullable|string|max:255'
             ];
@@ -226,24 +223,11 @@ class PendaftaranController extends Controller
                 ]);
             }
 
-            // Cek duplikasi
-            $duplicate = PendaftaranLombaModel::where('mahasiswa_nim', $request->mahasiswa_nim)
-                ->where('lomba_id', $request->lomba_id)
-                ->where('id', '!=', $id)
-                ->exists();
-
-            if ($duplicate) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Mahasiswa sudah terdaftar pada lomba ini.'
-                ]);
-            }
-
-            $pendaftaran->update($request->only(['mahasiswa_nim', 'lomba_id', 'status', 'hasil']));
+            $pendaftaran->update($request->only(['status', 'hasil']));
 
             return response()->json([
                 'status' => true,
-                'message' => 'Data berhasil diupdate'
+                'message' => 'Data berhasil diupdate.'
             ]);
         }
 
@@ -285,8 +269,14 @@ class PendaftaranController extends Controller
 
     public function show_ajax(string $id)
     {
-        $pendaftaran = PendaftaranLombaModel::with(['mahasiswa', 'lomba'])->find($id);
-        return view('admin.pendaftaran_lomba.show_ajax', ['pendaftaran' => $pendaftaran]);
+        $pendaftaran = PendaftaranLombaModel::with([
+            'mahasiswa',
+            'lomba.bidangKeahlian',
+            'lomba.creator',
+            'lomba.periode'
+        ])->find($id);
+
+        return view('pendaftaran.show_ajax', compact('pendaftaran'));
     }
 
     public function getDetail($id)
