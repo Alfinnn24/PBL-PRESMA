@@ -61,6 +61,12 @@ class VerifikasiLombaController extends Controller
 
     return DataTables::of($lomba)
         ->addIndexColumn()
+        ->filterColumn('keahlian', function($query, $keyword) {
+            $query->where('bidang_keahlian.keahlian', 'like', "%{$keyword}%");
+        })
+        ->filterColumn('periode_display_name', function($query, $keyword) {
+            $query->whereRaw("CONCAT(periode.nama, ' ', periode.semester) like ?", ["%{$keyword}%"]);
+        })
         ->addColumn('aksi', function ($lomba) {
             return '
             <button onclick="modalAction(\''.url('/verifikasi_lomba/'.$lomba->id.'/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button>

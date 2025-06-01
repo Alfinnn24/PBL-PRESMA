@@ -74,8 +74,8 @@ class DosenLombaController extends Controller
         ->filterColumn('keahlian', function($query, $keyword) {
             $query->where('bidang_keahlian.keahlian', 'like', "%{$keyword}%");
         })
-        ->filterColumn('periode_nama', function($query, $keyword) {
-            $query->where('periode.nama', 'like', "%{$keyword}%");
+        ->filterColumn('periode_display_name', function($query, $keyword) {
+            $query->whereRaw("CONCAT(periode.nama, ' ', periode.semester) like ?", ["%{$keyword}%"]);
         })
         ->addColumn('aksi', function ($lomba) {
             return '<button onclick="modalAction(\''.url('/dosen/lomba/' . $lomba->id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button>';
@@ -109,7 +109,7 @@ public function store_ajax(Request $request)
             'tingkat'            => 'required|string|max:50',
             'bidang_keahlian_id' => 'required|exists:bidang_keahlian,id',
             'persyaratan'        => 'nullable|string|max:500',
-            'jumlah_peserta'     => 'nullable|integer|min:1',
+            'jumlah_peserta'     => 'nullable|integer|min:1|max:10',
             'link_registrasi'    => 'nullable|url|max:255',
             'tanggal_mulai'      => 'required|date',
             'tanggal_selesai'    => 'required|date|after:tanggal_mulai',

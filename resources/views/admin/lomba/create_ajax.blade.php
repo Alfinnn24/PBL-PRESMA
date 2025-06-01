@@ -115,7 +115,8 @@
             },
               jumlah_peserta: {
                 digits: true,
-                min: 1
+                min: 1,
+                max: 10
             },
               link_registrasi: {
                 url: true,
