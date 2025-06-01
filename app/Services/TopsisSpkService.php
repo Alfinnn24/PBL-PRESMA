@@ -227,12 +227,22 @@ class TopsisSpkService
             if ($rekom) {
                 $rekom->update(['skor' => $data['skor']]);
             } else {
+                // Cari dosen_pembimbing_id dan status_dosen dari rekomendasi lomba yang sama jika ada
+                $existingRekom = RekomendasiLombaModel::where('lomba_id', $data['lomba_id'])
+                    ->whereNotNull('dosen_pembimbing_id')
+                    ->orderByDesc('id')
+                    ->first();
+
+                $dosenPembimbingId = $existingRekom ? $existingRekom->dosen_pembimbing_id : null;
+                $statusDosen = $existingRekom ? $existingRekom->status_dosen : null;
+
                 RekomendasiLombaModel::create([
                     'lomba_id' => $data['lomba_id'],
                     'mahasiswa_nim' => $data['nim'],
                     'skor' => $data['skor'],
                     'status' => 'Pending',
-                    'dosen_pembimbing_id' => null,
+                    'dosen_pembimbing_id' => $dosenPembimbingId,
+                    'status_dosen' => $statusDosen,
                 ]);
             }
         }
