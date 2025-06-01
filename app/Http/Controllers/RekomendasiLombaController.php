@@ -317,8 +317,12 @@ class RekomendasiLombaController extends Controller
 
         try {
             // Hapus data dosen pembimbing yang terkait dengan mahasiswa_nim
-            DosenPembimbingModel::where('mahasiswa_nim', $rekomendasi->mahasiswa_nim)->delete();
-            PendaftaranLombaModel::where('mahasiswa_nim', $rekomendasi->mahasiswa_nim)->delete();
+            DosenPembimbingModel::where('mahasiswa_nim', $rekomendasi->mahasiswa_nim)
+                ->where('dosen_id', $rekomendasi->dosen_pembimbing_id)
+                ->delete();
+            PendaftaranLombaModel::where('mahasiswa_nim', $rekomendasi->mahasiswa_nim)
+                ->where('lomba_id', $rekomendasi->lomba_id)
+                ->delete();
 
             $rekomendasi->delete();
             return response()->json([
