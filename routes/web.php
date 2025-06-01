@@ -17,6 +17,7 @@ use App\Http\Controllers\VerifikasiLombaController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PendaftaranController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -29,7 +30,7 @@ use App\Http\Controllers\PendaftaranController;
 */
 
 Route::pattern('id', '[0-9]+'); // artinya ketika ada parameter (id), maka harus berupa angka
-
+Route::get('landing', [AuthController::class, 'landing'])->name('landing');
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
