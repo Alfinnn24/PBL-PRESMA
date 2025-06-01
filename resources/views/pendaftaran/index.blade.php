@@ -36,9 +36,12 @@
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>Periode Lomba</th>
                             <th>Nama Lomba</th>
-                            <th>Penyelenggara</th>
-                            <th>Tanggal Ditambahkan</th>
+                            <th>Penyelenggara Lomba</th>
+                            <th>Tingkat Lomba</th>
+                            <th>Bidang Keahlian Lomba</th>
+                            <th>Status Lomba</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -46,6 +49,8 @@
             </div>
         </div>
     </div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 
 @push('css')
@@ -79,7 +84,6 @@
         function initTablePendaftaran() {
             tablePendaftaran = $('#table_pendaftaran').DataTable({
                 serverSide: true,
-                processing: true,
                 ajax: {
                     url: "{{ url('pendaftaran/list') }}",
                     type: "POST",
@@ -99,19 +103,68 @@
         function initTableTambahan() {
             tableTambahan = $('#table_tambahan').DataTable({
                 serverSide: true,
-                processing: true,
                 ajax: {
-                    url: "{{ url('lomba/list') }}",
+                    url: "{{ url('dosen/lomba/list') }}",
                     type: "POST",
                     data: { _token: '{{ csrf_token() }}' }
                 },
-                columns: [
-                    { data: 'DT_RowIndex', className: "text-center" },
-                    { data: 'nama_lomba' },
-                    { data: 'penyelenggara' },
-                    { data: 'created_at', className: "text-center" },
-                    { data: 'aksi', orderable: false, searchable: false, className: "text-center" }
-                ]
+                columns: [{
+                    data: "DT_RowIndex",
+                    className: "text-center",
+                    orderable: false,
+                    searchable: false,
+                    width: "40px"
+                },
+                {
+                    data: "periode_display_name",
+                    className: "text-center",
+                    orderable: true,
+                    searchable: true,
+                    width: "150px"
+                },
+                {
+                    data: "nama",
+                    className: "text-center",
+                    orderable: true,
+                    searchable: true,
+                    width: "150px"
+                },
+                {
+                    data: "penyelenggara",
+                    className: "text-center",
+                    orderable: true,
+                    searchable: true,
+                    width: "200px"
+                },
+                {
+                    data: "tingkat",
+                    className: "text-center",
+                    orderable: true,
+                    searchable: true,
+                    width: "150px"
+                },
+                {
+                    data: "keahlian",
+                    className: "text-center",
+                    orderable: true,
+                    searchable: true,
+                    width: "150px"
+                },
+                {
+                    data: "is_verified",
+                    className: "text-center",
+                    orderable: true,
+                    searchable: true,
+                    width: "150px"
+                },
+                {
+                    data: "aksi",
+                    className: "text-center",
+                    orderable: false,
+                    searchable: false,
+                    width: "200px"
+                }
+                ],
             });
         }
 

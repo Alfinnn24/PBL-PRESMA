@@ -128,6 +128,16 @@ Route::middleware(['authorize:mahasiswa,admin'])->group(function () {
     });
 });
 
+// route untuk mahasiswa, dan dosen
+Route::middleware(['authorize:mahasiswa,dosen'])->group(function () {
+    Route::group(['prefix' => 'dosen/lomba'], function () {
+        Route::get('/', [DosenLombaController::class, 'index']);                          // menampilkan halaman awal lomba dosen
+        Route::post('/list', [DosenLombaController::class, 'list']);                      // datatables
+        Route::get('/create_ajax', [DosenLombaController::class, 'create_ajax']);         // form tambah ajax
+        Route::post('/ajax', [DosenLombaController::class, 'store_ajax']);                // simpan data lomba
+        Route::get('/{id}/show_ajax', [DosenLombaController::class, 'show_ajax']);
+    });
+});
 
 // route untuk dosen
 Route::middleware(['authorize:dosen'])->group(function () {
@@ -137,13 +147,6 @@ Route::middleware(['authorize:dosen'])->group(function () {
         Route::post('/bimbingan/list', [DosenBimbinganController::class, 'list'])->name('dosen.bimbingan.list'); // Endpoint DataTables AJAX untuk daftar mahasiswa bimbingan
     });
 
-    Route::group(['prefix' => 'dosen/lomba'], function () {
-        Route::get('/', [DosenLombaController::class, 'index']);                          // menampilkan halaman awal lomba dosen
-        Route::post('/list', [DosenLombaController::class, 'list']);                      // datatables
-        Route::get('/create_ajax', [DosenLombaController::class, 'create_ajax']);         // form tambah ajax
-        Route::post('/ajax', [DosenLombaController::class, 'store_ajax']);                // simpan data lomba
-        Route::get('/{id}/show_ajax', [DosenLombaController::class, 'show_ajax']);
-    });
 
     Route::group(['prefix' => 'rekomendasi'], function () {
         Route::post('/{id}/approve_dosen', [RekomendasiLombaController::class, 'approveDosen']);

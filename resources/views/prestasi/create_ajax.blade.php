@@ -26,7 +26,7 @@
                     </select>
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <span>Tidak ada lomba yang tersedia?</span>
-                        <a href="{{ url('/lomba') }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <a href="{{ url('/rekomendasi') }}" target="_blank" class="btn btn-sm btn-outline-primary">
                             + Tambah Lomba
                         </a>
                     </div>
@@ -166,24 +166,24 @@
     });
 
     $('#lomba_id').on('change', function () {
-            let id = $(this).val();
-            if (id) {
-                $.get("/prestasi/lomba/" + id + "/detail", function (res) {
-                    if (res.status) {
-                        $('#info-lomba').removeClass('d-none');
-                        $('#penyelenggara').val(res.data.penyelenggara || '-');
-                        $('#tanggal_perolehan').val(res.data.tanggal_perolehan || '');
-                        $('#tingkat').val(res.data.tingkat || '-');
-                        $('#kategori').val(res.data.kategori || '-');
-                    } else {
-                        $('#info-lomba').addClass('d-none');
-                    }
-                }).fail(function () {
+        let id = $(this).val();
+        if (id) {
+            $.get("/prestasi/lomba/" + id + "/detail", function (res) {
+                if (res.status) {
+                    $('#info-lomba').removeClass('d-none');
+                    $('#penyelenggara').val(res.data.penyelenggara || '-');
+                    $('#tanggal_perolehan').val(res.data.tanggal_perolehan || '');
+                    $('#tingkat').val(res.data.tingkat || '-');
+                    $('#kategori').val(res.data.kategori || '-');
+                } else {
                     $('#info-lomba').addClass('d-none');
-                });
-            } else {
+                }
+            }).fail(function () {
                 $('#info-lomba').addClass('d-none');
-            }
-        });
+            });
+        } else {
+            $('#info-lomba').addClass('d-none');
+        }
+    });
 
 </script>
