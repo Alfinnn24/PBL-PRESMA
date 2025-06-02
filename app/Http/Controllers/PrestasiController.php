@@ -139,9 +139,7 @@ class PrestasiController extends Controller
 
         // Pastikan input mahasiswa_nim menjadi array
         $mahasiswaNimInput = $request->input('mahasiswa_nim');
-        $mahasiswaNimArray = is_array($mahasiswaNimInput)
-            ? $mahasiswaNimInput
-            : [$mahasiswaNimInput];
+        $mahasiswaNimArray = is_array($mahasiswaNimInput) ? $mahasiswaNimInput : [$mahasiswaNimInput];
 
         // Validasi input
         $validator = Validator::make([
@@ -167,6 +165,52 @@ class PrestasiController extends Controller
             ]);
         }
 
+        // Cek apakah sudah ada prestasi dengan kombinasi nama, lomba, tahun, dan semester
+        $existingPrestasi = PrestasiModel::where('nama_prestasi', $request->nama_prestasi)
+            ->where('lomba_id', $request->lomba_id)
+            ->first();
+
+        if ($existingPrestasi) {
+            $sudahAda = [];
+            $ditambahkan = [];
+
+            foreach ($mahasiswaNimArray as $nim) {
+                $sudahTerdaftar = DetailPrestasiModel::where('prestasi_id', $existingPrestasi->id)
+                    ->where('mahasiswa_nim', $nim)
+                    ->exists();
+
+                if ($sudahTerdaftar) {
+                    $sudahAda[] = $nim;
+                } else {
+                    DetailPrestasiModel::create([
+                        'prestasi_id' => $existingPrestasi->id,
+                        'mahasiswa_nim' => $nim
+                    ]);
+                    $ditambahkan[] = $nim;
+                }
+            }
+
+            // Kirim notifikasi ke admin jika user bukan admin
+            if ($user->role != 'admin' && count($ditambahkan) > 0) {
+                $userAdmin = UserModel::where('role', 'admin')->get();
+                Notification::send($userAdmin, new UserNotification((object) [
+                    'title' => 'Pengajuan Prestasi Ditambahkan',
+                    'message' => $user->mahasiswa->nama_lengkap . ' ditambahkan ke prestasi yang sudah ada.',
+                    'linkTitle' => 'Lihat Detail',
+                    'link' => route('prestasi.show', ['id' => $existingPrestasi->id])
+                ]));
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Prestasi sudah ada sebelumnya. Mahasiswa baru berhasil ditambahkan.',
+                'detail' => [
+                    'ditambahkan' => $ditambahkan,
+                    'sudah_ada' => $sudahAda
+                ]
+            ]);
+        }
+
         // Proses upload file
         $pathBukti = null;
         if ($request->hasFile('file_bukti')) {
@@ -179,17 +223,19 @@ class PrestasiController extends Controller
         // Status otomatis berdasarkan role user
         $status = $user->role == 'admin' ? 'Disetujui' : 'Pending';
 
-        // Simpan ke tabel prestasi
+        // Simpan ke tabel prestasi baru
         $prestasi = PrestasiModel::create([
             'nama_prestasi' => $request->nama_prestasi,
             'lomba_id' => $request->lomba_id,
+            'tahun' => $request->tahun,
+            'semester' => $request->semester,
             'file_bukti' => $pathBukti,
             'status' => $status,
             'catatan' => $request->catatan ?? '',
             'created_by' => $user->id
         ]);
 
-        // Simpan relasi mahasiswa ke tabel detail_prestasi
+        // Simpan ke detail prestasi
         foreach ($mahasiswaNimArray as $nim) {
             DetailPrestasiModel::create([
                 'prestasi_id' => $prestasi->id,
@@ -197,9 +243,8 @@ class PrestasiController extends Controller
             ]);
         }
 
-        // Jika user bukan admin
+        // Notifikasi untuk admin
         if ($user->role != 'admin') {
-            // Kirim notifikasi ke admin
             $userAdmin = UserModel::where('role', 'admin')->get();
             Notification::send($userAdmin, new UserNotification((object) [
                 'title' => 'Pengajuan Prestasi Baru',
@@ -211,10 +256,9 @@ class PrestasiController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Prestasi berhasil ditambahkan'
+            'message' => 'Prestasi berhasil ditambahkan.'
         ]);
     }
-
 
 
     public function show_ajax($id)
