@@ -73,10 +73,12 @@ class RekomendasiLombaController extends Controller
         // Filter berdasarkan status
         if ($request->status) {
             if ($user->role == 'dosen') {
-                // Kalau perlu filter khusus dosen, misal:
-                $rekomendasi->where('status_dosen', $request->status);
+                if ($request->status == 'pending') {
+                    $rekomendasi->whereNull('status_dosen');
+                } else {
+                    $rekomendasi->where('status_dosen', $request->status);
+                }
             } else {
-                // Untuk selain dosen, filter berdasarkan 'status'
                 $rekomendasi->where('status', $request->status);
             }
         }
@@ -92,6 +94,26 @@ class RekomendasiLombaController extends Controller
             } elseif ($request->kecocokan == 'srendah') {
                 $rekomendasi->where('skor', '<', 0.4);
             }
+        }
+
+        // Searchable untuk dosen
+        if ($user->role == 'dosen' && $request->has('search') && $request->search['value']) {
+            $search = strtolower($request->search['value']);
+            $rekomendasi->where(function ($q) use ($search) {
+                $q->whereHas('mahasiswa', function ($q2) use ($search) {
+                    $q2->whereRaw('LOWER(nama_lengkap) LIKE ?', ["%{$search}%"]);
+                })
+                    ->orWhereHas('lomba', function ($q2) use ($search) {
+                        $q2->whereRaw('LOWER(nama) LIKE ?', ["%{$search}%"])
+                            ->orWhereRaw('LOWER(penyelenggara) LIKE ?', ["%{$search}%"])
+                            ->orWhereRaw('LOWER(tingkat) LIKE ?', ["%{$search}%"]);
+                    })
+                    ->orWhereHas('lomba.bidangKeahlian', function ($q2) use ($search) {
+                        $q2->whereRaw('LOWER(keahlian) LIKE ?', ["%{$search}%"]);
+                    })
+                    ->orWhereRaw('LOWER(status) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(status_dosen) LIKE ?', ["%{$search}%"]);
+            });
         }
 
         return DataTables::of($rekomendasi)
@@ -116,13 +138,11 @@ class RekomendasiLombaController extends Controller
         $length = $request->get('length', 10);
         $draw = intval($request->get('draw', 1));
 
-        // Ambil filter
         $filterStatus = $request->get('status');
         $filterKecocokan = $request->get('kecocokan');
+        $searchValue = strtolower($request->input('search.value')); // Search dari DataTables
 
-        // Ambil semua lomba dan rekomendasi dulu (bisa dioptimasi nanti)
         $lombaList = LombaModel::with(['rekomendasi.mahasiswa', 'rekomendasi.dosen'])->get();
-
         $allLombaPeserta = collect();
 
         foreach ($lombaList as $lomba) {
@@ -160,7 +180,6 @@ class RekomendasiLombaController extends Controller
             ]);
         }
 
-        // Flatten semua peserta ke satu list
         $flatList = collect();
         foreach ($allLombaPeserta as $lombaData) {
             $rowspan = $lombaData['peserta']->count();
@@ -177,6 +196,18 @@ class RekomendasiLombaController extends Controller
             }
         }
 
+        // ✅ Filter berdasarkan pencarian global (search.value)
+        if (!empty($searchValue)) {
+            $flatList = $flatList->filter(function ($item) use ($searchValue) {
+                return str_contains(strtolower($item['lomba']), $searchValue) ||
+                    str_contains(strtolower($item['mahasiswa']), $searchValue) ||
+                    str_contains(strtolower($item['status']), $searchValue) ||
+                    str_contains(strtolower($item['hasil_rekomendasi']), $searchValue) ||
+                    str_contains(strtolower($item['dosen']), $searchValue);
+            })->values();
+        }
+
+        // Urutkan jika diperlukan
         $orderColumnIndex = $request->input('order.0.column');
         $orderDir = $request->input('order.0.dir');
         $orderColumnName = $request->input("columns.$orderColumnIndex.data");
@@ -189,16 +220,16 @@ class RekomendasiLombaController extends Controller
 
         $totalRecords = $flatList->count();
 
-        // Ambil data sesuai offset dan limit DataTables
         $pagedData = $flatList->slice($start, $length)->values();
 
         return response()->json([
             'draw' => $draw,
             'recordsTotal' => $totalRecords,
-            'recordsFiltered' => $totalRecords, // karena semua data sudah filter di atas
+            'recordsFiltered' => $totalRecords,
             'data' => $pagedData,
         ]);
     }
+
 
     // fungsi tambahan
     private function getHasilRekomendasi($skor)
