@@ -36,8 +36,7 @@
                     <strong>PERINGATAN!</strong> Menghapus program studi ini akan <u>menghapus seluruh data yang terkait</u>, seperti:
                     <ul class="mb-0">
                         <li>Data Mahasiswa</li>
-                        <li>Data Mata Kuliah</li>
-                        <li>Data Jadwal</li>
+                        <li>Data Dosen</li>
                         <li>Relasi lainnya dalam sistem</li>
                     </ul>
                     <p class="mt-2 mb-0">Lanjutkan hanya jika Anda yakin.</p>
