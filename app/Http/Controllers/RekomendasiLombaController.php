@@ -246,21 +246,27 @@ class RekomendasiLombaController extends Controller
 
     private function getAksiColumn($data, $user)
     {
+        // Cek apakah lomba sudah selesai
+        $isLombaSelesai = false;
+        if ($data->lomba && $data->lomba->tanggal_selesai) {
+            $isLombaSelesai = strtotime($data->lomba->tanggal_selesai) < strtotime(date('Y-m-d'));
+        }
+
         if ($user->role === 'admin') {
-            $disabledApproved = ($data->status_dosen == 'Disetujui') ? 'disabled' : '';
+            $disabledApproved = ($data->status_dosen == 'Disetujui' || $isLombaSelesai) ? 'disabled' : '';
             return '
         <button class="btn btn-sm btn-info" onclick="modalAction(\'' . url('/rekomendasi/' . $data->id . '/show_ajax') . '\')">Detail</button>
         <button class="btn btn-sm btn-warning" onclick="modalAction(\'' . url('/rekomendasi/' . $data->id . '/edit_ajax') . '\')"' . $disabledApproved . '>Edit</button>
         <button class="btn btn-sm btn-danger" onclick="modalAction(\'' . url('/rekomendasi/' . $data->id . '/delete_ajax') . '\')">Hapus</button>';
         } elseif ($user->role === 'dosen') {
-            $disabledApproved = ($data->status_dosen == 'Disetujui') ? 'disabled' : '';
+            $disabledApproved = ($data->status_dosen == 'Disetujui' || $isLombaSelesai) ? 'disabled' : '';
             return '
         <button class="btn btn-sm btn-info" onclick="modalAction(\'' . url('/rekomendasi/' . $data->lomba_id . '/show_ajax') . '\')">Detail</button>
         <button class="btn btn-sm btn-success" onclick="ubahStatusDosen(' . $data->id . ', \'approve\')"' . $disabledApproved . '>Setujui</button>
         <button class="btn btn-sm btn-danger" onclick="ubahStatusDosen(' . $data->id . ', \'reject\')"' . $disabledApproved . '>Tolak</button>';
         } else {
-            $disabledApprove = ($data->status == 'Disetujui' || RekomendasiLombaModel::where('lomba_id', $data->lomba_id)->where('status', 'Disetujui')->count() >= $data->lomba->jumlah_peserta) ? 'disabled' : '';
-            $tolakApprove = ($data->status == 'Ditolak') || RekomendasiLombaModel::where('lomba_id', $data->lomba_id)->where('status', 'Disetujui')->count() >= $data->lomba->jumlah_peserta ? 'disabled' : '';
+            $disabledApprove = ($data->status == 'Disetujui' || RekomendasiLombaModel::where('lomba_id', $data->lomba_id)->where('status', 'Disetujui')->count() >= $data->lomba->jumlah_peserta || $isLombaSelesai) ? 'disabled' : '';
+            $tolakApprove = ($data->status == 'Ditolak') || RekomendasiLombaModel::where('lomba_id', $data->lomba_id)->where('status', 'Disetujui')->count() >= $data->lomba->jumlah_peserta || $isLombaSelesai ? 'disabled' : '';
             return '
         <button class="btn btn-sm btn-info" onclick="modalAction(\'' . url('/rekomendasi/' . $data->lomba_id . '/show_ajax') . '\')">Detail</button>
         <button class="btn btn-sm btn-success" onclick="buatPendaftaran(' . $data->lomba_id . ')" ' . $disabledApprove . '>Daftar</button>
