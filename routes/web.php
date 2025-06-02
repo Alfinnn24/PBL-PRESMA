@@ -16,6 +16,7 @@ use App\Http\Controllers\DosenLombaController;
 use App\Http\Controllers\VerifikasiLombaController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\LaporanPrestasiController;
 
 
 /*
@@ -104,6 +105,20 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::get('/{id}/confirm_ajax', [ProgramStudiController::class, 'confirm_ajax']);    // Menampilkan form konfirmasi delete Ajax
         Route::delete('/{id}/delete_ajax', [ProgramStudiController::class, 'delete_ajax']);   // Menghapus data program studi Ajax
     });
+
+    Route::prefix('admin')->group(function () {
+        // Halaman utama laporan prestasi
+        Route::get('laporan-prestasi', [LaporanPrestasiController::class, 'index'])->name('laporan-prestasi.index');
+        // Route untuk DataTables AJAX (POST)
+        Route::post('laporan-prestasi/list', [LaporanPrestasiController::class, 'list'])->name('laporan-prestasi.list');
+        // Route untuk export
+        Route::get('laporan-prestasi-export-excel', [LaporanPrestasiController::class, 'exportExcel'])->name('laporan-prestasi.exportExcel');
+        Route::get('laporan-prestasi-export-pdf', [LaporanPrestasiController::class, 'exportPdf'])->name('laporan-prestasi.exportPdf');
+    });
+
+    //  Route::resource('laporan-prestasi', LaporanPrestasiController::class)->only(['index']);
+
+
 
     Route::get('/tes-rekomendasi/topsis', [TesRekomendasi::class, 'prosesSemuaLombaDenganTopsis']); //jangan dipake dulu masih belum stabil
     Route::get('/tes-topsis/{idLomba}', [TesRekomendasi::class, 'lihatHasilTopsis']);

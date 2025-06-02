@@ -27,11 +27,14 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'laporan' ? 'active' : '' }}">
+            <a href="{{ url('/admin/laporan-prestasi') }}"
+                class="nav-link {{ $activeMenu == 'laporanprestasi' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-file-contract"></i>
                 <p>Laporan & Analisis</p>
             </a>
         </li>
+
+
         <li class="nav-header">Manejemen Akademik</li>
         <li class="nav-item">
             <a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
