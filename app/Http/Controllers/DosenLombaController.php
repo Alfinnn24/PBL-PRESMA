@@ -26,7 +26,10 @@ class DosenLombaController extends Controller
         
         $activeMenu = 'lomba_dosen';
         $bidang_keahlian = BidangKeahlianModel::all();
-        $periode = PeriodeModel::all();
+        $periode = PeriodeModel::all()->map(function($item) {
+            $item->display_name = $item->nama . ' ' . $item->semester;
+            return $item;
+        });        
         
         return view('dosen.lomba.index', [
             'breadcrumb' => $breadcrumb, 
@@ -39,6 +42,8 @@ class DosenLombaController extends Controller
 
     public function list(Request $request)
 {
+    $dosenId = auth()->id(); // Ambil ID user login
+
     $lomba = LombaModel::join('bidang_keahlian', 'lomba.bidang_keahlian_id', '=', 'bidang_keahlian.id')
         ->join('periode', 'lomba.periode_id', '=', 'periode.id')
         ->select(
@@ -52,10 +57,11 @@ class DosenLombaController extends Controller
             'lomba.link_registrasi',
             'lomba.tanggal_mulai',
             'lomba.tanggal_selesai',
-            'periode.nama as periode_id',
+            \DB::raw("CONCAT(periode.nama, ' ', periode.semester) as periode_display_name"),
             'lomba.is_verified'
         )
-        ->where('lomba.is_verified', 'Disetujui') // Hanya tampilkan yang disetujui
+        ->whereIn('lomba.is_verified', ['Disetujui', 'Pending', 'Ditolak']) // tampilkan yang disetujui, pending, ditolak
+        ->where('lomba.created_by', $dosenId)     // Filter hanya yang dibuat oleh dosen login
         ->when($request->bidang_keahlian, function ($query) use ($request) {
             $query->where('lomba.bidang_keahlian_id', $request->bidang_keahlian);
         })
@@ -68,8 +74,8 @@ class DosenLombaController extends Controller
         ->filterColumn('keahlian', function($query, $keyword) {
             $query->where('bidang_keahlian.keahlian', 'like', "%{$keyword}%");
         })
-        ->filterColumn('periode_nama', function($query, $keyword) {
-            $query->where('periode.nama', 'like', "%{$keyword}%");
+        ->filterColumn('periode_display_name', function($query, $keyword) {
+            $query->whereRaw("CONCAT(periode.nama, ' ', periode.semester) like ?", ["%{$keyword}%"]);
         })
         ->addColumn('aksi', function ($lomba) {
             return '<button onclick="modalAction(\''.url('/dosen/lomba/' . $lomba->id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button>';
@@ -81,7 +87,10 @@ class DosenLombaController extends Controller
 public function create_ajax() 
 {
     $bidang_keahlian = BidangKeahlianModel::select('id', 'keahlian')->distinct()->get();
-    $periode = PeriodeModel::select('id', 'nama')->distinct()->get();
+    $periode = PeriodeModel::select('id', 'nama', 'semester')->distinct()->get()->map(function($item) {
+        $item->display_name = $item->nama . ' ' . $item->semester;
+        return $item;
+    });
     $tingkat_lomba = ['Kota/Kabupaten', 'Provinsi', 'Nasional', 'Internasional'];
 
     return view('dosen.lomba.create_ajax', [
@@ -100,7 +109,7 @@ public function store_ajax(Request $request)
             'tingkat'            => 'required|string|max:50',
             'bidang_keahlian_id' => 'required|exists:bidang_keahlian,id',
             'persyaratan'        => 'nullable|string|max:500',
-            'jumlah_peserta'     => 'nullable|integer|min:1',
+            'jumlah_peserta'     => 'nullable|integer|min:1|max:10',
             'link_registrasi'    => 'nullable|url|max:255',
             'tanggal_mulai'      => 'required|date',
             'tanggal_selesai'    => 'required|date|after:tanggal_mulai',
@@ -162,13 +171,12 @@ public function show_ajax(string $id)
 {
     $lomba = LombaModel::with(['creator.dosen', 'creator.admin'])->find($id);
 
-    // Optional: Batasi hanya menampilkan yang sudah disetujui
-    if (!$lomba || $lomba->is_verified !== 'Disetujui') {
+    if (!$lomba || !in_array($lomba->is_verified, ['Disetujui', 'Pending', 'Ditolak'])) {
         return response()->json([
             'status' => false,
-            'message' => 'Lomba tidak ditemukan atau belum disetujui.'
+            'message' => 'Lomba tidak ditemukan atau statusnya tidak valid.'
         ]);
-    }
+    }    
 
     return view('dosen.lomba.show_ajax', ['lomba' => $lomba]);
 }

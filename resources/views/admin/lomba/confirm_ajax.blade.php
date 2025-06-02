@@ -61,15 +61,15 @@
                         </tr>
                         <tr>
                             <th class="text-right col-3">Tanggal Mulai Lomba:</th>
-                            <td class="col-9">{{ $lomba->tanggal_mulai }}</td>
+                            <td class="col-9">{{ \Carbon\Carbon::parse($lomba->tanggal_mulai)->format('d-m-Y') }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Tanggal Selesai Lomba:</th>
-                            <td class="col-9">{{ $lomba->tanggal_selesai }}</td>
+                            <td class="col-9">{{ \Carbon\Carbon::parse($lomba->tanggal_selesai)->format('d-m-Y') }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Periode Lomba:</th>
-                            <td class="col-9">{{ $lomba->periode->nama }}</td>
+                            <td class="col-9">{{ $lomba->periode->display_name }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Pembuat Lomba:</th>

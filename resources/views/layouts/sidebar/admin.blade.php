@@ -7,7 +7,12 @@
                 <p>Dashboard</p>
             </a>
         </li>
-
+        <li class="nav-item">
+            <a href="{{ url('/notifikasi') }}" class="nav-link {{ $activeMenu == 'notifikasi' ? 'active' : '' }}">
+                <i class="nav-icon fas fa-solid fa-award"></i>
+                <p>Notifikasi</p>
+            </a>
+        </li>
         <li class="nav-header">Data Pengguna</li>
         <li class="nav-item">
             <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
@@ -51,7 +56,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'veriflomba' ? 'active' : '' }}">
+            <a href="{{ url('/verifikasi_lomba') }}" class="nav-link {{ $activeMenu == 'verifikasi_lomba' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-check"></i>
                 <p>Verifikasi Lomba</p>
             </a>

@@ -12,7 +12,7 @@
                 <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                 Data yang anda cari tidak ditemukan
             </div>
-            <a href="{{ url('/lomba') }}" class="btn btn-warning">Kembali</a>
+            <a href="{{ url('/verifikasi_lomba') }}" class="btn btn-warning">Kembali</a>
         </div>
     </div>
 </div>

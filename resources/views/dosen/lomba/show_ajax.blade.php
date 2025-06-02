@@ -56,20 +56,28 @@
                     <td>{{ $lomba->jumlah_peserta }}</td>
                 </tr>
                 <tr>
-                    <th>Link Registrasi Lomba</th>
-                    <td>{{ $lomba->link_registrasi }}</td>
-                </tr>
+                        <th>Link Registrasi</th>
+                        <td>
+                            @if ($lomba->link_registrasi)
+                                <a href="{{ $lomba->link_registrasi }}" target="_blank" rel="noopener noreferrer">
+                                    {{ $lomba->link_registrasi }}
+                                </a>
+                            @else
+                                <span class="text-muted">Tidak tersedia</span>
+                            @endif
+                        </td>
+                    </tr>
                 <tr>
                     <th>Tanggal Mulai Lomba</th>
-                    <td>{{ $lomba->tanggal_mulai }}</td>
+                    <td>{{ \Carbon\Carbon::parse($lomba->tanggal_mulai)->format('d-m-Y') }}</td>
                 </tr>
                 <tr>
                     <th>Tanggal Selesai Lomba</th>
-                    <td>{{ $lomba->tanggal_selesai }}</td>
+                    <td>{{ \Carbon\Carbon::parse($lomba->tanggal_selesai)->format('d-m-Y') }}</td>
                 </tr>
                 <tr>
                     <th>Periode Lomba</th>
-                    <td>{{ $lomba->periode->nama }}</td>
+                    <td>{{ $lomba->periode->display_name }}</td>
                 </tr>
                 <tr>
                     <th>Pembuat Lomba</th>

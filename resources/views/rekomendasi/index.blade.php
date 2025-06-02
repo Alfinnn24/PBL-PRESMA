@@ -3,6 +3,11 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
+            <div class="card-tools">
+                <button onclick="modalAction('{{ url('dosen/lomba/create_ajax') }}')" class="btn btn-sm btn-success mt-1">
+                    Tambah Lomba
+                </button>
+            </div>
         </div>
         <div class="card-body">
             @if (session('success'))
@@ -22,15 +27,15 @@
                     </select>
                 </div>
                 <!-- <div class="col-md-3">
-                                        <label>Kecocokan</label>
-                                        <select id="filter_kecocokan" class="form-control">
-                                            <option value="">- Semua -</option>
-                                            <option value="tinggi">Sangat direkomendasikan</option>
-                                            <option value="sedang">Direkomendasikan</option>
-                                            <option value="rendah">Cukup direkomendasikan</option>
-                                            <option value="srendah">Tidak direkomendasikan</option>
-                                        </select>
-                                    </div> -->
+                                                                    <label>Kecocokan</label>
+                                                                    <select id="filter_kecocokan" class="form-control">
+                                                                        <option value="">- Semua -</option>
+                                                                        <option value="tinggi">Sangat direkomendasikan</option>
+                                                                        <option value="sedang">Direkomendasikan</option>
+                                                                        <option value="rendah">Cukup direkomendasikan</option>
+                                                                        <option value="srendah">Tidak direkomendasikan</option>
+                                                                    </select>
+                                                                </div> -->
             </div>
 
             <table class="table modern-table display nowrap" id="table_rekomendasi" style="width:100%">
@@ -61,54 +66,54 @@
         function modalAction(url = '') {
             $('#myModal').modal('hide').removeData('bs.modal');
             $('#myModal').html('');
-            $('#myModal').load(url, function() {
+            $('#myModal').load(url, function () {
                 $('#myModal').modal('show');
             });
         }
 
         var tableRekomendasi;
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             tableRekomendasi = $('#table_rekomendasi').DataTable({
                 serverSide: false,
                 ajax: {
                     url: "{{ url('rekomendasi/list') }}",
                     type: "POST",
                     dataType: "json",
-                    data: function(d) {
+                    data: function (d) {
                         d.status = $('#filter_status').val();
                         d.kecocokan = $('#filter_kecocokan').val();
                         d._token = '{{ csrf_token() }}';
                     }
                 },
                 columns: [{
-                        data: 'DT_RowIndex',
-                        className: "text-center"
-                    },
-                    {
-                        data: 'lomba'
-                    },
-                    {
-                        data: 'status',
-                        className: "text-capitalize"
-                    },
-                    {
-                        data: 'skor',
-                        className: "text-center"
-                    },
-                    {
-                        data: 'hasil_rekomendasi'
-                    },
-                    {
-                        data: 'aksi',
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false
-                    }
+                    data: 'DT_RowIndex',
+                    className: "text-center"
+                },
+                {
+                    data: 'lomba'
+                },
+                {
+                    data: 'status',
+                    className: "text-capitalize"
+                },
+                {
+                    data: 'skor',
+                    className: "text-center"
+                },
+                {
+                    data: 'hasil_rekomendasi'
+                },
+                {
+                    data: 'aksi',
+                    className: "text-center",
+                    orderable: false,
+                    searchable: false
+                }
                 ]
             });
 
-            $('#filter_status, #filter_kecocokan').on('change', function() {
+            $('#filter_status, #filter_kecocokan').on('change', function () {
                 tableRekomendasi.ajax.reload();
             });
         });
@@ -140,10 +145,10 @@
 
                         $.post(url, {
                             _token: '{{ csrf_token() }}'
-                        }, function(res) {
+                        }, function (res) {
                             Swal.fire('Berhasil', res.message, 'success');
                             tableRekomendasi.ajax.reload(null, false);
-                        }).fail(function() {
+                        }).fail(function () {
                             Swal.fire('Gagal', 'Terjadi kesalahan saat memproses data.', 'error');
                         });
 
@@ -151,5 +156,22 @@
                 });
             }, 500);
         }
+
+        function buatPendaftaran(lombaId) {
+            Swal.fire({
+                title: 'Daftar ke Lomba?',
+                text: 'Formulir akan dibuka dalam modal.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Lanjutkan',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#28a745'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    modalAction(`/pendaftaran/create_ajax?lomba_id=${lombaId}`);
+                }
+            });
+        }
+
     </script>
 @endpush

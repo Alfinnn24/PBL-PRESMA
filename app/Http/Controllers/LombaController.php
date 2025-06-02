@@ -26,7 +26,10 @@ class LombaController extends Controller
         
         $activeMenu = 'lomba';
         $bidang_keahlian = BidangKeahlianModel::all();
-        $periode = PeriodeModel::all();
+        $periode = PeriodeModel::all()->map(function($item) {
+            $item->display_name = $item->nama . ' ' . $item->semester;
+            return $item;
+        });        
         
         return view('admin.lomba.index', [
             'breadcrumb' => $breadcrumb, 
@@ -53,7 +56,7 @@ class LombaController extends Controller
             'lomba.link_registrasi',
             'lomba.tanggal_mulai',
             'lomba.tanggal_selesai',
-            'periode.nama as periode_id',
+            \DB::raw("CONCAT(periode.nama, ' ', periode.semester) as periode_display_name"),
             'lomba.is_verified'
         )
         ->when($request->bidang_keahlian, function ($query) use ($request) {
@@ -68,8 +71,8 @@ class LombaController extends Controller
         ->filterColumn('keahlian', function($query, $keyword) {
             $query->where('bidang_keahlian.keahlian', 'like', "%{$keyword}%");
         })
-        ->filterColumn('periode_nama', function($query, $keyword) {
-            $query->where('periode.nama', 'like', "%{$keyword}%");
+        ->filterColumn('periode_display_name', function($query, $keyword) {
+            $query->whereRaw("CONCAT(periode.nama, ' ', periode.semester) like ?", ["%{$keyword}%"]);
         })
         ->addColumn('aksi', function ($lomba) {
             $btn  = '<button onclick="modalAction(\''.url('/lomba/' . $lomba->id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
@@ -85,7 +88,10 @@ class LombaController extends Controller
     public function create_ajax() 
     {
         $bidang_keahlian = BidangKeahlianModel::select('id', 'keahlian')->distinct()->get();
-        $periode = PeriodeModel::select('id', 'nama')->distinct()->get();
+        $periode = PeriodeModel::select('id', 'nama', 'semester')->distinct()->get()->map(function($item) {
+            $item->display_name = $item->nama . ' ' . $item->semester;
+            return $item;
+        });
         $tingkat_lomba = ['Kota/Kabupaten', 'Provinsi', 'Nasional', 'Internasional'];
     
         return view('admin.lomba.create_ajax', [
@@ -104,7 +110,7 @@ class LombaController extends Controller
             'tingkat'            => 'required|string|max:50',
             'bidang_keahlian_id' => 'required|exists:bidang_keahlian,id',
             'persyaratan'        => 'nullable|string|max:500',
-            'jumlah_peserta'     => 'nullable|integer|min:1',
+            'jumlah_peserta'     => 'nullable|integer|min:1|max:10',
             'link_registrasi'    => 'nullable|url|max:255',
             'tanggal_mulai'      => 'required|date',
             'tanggal_selesai'    => 'required|date|after:tanggal_mulai',
@@ -177,7 +183,10 @@ class LombaController extends Controller
 
     // Ambil data bidang_keahlian, periode, dan user
     $bidang_keahlian = BidangKeahlianModel::select('id', 'keahlian')->distinct()->get();
-    $periode = PeriodeModel::select('id', 'nama')->distinct()->get();
+    $periode = PeriodeModel::select('id', 'nama', 'semester')->distinct()->get()->map(function($item) {
+        $item->display_name = $item->nama . ' ' . $item->semester;
+        return $item;
+    });
     $tingkat_lomba = ['Kota/Kabupaten', 'Provinsi', 'Nasional', 'Internasional'];
 
 
@@ -209,7 +218,7 @@ class LombaController extends Controller
                 'tingkat'            => 'required|string|max:50',
                 'bidang_keahlian_id' => 'required|exists:bidang_keahlian,id',  
                 'persyaratan'        => 'nullable|string|max:500',               
-                'jumlah_peserta'     => 'nullable|integer|min:1',                
+                'jumlah_peserta'     => 'nullable|integer|min:1|max:10',                
                 'link_registrasi'    => 'nullable|url|max:255',                  
                 'tanggal_mulai'      => 'required|date',    
                 'tanggal_selesai'    => 'required|date|after:tanggal_mulai',    
@@ -293,31 +302,5 @@ class LombaController extends Controller
         $lomba = LombaModel::with(['creator.dosen', 'creator.admin'])->find($id);
         return view('admin.lomba.show_ajax', ['lomba' =>$lomba]);
     }
-
-    public function approve(Request $request, string $id)
-{
-    $lomba = LombaModel::find($id);
-    if (!$lomba) {
-        return response()->json(['status' => 'error', 'message' => 'Lomba tidak ditemukan'], 404);
-    }
-
-    $lomba->is_verified = 'Disetujui';
-    $lomba->save();
-
-    return response()->json(['status' => 'success', 'message' => 'Lomba disetujui']);
-}
-
-public function reject(Request $request, string $id)
-{
-    $lomba = LombaModel::find($id);
-    if (!$lomba) {
-        return response()->json(['status' => 'error', 'message' => 'Lomba tidak ditemukan'], 404);
-    }
-
-    $lomba->is_verified = 'Ditolak';
-    $lomba->save();
-
-    return response()->json(['status' => 'success', 'message' => 'Lomba ditolak']);
-}
 
 }

@@ -16,7 +16,7 @@ class PendaftaranLombaModel extends Model
 
     public function lomba(): BelongsTo
     {
-        return $this->belongsTo(LombaModel::class);
+        return $this->belongsTo(LombaModel::class, 'lomba_id', 'id');
     }
 }
 

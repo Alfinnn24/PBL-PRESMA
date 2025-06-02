@@ -8,17 +8,23 @@ use App\Models\MahasiswaModel;
 use App\Models\DetailPrestasiModel;
 use App\Models\PeriodeModel;
 use App\Models\BidangKeahlianModel;
+use App\Models\UserModel;
+use App\Notifications\UserNotification;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 
 class PrestasiController extends Controller
 {
     public function index()
     {
         $user = auth()->user();
-
+        // $notifications = $user->unreadNotifications->map(function ($notification) {
+        //     return $notification->data;
+        // });
+        // dd($notifications);
         $breadcrumb = (object) [
             'title' => 'Data Prestasi',
             'list' => ['Home', 'Prestasi']
@@ -118,7 +124,7 @@ class PrestasiController extends Controller
         $user = auth()->user();
 
         $mahasiswa = MahasiswaModel::all();
-        $lomba = LombaModel::all();
+        $lomba = LombaModel::where('is_verified', 'DIsetujui')->get();
 
         if ($user->role === 'admin') {
             return view('admin.prestasi.create_ajax', compact('mahasiswa', 'lomba'));
@@ -191,11 +197,24 @@ class PrestasiController extends Controller
             ]);
         }
 
+        // Jika user bukan admin
+        if ($user->role != 'admin') {
+            // Kirim notifikasi ke admin
+            $userAdmin = UserModel::where('role', 'admin')->get();
+            Notification::send($userAdmin, new UserNotification((object) [
+                'title' => 'Pengajuan Prestasi Baru',
+                'message' => $user->mahasiswa->nama_lengkap . ' telah mengajukan prestasi untuk disetujui.',
+                'linkTitle' => 'Lihat Detail',
+                'link' => route('prestasi.show', ['id' => $prestasi->id])
+            ]));
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Prestasi berhasil ditambahkan'
         ]);
     }
+
 
 
     public function show_ajax($id)
@@ -209,10 +228,40 @@ class PrestasiController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        $user = auth()->user();
+
+        $prestasi = PrestasiModel::with([
+            'lomba.bidangKeahlian',
+            'detailPrestasi.mahasiswa.programStudi',
+            'creator.mahasiswa',
+            'creator.dosen',
+            'creator.admin'
+        ])->findOrFail($id);
+
+        $breadcrumb = (object) [
+            'title' => 'Detail Prestasi',
+            'list' => ['Home', 'Prestasi', 'Detail']
+        ];
+
+        $page = (object) [
+            'title' => 'Detail Prestasi Mahasiswa'
+        ];
+
+        $activeMenu = 'verifprestasi';
+
+        if ($user->role === 'admin') {
+            return view('admin.prestasi.show', compact('prestasi', 'breadcrumb', 'page', 'activeMenu'));
+        } else {
+            return view('prestasi.show', compact('prestasi', 'breadcrumb', 'page', 'activeMenu'));
+        }
+    }
+
 
     public function edit_ajax($id)
     {
-        $lomba = LombaModel::all();
+        $lomba = LombaModel::where('is_verified', 'DIsetujui')->get();
         $prestasi = PrestasiModel::with(['lomba.bidangKeahlian', 'detailPrestasi'])->findOrFail($id);
         $mahasiswa = MahasiswaModel::all();
         return view('prestasi.edit_ajax', compact('prestasi', 'mahasiswa', 'lomba'));
@@ -305,6 +354,8 @@ class PrestasiController extends Controller
         $prestasi->status = 'Disetujui';
         $prestasi->save();
 
+        $this->sendNotifikasiMahasiswa($prestasi, 'Disetujui');
+
         return response()->json(['success' => 'Prestasi berhasil disetujui']);
     }
 
@@ -321,7 +372,36 @@ class PrestasiController extends Controller
         $prestasi->catatan = $catatan;
         $prestasi->save();
 
+        $this->sendNotifikasiMahasiswa($prestasi, 'Ditolak', $catatan);
+
         return response()->json(['success' => 'Prestasi berhasil ditolak']);
+    }
+    private function sendNotifikasiMahasiswa(PrestasiModel $prestasi, string $status, string $catatan = null)
+    {
+        // Dapatkan semua mahasiswa yang terlibat dalam prestasi ini
+        $mahasiswas = $prestasi->detailPrestasi()->with('mahasiswa.user')->get()
+            ->pluck('mahasiswa.user')
+            ->filter();
+
+        // Jika tidak ada relasi detail, coba melalui creator
+        if ($mahasiswas->isEmpty() && $prestasi->creator) {
+            $mahasiswas = collect([$prestasi->creator]);
+        }
+
+        foreach ($mahasiswas as $user) {
+            if ($user) {
+                $message = $status === 'Disetujui'
+                    ? 'Prestasi Anda "' . $prestasi->nama_prestasi . '" telah disetujui'
+                    : 'Prestasi Anda "' . $prestasi->nama_prestasi . '" ditolak. Catatan: ' . $catatan;
+
+                Notification::send($user, new UserNotification((object) [
+                    'title' => 'Prestasi ' . $status,
+                    'message' => $message,
+                    'linkTitle' => 'Lihat Detail',
+                    'link' => route('prestasi.show', ['id' => $prestasi->id])
+                ]));
+            }
+        }
     }
 
     public function search(Request $request)
@@ -353,6 +433,4 @@ class PrestasiController extends Controller
             ]
         ]);
     }
-
-
 }

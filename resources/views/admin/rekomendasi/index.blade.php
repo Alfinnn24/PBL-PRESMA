@@ -5,9 +5,9 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="konfirmasiProsesTopsis()" class="btn btn-sm btn-success mt-1">
-                    Generate Rekomendasi
-                </button>
+                <!-- <button onclick="konfirmasiProsesTopsis()" class="btn btn-sm btn-success mt-1">
+                            Generate Rekomendasi
+                        </button> -->
             </div>
         </div>
         <div class="card-body">
@@ -28,15 +28,15 @@
                     </select>
                 </div>
                 <!-- <div class="col-md-3">
-                                <label>Kecocokan</label>
-                                <select id="filter_kecocokan" class="form-control">
-                                    <option value="">- Semua -</option>
-                                    <option value="tinggi">Sangat direkomendasikan</option>
-                                    <option value="sedang">Direkomendasikan</option>
-                                    <option value="rendah">Cukup direkomendasikan</option>
-                                    <option value="srendah">Tidak direkomendasikan</option>
-                                </select>
-                            </div> -->
+                                        <label>Kecocokan</label>
+                                        <select id="filter_kecocokan" class="form-control">
+                                            <option value="">- Semua -</option>
+                                            <option value="tinggi">Sangat direkomendasikan</option>
+                                            <option value="sedang">Direkomendasikan</option>
+                                            <option value="rendah">Cukup direkomendasikan</option>
+                                            <option value="srendah">Tidak direkomendasikan</option>
+                                        </select>
+                                    </div> -->
             </div>
 
             <table class="table modern-table display nowrap" id="table_rekomendasi" style="width:100%">

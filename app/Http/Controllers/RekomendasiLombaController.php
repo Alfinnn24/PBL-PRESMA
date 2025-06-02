@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\LombaModel;
 use App\Models\MahasiswaModel;
 use App\Models\DosenModel;
+use App\Models\PendaftaranLombaModel;
 use App\Models\RekomendasiLombaModel;
+use App\Models\DosenPembimbingModel;
 use App\Services\TopsisSpkService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -26,12 +28,12 @@ class RekomendasiLombaController extends Controller
         $this->topsisService->prosesSemuaLombaDenganTopsis();
 
         $breadcrumb = (object) [
-            'title' => 'Rekomendasi Lomba',
+            'title' => 'Data Lomba',
             'list' => ['Lomba', 'Rekomendasi']
         ];
 
         $page = (object) [
-            'title' => 'Daftar rekomendasi lomba berdasarkan peran pengguna'
+            'title' => 'Daftar lomba dengan skor kecocokan'
         ];
 
         $activeMenu = 'rekomendasiLomba';
@@ -175,6 +177,16 @@ class RekomendasiLombaController extends Controller
             }
         }
 
+        $orderColumnIndex = $request->input('order.0.column');
+        $orderDir = $request->input('order.0.dir');
+        $orderColumnName = $request->input("columns.$orderColumnIndex.data");
+
+        if ($orderColumnName && in_array($orderColumnName, ['lomba', 'mahasiswa', 'status', 'hasil_rekomendasi', 'dosen'])) {
+            $flatList = $flatList->sortBy(function ($item) use ($orderColumnName) {
+                return strtolower($item[$orderColumnName] ?? '');
+            }, SORT_REGULAR, $orderDir === 'desc')->values();
+        }
+
         $totalRecords = $flatList->count();
 
         // Ambil data sesuai offset dan limit DataTables
@@ -204,21 +216,23 @@ class RekomendasiLombaController extends Controller
     private function getAksiColumn($data, $user)
     {
         if ($user->role === 'admin') {
+            $disabledApproved = ($data->status_dosen == 'Disetujui') ? 'disabled' : '';
             return '
         <button class="btn btn-sm btn-info" onclick="modalAction(\'' . url('/rekomendasi/' . $data->id . '/show_ajax') . '\')">Detail</button>
-        <button class="btn btn-sm btn-warning" onclick="modalAction(\'' . url('/rekomendasi/' . $data->id . '/edit_ajax') . '\')">Edit</button>
+        <button class="btn btn-sm btn-warning" onclick="modalAction(\'' . url('/rekomendasi/' . $data->id . '/edit_ajax') . '\')"' . $disabledApproved . '>Edit</button>
         <button class="btn btn-sm btn-danger" onclick="modalAction(\'' . url('/rekomendasi/' . $data->id . '/delete_ajax') . '\')">Hapus</button>';
         } elseif ($user->role === 'dosen') {
+            $disabledApproved = ($data->status_dosen == 'Disetujui') ? 'disabled' : '';
             return '
         <button class="btn btn-sm btn-info" onclick="modalAction(\'' . url('/rekomendasi/' . $data->lomba_id . '/show_ajax') . '\')">Detail</button>
-        <button class="btn btn-sm btn-success" onclick="ubahStatusDosen(' . $data->id . ', \'approve\')">Setujui</button>
-        <button class="btn btn-sm btn-danger" onclick="ubahStatusDosen(' . $data->id . ', \'reject\')">Tolak</button>';
+        <button class="btn btn-sm btn-success" onclick="ubahStatusDosen(' . $data->id . ', \'approve\')"' . $disabledApproved . '>Setujui</button>
+        <button class="btn btn-sm btn-danger" onclick="ubahStatusDosen(' . $data->id . ', \'reject\')"' . $disabledApproved . '>Tolak</button>';
         } else {
             $disabledApprove = ($data->status == 'Disetujui' || RekomendasiLombaModel::where('lomba_id', $data->lomba_id)->where('status', 'Disetujui')->count() >= $data->lomba->jumlah_peserta) ? 'disabled' : '';
             $tolakApprove = ($data->status == 'Ditolak') || RekomendasiLombaModel::where('lomba_id', $data->lomba_id)->where('status', 'Disetujui')->count() >= $data->lomba->jumlah_peserta ? 'disabled' : '';
             return '
         <button class="btn btn-sm btn-info" onclick="modalAction(\'' . url('/rekomendasi/' . $data->lomba_id . '/show_ajax') . '\')">Detail</button>
-        <button class="btn btn-sm btn-success" onclick="ubahStatus(' . $data->id . ', \'approve\')" ' . $disabledApprove . '>Setujui</button>
+        <button class="btn btn-sm btn-success" onclick="buatPendaftaran(' . $data->lomba_id . ')" ' . $disabledApprove . '>Daftar</button>
         <button class="btn btn-sm btn-danger" onclick="ubahStatus(' . $data->id . ', \'reject\')" ' . $tolakApprove . '>Tolak</button>';
         }
     }
@@ -302,6 +316,14 @@ class RekomendasiLombaController extends Controller
         }
 
         try {
+            // Hapus data dosen pembimbing yang terkait dengan mahasiswa_nim
+            DosenPembimbingModel::where('mahasiswa_nim', $rekomendasi->mahasiswa_nim)
+                ->where('dosen_id', $rekomendasi->dosen_pembimbing_id)
+                ->delete();
+            PendaftaranLombaModel::where('mahasiswa_nim', $rekomendasi->mahasiswa_nim)
+                ->where('lomba_id', $rekomendasi->lomba_id)
+                ->delete();
+
             $rekomendasi->delete();
             return response()->json([
                 'status' => true,
@@ -320,8 +342,27 @@ class RekomendasiLombaController extends Controller
         $rekomendasi->status = 'Disetujui';
         $rekomendasi->save();
 
+        // Tambahkan ke dosen_pembimbing jika dosen juga sudah menyetujui
+        if ($rekomendasi->status_dosen === 'Disetujui') {
+            $exists = \DB::table('dosen_pembimbing')
+                ->where('dosen_id', $rekomendasi->dosen_pembimbing_id)
+                ->where('mahasiswa_nim', $rekomendasi->mahasiswa_nim)
+                ->exists();
+
+            if (!$exists) {
+                \DB::table('dosen_pembimbing')->insert([
+                    'dosen_id' => $rekomendasi->dosen_pembimbing_id,
+                    'mahasiswa_nim' => $rekomendasi->mahasiswa_nim,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+
         return response()->json(['status' => 'success', 'message' => 'Rekomendasi lomba disetujui']);
     }
+
+
     public function reject(Request $request, string $id)
     {
         $rekomendasi = RekomendasiLombaModel::find($id);
@@ -335,18 +376,44 @@ class RekomendasiLombaController extends Controller
     {
         $rekomendasi = RekomendasiLombaModel::findOrFail($id);
 
+        // Update status dosen untuk semua rekomendasi lomba ini
         RekomendasiLombaModel::where('lomba_id', $rekomendasi->lomba_id)
             ->update(['status_dosen' => 'Disetujui']);
 
+        // Ambil semua rekomendasi lomba dengan status mahasiswa 'Disetujui'
+        $disetujuiMahasiswa = RekomendasiLombaModel::where('lomba_id', $rekomendasi->lomba_id)
+            ->where('status', 'Disetujui')
+            ->get();
+
+        foreach ($disetujuiMahasiswa as $item) {
+            $exists = \DB::table('dosen_pembimbing')
+                ->where('dosen_id', $item->dosen_pembimbing_id)
+                ->where('mahasiswa_nim', $item->mahasiswa_nim)
+                ->exists();
+
+            if (!$exists) {
+                \DB::table('dosen_pembimbing')->insert([
+                    'dosen_id' => $item->dosen_pembimbing_id,
+                    'mahasiswa_nim' => $item->mahasiswa_nim,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+
         return response()->json(['status' => 'success', 'message' => 'Semua rekomendasi pada lomba ini telah disetujui oleh dosen']);
     }
+
 
     public function rejectDosen(Request $request, string $id)
     {
         $rekomendasi = RekomendasiLombaModel::findOrFail($id);
 
         RekomendasiLombaModel::where('lomba_id', $rekomendasi->lomba_id)
-            ->update(['status_dosen' => 'Ditolak']);
+            ->update([
+                'status_dosen' => 'Pending',
+                'dosen_pembimbing_id' => null
+            ]);
 
         return response()->json(['status' => 'success', 'message' => 'Semua rekomendasi pada lomba ini telah ditolak oleh dosen']);
     }

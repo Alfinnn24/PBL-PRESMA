@@ -9,50 +9,60 @@ use App\Helpers\BidangKeahlianMatcher;
 
 class TopsisSpkService
 {
-    /**
-     * Proses rekomendasi menggunakan metode TOPSIS
-     *
-     * @param LombaModel $lomba
-     * @param array $excludedMahasiswa
-     * @return array
-     */
     public function prosesRekomendasi(LombaModel $lomba, array $excludedMahasiswa = [])
     {
         $kategoriLomba = $lomba->bidangKeahlian->keahlian ?? 'Lainnya';
 
-        // Ambil data mahasiswa dengan relasi yang diperlukan
         $mahasiswas = MahasiswaModel::with(['sertifikasis', 'bidangKeahlian.bidangKeahlian', 'pengalaman', 'prestasi'])
             ->whereNotIn('nim', $excludedMahasiswa)
             ->get();
 
         $kriteria = ['sertifikasi', 'keahlian', 'pengalaman', 'prestasi'];
 
-        // 1. Bangun matriks keputusan
+        // Matriks keputusan awal
         $matriks = [];
         foreach ($mahasiswas as $mhs) {
-            // Hitung nilai sertifikasi dengan matching bidang keahlian
             $nilaiSertifikasi = 0;
             foreach ($mhs->sertifikasis as $sertifikasi) {
-                $bidangSertifikasi = $sertifikasi->bidangKeahlian->keahlian ?? $sertifikasi->kategori ?? 'Lainnya';
-                $nilaiSertifikasi += BidangKeahlianMatcher::getSkor($kategoriLomba, $bidangSertifikasi);
+                $bidang = $sertifikasi->kategori ?? 'Lainnya';
+                $nilaiSertifikasi += BidangKeahlianMatcher::getSkor($kategoriLomba, $bidang);
+                // \Log::info("Lomba {$kategoriLomba} Kategori {$bidang}");
+                // \Log::info("Nilai sertifikasi {$mhs->nama_lengkap}: {$nilaiSertifikasi}");
             }
 
-            $nilaiKeahlian = $mhs->bidangKeahlian->sum(function ($item) use ($kategoriLomba) {
+            $nilaiKeahlian = 0;
+            foreach ($mhs->bidangKeahlian as $item) {
                 $keahlian = $item->bidangKeahlian->keahlian ?? null;
-                return $keahlian ? BidangKeahlianMatcher::getSkor($kategoriLomba, $keahlian) : 0;
-            });
+                if ($keahlian) {
+                    $nilaiKeahlian += BidangKeahlianMatcher::getSkor($kategoriLomba, $keahlian);
+                    // \Log::info("Lomba {$kategoriLomba} Kategori {$keahlian}");
+                    // \Log::info("Nilai keahlian {$mhs->nama_lengkap}: {$nilaiKeahlian}");
+                }
+            }
 
-            $nilaiPengalaman = $mhs->pengalaman->sum(function ($item) use ($kategoriLomba) {
-                return BidangKeahlianMatcher::getSkor($kategoriLomba, $item->kategori);
-            });
+            $nilaiPengalaman = 0;
+            foreach ($mhs->pengalaman as $item) {
+                $kategoriItem = $item->kategori ?? 'Lainnya';
+                $nilaiPengalaman += BidangKeahlianMatcher::getSkor($kategoriLomba, $kategoriItem);
+                // \Log::info("Lomba {$kategoriLomba} Kategori {$kategoriItem}");
+                // \Log::info("Nilai pengalaman {$mhs->nama_lengkap}: {$nilaiPengalaman}");
+            }
 
             $nilaiPrestasi = 0;
             foreach ($mhs->prestasi as $detailPrestasi) {
-                $kategoriPrestasi = optional($detailPrestasi->prestasi->lomba->bidangKeahlian)->keahlian;
-                if ($kategoriPrestasi) {
-                    $nilaiPrestasi += BidangKeahlianMatcher::getSkor($kategoriLomba, $kategoriPrestasi);
+                $prestasi = $detailPrestasi->prestasi;
+
+                // Cek apakah prestasi ada dan sudah disetujui
+                if ($prestasi && $prestasi->status === 'Disetujui') {
+                    $kategoriPrestasi = optional($prestasi->lomba->bidangKeahlian)->keahlian;
+                    if ($kategoriPrestasi) {
+                        $nilaiPrestasi += BidangKeahlianMatcher::getSkor($kategoriLomba, $kategoriPrestasi);
+                        // \Log::info("Lomba {$kategoriLomba} Kategori {$kategoriPrestasi}");
+                        // \Log::info("Nilai prestasi {$mhs->nama_lengkap}: {$nilaiPrestasi}");
+                    }
                 }
             }
+
 
             $matriks[] = [
                 'nim' => $mhs->nim,
@@ -64,35 +74,63 @@ class TopsisSpkService
                     $nilaiPrestasi,
                 ],
             ];
+            // \Log::info('Matriks keputusan', [
+            //     'nim' => $mhs->nim,
+            //     'nama' => $mhs->nama_lengkap,
+            //     'nilai' => [
+            //         'sertifikasi' => $nilaiSertifikasi,
+            //         'keahlian' => $nilaiKeahlian,
+            //         'pengalaman' => $nilaiPengalaman,
+            //         'prestasi' => $nilaiPrestasi,
+            //     ],
+            // ]);
         }
 
-        if (count($matriks) === 0) {
-            return []; // Tidak ada mahasiswa
-        }
+        // \Log::info('Matriks keputusan awal', $matriks);
 
-        // 2. Bobot kriteria (pastikan jumlah bobot = 1)
+        if (count($matriks) === 0)
+            return [];
+
+        // Bobot
         $bobot = [0.25, 0.30, 0.20, 0.25];
 
-        // 3. Normalisasi matriks keputusan
+        // Normalisasi
         $jumlahKuadrat = array_fill(0, count($kriteria), 0);
-
         foreach ($matriks as $row) {
             foreach ($row['nilai'] as $j => $nilai) {
                 $jumlahKuadrat[$j] += pow($nilai, 2);
             }
         }
-        $akarJumlahKuadrat = array_map(fn($x) => sqrt($x), $jumlahKuadrat);
+
+        $akarJumlahKuadrat = array_map(fn($x) => sqrt($x ?: 1), $jumlahKuadrat); // Hindari pembagian 0
+
+
+        // \Log::info('Akar jumlah kuadrat', $akarJumlahKuadrat);
 
         $normalisasi = [];
         foreach ($matriks as $row) {
             $normalisasi[] = [
                 'nim' => $row['nim'],
                 'nama' => $row['nama'],
-                'nilai' => array_map(fn($nilai, $j) => $akarJumlahKuadrat[$j] != 0 ? $nilai / $akarJumlahKuadrat[$j] : 0, $row['nilai'], array_keys($row['nilai'])),
+                'nilai' => array_map(
+                    fn($nilai, $j) => $nilai / ($akarJumlahKuadrat[$j] ?: 1),
+                    $row['nilai'],
+                    array_keys($row['nilai'])
+                ),
             ];
+            // \Log::info('Normalisasi', [
+            //     'nim' => $row['nim'],
+            //     'nama' => $row['nama'],
+            //     'nilai' => [
+            //         'sertifikasi' => $normalisasi[array_key_last($normalisasi)]['nilai'][0],
+            //         'keahlian' => $normalisasi[array_key_last($normalisasi)]['nilai'][1],
+            //         'pengalaman' => $normalisasi[array_key_last($normalisasi)]['nilai'][2],
+            //         'prestasi' => $normalisasi[array_key_last($normalisasi)]['nilai'][3],
+            //     ],
+            // ]);
         }
 
-        // 4. Matriks terbobot
+        // Matriks terbobot
         $matriksTerbobot = [];
         foreach ($normalisasi as $row) {
             $nilaiTerbobot = [];
@@ -104,18 +142,31 @@ class TopsisSpkService
                 'nama' => $row['nama'],
                 'nilai' => $nilaiTerbobot,
             ];
+            // \Log::info('Matriks terbobot', [
+            //     'nim' => $row['nim'],
+            //     'nama' => $row['nama'],
+            //     'nilai' => [
+            //         'sertifikasi' => $nilaiTerbobot[0],
+            //         'keahlian' => $nilaiTerbobot[1],
+            //         'pengalaman' => $nilaiTerbobot[2],
+            //         'prestasi' => $nilaiTerbobot[3],
+            //     ],
+            // ]);
         }
 
-        // 5. Tentukan solusi ideal positif dan negatif (kriteria benefit semua)
+        // Solusi ideal
         $solusiIdealPositif = [];
         $solusiIdealNegatif = [];
         for ($j = 0; $j < count($kriteria); $j++) {
-            $kolom = array_column(array_map(fn($row) => $row['nilai'][$j], $matriksTerbobot), null);
-            $solusiIdealPositif[$j] = max($kolom);
-            $solusiIdealNegatif[$j] = min($kolom);
+            $kolom = array_column($matriksTerbobot, 'nilai');
+            $nilaiKolom = array_column($kolom, $j);
+            $solusiIdealPositif[$j] = max($nilaiKolom);
+            $solusiIdealNegatif[$j] = min($nilaiKolom);
         }
 
-        // 6. Hitung jarak ke solusi ideal positif dan negatif
+        // \Log::info('Solusi ideal positif', $solusiIdealPositif);
+        // \Log::info('Solusi ideal negatif', $solusiIdealNegatif);
+        // Hitung skor preferensi
         $hasil = [];
         foreach ($matriksTerbobot as $row) {
             $jarakPositif = 0;
@@ -124,46 +175,33 @@ class TopsisSpkService
                 $jarakPositif += pow($nilai - $solusiIdealPositif[$j], 2);
                 $jarakNegatif += pow($nilai - $solusiIdealNegatif[$j], 2);
             }
+
             $jarakPositif = sqrt($jarakPositif);
             $jarakNegatif = sqrt($jarakNegatif);
+            $denominator = $jarakNegatif + $jarakPositif;
 
-            // 7. Hitung nilai preferensi
-            $nilaiPreferensi = $jarakNegatif / ($jarakNegatif + $jarakPositif);
+            $nilaiPreferensi = $denominator > 0 ? $jarakNegatif / $denominator : 0;
 
             $hasil[] = [
                 'nim' => $row['nim'],
                 'nama' => $row['nama'],
-                'matriks' => $matriks,
                 'skor' => round($nilaiPreferensi, 4),
             ];
+            // \Log::info('Hasil preferensi', [
+            //     'nim' => $row['nim'],
+            //     'nama' => $row['nama'],
+            //     'skor' => $nilaiPreferensi,
+            // ]);
         }
 
-        // 8. Urutkan berdasarkan skor preferensi descending
         usort($hasil, fn($a, $b) => $b['skor'] <=> $a['skor']);
-
-        // // Simpan atau update rekomendasi di database
-        // foreach ($hasil as $item) {
-        //     RekomendasiLombaModel::updateOrCreate(
-        //         [
-        //             'mahasiswa_nim' => $item['nim'],
-        //             'lomba_id' => $lomba->id,
-        //         ],
-        //         [
-        //             'status' => 'Pending',
-        //         ]
-        //     );
-        // }
 
         return $hasil;
     }
 
     public function prosesSemuaLombaDenganTopsis()
     {
-        // Ambil hanya lomba yang disetujui
-        $lombas = LombaModel::with('bidangKeahlian')
-            ->where('is_verified', 'Disetujui')
-            ->get();
-
+        $lombas = LombaModel::with('bidangKeahlian')->where('is_verified', 'Disetujui')->get();
         $hasilAkhir = [];
 
         foreach ($lombas as $lomba) {
@@ -187,25 +225,28 @@ class TopsisSpkService
                 ->first();
 
             if ($rekom) {
-                // Hanya update skor jika statusnya masih Pending
-                if ($rekom->status == 'Pending') {
-                    $rekom->update([
-                        'skor' => $data['skor'],
-                    ]);
-                }
+                $rekom->update(['skor' => $data['skor']]);
             } else {
-                // Buat rekomendasi baru dengan status Pending
+                // Cari dosen_pembimbing_id dan status_dosen dari rekomendasi lomba yang sama jika ada
+                $existingRekom = RekomendasiLombaModel::where('lomba_id', $data['lomba_id'])
+                    ->whereNotNull('dosen_pembimbing_id')
+                    ->orderByDesc('id')
+                    ->first();
+
+                $dosenPembimbingId = $existingRekom ? $existingRekom->dosen_pembimbing_id : null;
+                $statusDosen = $existingRekom ? $existingRekom->status_dosen : null;
+
                 RekomendasiLombaModel::create([
                     'lomba_id' => $data['lomba_id'],
                     'mahasiswa_nim' => $data['nim'],
                     'skor' => $data['skor'],
                     'status' => 'Pending',
-                    'dosen_pembimbing_id' => null,
+                    'dosen_pembimbing_id' => $dosenPembimbingId,
+                    'status_dosen' => $statusDosen,
                 ]);
             }
         }
 
         return $hasilAkhir;
     }
-
 }

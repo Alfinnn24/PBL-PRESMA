@@ -1,14 +1,14 @@
 @extends('layouts.template')
 
 @section('content')
-    <div class="card card-outline card-primary">
-        <div class="card-header">
+    <div class="card">
+        <!-- <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('dosen/lomba/create_ajax') }}')"
-                    class="btn btn-sm btn-success mt-1">Tambah Lomba</button>
+                <button onclick="modalAction('{{ url('lomba/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah
+                    Lomba</button>
             </div>
-        </div>
+        </div> -->
         <div class="card-body">
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
@@ -16,39 +16,41 @@
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-            {{-- filter opsi --}}
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group row">
-                        <label class="col-1 control-label col-form-label">Filter:</label>
-
-                        {{-- Filter Periode --}}
-                        <div class="col-3">
-                            <select class="form-control" id="nama" name="nama">
-                                <option value="">- Semua -</option>
-                                @foreach ($periode as $item)
-                                    <option value="{{ $item->id }}">{{ $item->nama }}</option>
-                                @endforeach
-                            </select>
-                            <small class="form-text text-muted">Nama Periode</small>
-                        </div>
-
-                        {{-- Filter Bidang Keahlian --}}
-                        <div class="col-3">
+            {{-- filternya tinggal dicomot terus disesuaikan --}}
+            {{-- bagian kiri filter --}}
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-8">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-4">
+                            <label>Filter Bidang Keahlian:</label>
                             <select class="form-control" id="bidang_keahlian" name="bidang_keahlian">
                                 <option value="">- Semua -</option>
                                 @foreach ($bidang_keahlian as $item)
                                     <option value="{{ $item->id }}">{{ $item->keahlian }}</option>
                                 @endforeach
                             </select>
-                            <small class="form-text text-muted">Bidang Keahlian</small>
+                        </div>
+                        <div class="col-md-8">
+                            <label>Pencarian:</label>
+                            <div class="input-group">
+                                <input type="search" class="form-control" placeholder="Cari..." id="customSearch">
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- bagian kanan tambah -->
+                <div class="col-md-4 d-flex align-items-center justify-content-end mt-4">
+                    <button onclick="modalAction('{{ url('dosen/lomba/create_ajax') }}')"
+                        class="btn btn-success btn-md d-flex align-items-center">
+                        <i class="fas fa-plus"></i> Tambah Lomba
+                    </button>
+                </div>
             </div>
             <div style="overflow-x:auto;">
-                <table class="table modern-table display nowrap" id="table_lomba"
-                    style="width:100%">
+                <table class="table modern-table display nowrap" id="table_lomba" style="width:100%">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -57,8 +59,6 @@
                             <th>Penyelenggara Lomba</th>
                             <th>Tingkat Lomba</th>
                             <th>Bidang Keahlian Lomba</th>
-                            <th>Tanggal Mulai Lomba</th>
-                            <th>Tanggal Selesai Lomba</th>
                             <th>Status Lomba</th>
                             <th>Aksi</th>
                         </tr>
@@ -84,16 +84,15 @@
         }
         var dataLomba;
         $(document).ready(function() {
-            var dataLomba = $('#table_lomba').DataTable({
+            dataLomba = $('#table_lomba').DataTable({
                 //scrollX: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{ url('dosen/lomba/list') }}",
-                    "dataType": "json",
-                    "type": "POST",
+                    url: "{{ url('dosen/lomba/list') }}",
+                    dataType: "json",
+                    type: "POST",
                     data: function(d) {
-                        d.nama = $('#nama').val(); // nama periode
-                        d.bidang_keahlian = $('#bidang_keahlian').val(); // bidang keahlian
+                        d.bidang_keahlian = $('#bidang_keahlian').val();
                     }
                 },
                 columns: [{
@@ -104,7 +103,7 @@
                         width: "40px"
                     },
                     {
-                        data: "periode_id",
+                        data: "periode_display_name",
                         className: "text-center",
                         orderable: true,
                         searchable: true,
@@ -139,20 +138,6 @@
                         width: "150px"
                     },
                     {
-                        data: "tanggal_mulai",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        width: "150px"
-                    },
-                    {
-                        data: "tanggal_selesai",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        width: "150px"
-                    },
-                    {
                         data: "is_verified",
                         className: "text-center",
                         orderable: true,
@@ -166,14 +151,21 @@
                         searchable: false,
                         width: "200px"
                     }
-                ]
-
+                ],
+                initComplete: function() {
+                    // Hubungkan input pencarian custom
+                    $('#customSearch').on('keyup', function() {
+                        dataLomba.search(this.value).draw();
+                    });
+                }
             });
 
-            $('#nama, #bidang_keahlian').on('change', function() {
-                dataLomba.ajax.reload(); // reload datatable ketika filter berubah
+            $('#table_lomba_wrapper').children().first().addClass('d-none'); // buat menyembunyikan search sama show entries default lte
+            $('#bidang_keahlian').on('change', function() {
+                dataLomba.ajax.reload();
             });
 
         });
+
     </script>
 @endpush

@@ -12,6 +12,9 @@ use App\Models\AdminModel;
 
 class AuthController extends Controller
 {
+    public function landing(){
+        return view('landing');
+    }
     public function login()
     {
         if (Auth::check()) { // jika sudah login, maka redirect ke halaman home

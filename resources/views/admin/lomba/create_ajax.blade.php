@@ -77,7 +77,7 @@
                 <select name="periode_id" id="periode_id" class="form-control" required>
                     <option value="">- Pilih Periode -</option>
                     @foreach($periode as $item)
-                        <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                        <option value="{{ $item->id }}">{{ $item->display_name }}</option>
                     @endforeach
                 </select>
                 <small id="error-periode_id" class="error-text form-text text-danger"></small>
@@ -115,7 +115,8 @@
             },
               jumlah_peserta: {
                 digits: true,
-                min: 1
+                min: 1,
+                max: 10
             },
               link_registrasi: {
                 url: true,
