@@ -17,6 +17,7 @@ use App\Http\Controllers\VerifikasiLombaController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\LaporanPrestasiController;
+use App\Http\Controllers\DashboardController;
 
 
 /*
@@ -41,7 +42,7 @@ Route::post('register', [AuthController::class, 'postregister']);
 
 Route::middleware(['auth'])->group(function () { // artinya semua route di dalam group ini harus login dulu
     // jangan lupa nanti dimodifikasi sesusai dengan kebutuhan, terus kasih comment kalau sekiranya butuh
-    Route::get('/', [WelcomeController::class, 'index']);
+    Route::get('/', [DashboardController::class, 'index']);
     // Route::get('/rekomendasi', [RekomendasiLombaController::class, 'index'])->name('rekomendasi.index');
     // Route::post('/rekomendasi/{id}', [RekomendasiLombaController::class, 'updateStatus'])->name('rekomendasi.updateStatus');
 
