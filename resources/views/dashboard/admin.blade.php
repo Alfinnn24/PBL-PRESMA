@@ -62,6 +62,7 @@
                             <tr>
                                 <th>Nama Prestasi</th>
                                 <th>Lomba</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,6 +70,9 @@
                                 <tr>
                                     <td>{{ $item->nama_prestasi }}</td>
                                     <td>{{ $item->lomba->nama ?? '-' }}</td>
+                                    <td>
+                                        <a href="/prestasi" class="btn btn-sm btn-info">Selengkapnya</a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -81,6 +85,7 @@
                             <tr>
                                 <th>Nama Lomba</th>
                                 <th>Tanggal Mulai</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -88,6 +93,9 @@
                                 <tr>
                                     <td>{{ $item->nama }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d M Y') }}</td>
+                                    <td>
+                                        <a href="/lomba" class="btn btn-sm btn-info">Selengkapnya</a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -95,18 +103,14 @@
                 </div>
             </div>
 
-            <!-- <div class="row mb-4" style="min-height: auto;">
-                    <div class="col-md-6 d-flex align-items-stretch">
-
-                        <canvas id="grafikPrestasiPeriode"></canvas>
-
-                    </div>
-                    <div class="col-md-6 d-flex align-items-stretch">
-
-                        <canvas id="grafikPrestasiBidang" style="height: auto !important; width: 100% !important;"></canvas>
-
-                    </div>
-                </div> -->
+            <div class="row mb-4" style="min-height: auto;">
+                <div class="col-md-6 d-flex align-items-stretch">
+                    <canvas id="grafikPrestasiPeriode"></canvas>
+                </div>
+                <div class="col-md-6 d-flex align-items-stretch">
+                    <canvas id="grafikPrestasiBidang"></canvas>
+                </div>
+            </div>
 
             <div class="row mb-4">
                 <div class="col-12">

@@ -42,7 +42,14 @@ Route::post('register', [AuthController::class, 'postregister']);
 
 Route::middleware(['auth'])->group(function () { // artinya semua route di dalam group ini harus login dulu
     // jangan lupa nanti dimodifikasi sesusai dengan kebutuhan, terus kasih comment kalau sekiranya butuh
-    Route::get('/', [DashboardController::class, 'index']);
+    Route::get('/', function () {
+        if (auth()->user()->role == 'dosen') {
+            return app(DashboardController::class)->indexDosen();
+        } else if (auth()->user()->role == 'mahasiswa') {
+            return app(DashboardController::class)->indexMahasiswa();
+        }
+        return app(DashboardController::class)->index();
+    });
     // Route::get('/rekomendasi', [RekomendasiLombaController::class, 'index'])->name('rekomendasi.index');
     // Route::post('/rekomendasi/{id}', [RekomendasiLombaController::class, 'updateStatus'])->name('rekomendasi.updateStatus');
 
