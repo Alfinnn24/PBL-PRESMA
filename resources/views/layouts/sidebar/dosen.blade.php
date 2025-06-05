@@ -14,12 +14,12 @@
                 <p>Mahasiswa bimbingan</p>
             </a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'verifprestasi' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-award"></i>
                 <p>Verifikasi Prestasi</p>
             </a>
-        </li>
+        </li> -->
         <li class="nav-item">
             <a href="{{ url('dosen/lomba') }}" class="nav-link {{ $activeMenu == 'lomba_dosen' ? 'active' : '' }}">
                 <i class="nav-icon fas fa-solid fa-folder-open"></i>
