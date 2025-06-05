@@ -201,7 +201,22 @@ class TopsisSpkService
 
     public function prosesSemuaLombaDenganTopsis()
     {
-        $lombas = LombaModel::with('bidangKeahlian')->where('is_verified', 'Disetujui')->get();
+        // Hapus rekomendasi untuk lomba yang statusnya 'Ditolak' atau tanggal selesai < hari ini
+        $lombaDitolakAtauKadaluarsa = LombaModel::where(function ($q) {
+            $q->where('is_verified', 'Ditolak')
+                ->orWhereDate('tanggal_selesai', '<', now()->toDateString());
+        })
+            ->pluck('id')
+            ->toArray();
+
+        if (!empty($lombaDitolakAtauKadaluarsa)) {
+            RekomendasiLombaModel::whereIn('lomba_id', $lombaDitolakAtauKadaluarsa)->delete();
+        }
+
+        $lombas = LombaModel::with('bidangKeahlian')
+            ->where('is_verified', 'Disetujui')
+            ->whereDate('tanggal_selesai', '>=', now()->toDateString())
+            ->get();
         $hasilAkhir = [];
 
         foreach ($lombas as $lomba) {
