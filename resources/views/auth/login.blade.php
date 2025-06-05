@@ -36,9 +36,16 @@
                             <input type="text" id="username" name="username" class="form-control" placeholder="Username">
                             <small id="error-username" class="error-text text-danger"></small>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group position-relative">
                             <label for="password">Password</label>
-                            <input type="password" id="password" name="password" class="form-control" placeholder="Password">
+                            <div class="input-group">
+                                <input type="password" id="password" name="password" class="form-control" placeholder="Password">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-eye" id="toggle-password" style="cursor: pointer;"></i>
+                                    </span>
+                                </div>
+                            </div>
                             <small id="error-password" class="error-text text-danger"></small>
                         </div>
                         <div class="form-check mb-4">
@@ -132,7 +139,17 @@
                     $(element).removeClass('is-invalid');
                 }
             });
+
+        // Fitur view/hide password
+        $('#toggle-password').on('click', function () {
+            const passwordInput = $('#password');
+            const type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
+            passwordInput.attr('type', type);
+
+            // Toggle icon
+            $(this).toggleClass('fa-eye fa-eye-slash');
         });
+    });
     </script>
 </body>
 
