@@ -47,13 +47,14 @@
                 <div class="col-md-4 d-flex align-items-center justify-content-end mt-4">
                     <button onclick="modalAction('{{ url('user/create_ajax') }}')"
                         class="btn btn-success btn-md d-flex align-items-center">
-                        <i class="fas fa-plus"></i> Tambah User
+                        {{-- <i class="fas fa-plus"></i>  --}}
+                        Tambah User
                     </button>
                 </div>
             </div>
 
             {{-- tabel --}}
-            <table class="table modern-table display nowrap" id="table_user" style="width:100%">
+            <table class="table modern-table display nowrap table-striped" id="table_user" style="width:100%">
                 <thead>
                     <tr>
                         <th>No</th>
