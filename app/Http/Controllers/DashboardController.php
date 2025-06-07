@@ -138,7 +138,7 @@ class DashboardController extends Controller
 
         $breadcrumb = (object) [
             'title' => 'Selamat Datang, ' . ($user->fullName ?? ''),
-            'list' => ['Home', 'Dashboard Dosen']
+            'list' => ['Home', 'Dashboard Mahasiswa']
         ];
 
         $activeMenu = 'dashboard';

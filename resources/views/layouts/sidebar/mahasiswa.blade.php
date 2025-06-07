@@ -9,7 +9,7 @@
         </li>
         <li class="nav-item">
             <a href="{{ url('/notifikasi') }}" class="nav-link {{ $activeMenu == 'notifikasi' ? 'active' : '' }}">
-                <i class="nav-icon fas fa-solid fa-award"></i>
+                <i class="nav-icon fas fa-solid fa-bell"></i>
                 <p>Notifikasi</p>
             </a>
         </li>
