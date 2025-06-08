@@ -28,7 +28,7 @@ class RekomendasiLombaController extends Controller
         $this->topsisService->prosesSemuaLombaDenganTopsis();
 
         $breadcrumb = (object) [
-            'title' => 'Data Lomba',
+            'title' => 'Data Rekomendasi Lomba',
             'list' => ['Lomba', 'Rekomendasi']
         ];
 
@@ -60,6 +60,7 @@ class RekomendasiLombaController extends Controller
 
         if ($user->role == 'mahasiswa') {
             $rekomendasi->where('mahasiswa_nim', $user->mahasiswa->nim)
+                ->where('status', '!=', 'Ditolak')
                 ->orderBy('skor', 'desc');
         } elseif ($user->role == 'dosen') {
             $ids = RekomendasiLombaModel::where('dosen_pembimbing_id', $user->dosen->id)
