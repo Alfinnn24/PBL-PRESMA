@@ -182,7 +182,7 @@
                                 <td>{{ $prestasi->prestasi->nama_prestasi }}</td>
                                 <td>{{ $prestasi->prestasi->lomba->penyelenggara }}</td>
                                 <td>{{ $prestasi->prestasi->lomba->tingkat }}</td>
-                                <td>{{ $prestasi->prestasi->lomba->tanggal_selesai }}</td>
+                                <td>{{ \Carbon\Carbon::parse($prestasi->prestasi->lomba->tanggal_selesai)->format('d/m/Y') }}</td>
                             </tr>
                         @empty
                             <tr>
