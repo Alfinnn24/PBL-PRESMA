@@ -13,35 +13,52 @@
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
 
+            {{-- PENCARIAN CUSTOM (Optional – Bisa dikembangkan lagi nanti) --}}
+            {{-- <div class="row mb-3">
+                <div class="col-md-6">
+                    <label>Cari Mahasiswa:</label>
+                    <div class="input-group">
+                        <input type="search" class="form-control" placeholder="Ketik nama/NIM..." id="customSearch">
+                        <div class="input-group-append">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div> --}}
+
             {{-- TABEL MAHASISWA BIMBINGAN --}}
-            <table class="table table-bordered table-striped table-hover table-sm display nowrap"
-                id="table_mahasiswa_bimbingan" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>NIM</th>
-                        <th>Nama Lengkap</th>
-                        <th>Jumlah Prestasi</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-            </table>
+            <div style="overflow-x:auto;">
+                <table class="table modern-table display nowrap" id="table_mahasiswa_bimbingan" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>NIM</th>
+                            <th>Nama Lengkap</th>
+                            <th>Jumlah Prestasi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
 
     {{-- MODAL --}}
-    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-body" id="modalBody">
-                <!-- Konten AJAX akan dimuat di sini -->
             </div>
         </div>
     </div>
 @endsection
 
+@push('css')
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
+@endpush
+
 @push('js')
     <script>
-        // Fungsi AJAX untuk membuka modal detail
+        // Fungsi AJAX untuk membuka modal detail prestasi
         function modalAction(url = '') {
             $('#modalBody').html('<div class="text-center">Loading...</div>');
             $('#myModal').modal('show');
@@ -58,7 +75,7 @@
         }
 
         $(document).ready(function () {
-            $('#table_mahasiswa_bimbingan').DataTable({
+            let table = $('#table_mahasiswa_bimbingan').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -72,7 +89,7 @@
                     { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
                     { data: "nim", className: "text-center" },
                     { data: "nama_lengkap" },
-                    { data: "prestasi_count",className: "text-center", searchable: false },
+                    { data: "prestasi_count", className: "text-center", searchable: false },
                     { data: "aksi", className: "text-center", orderable: false, searchable: false }
                 ],
                 order: [[1, 'asc']],
@@ -87,6 +104,14 @@
                     infoFiltered: "(difilter dari total _MAX_ data)"
                 }
             });
+
+            // Uncomment jika pakai customSearch
+            // $('#customSearch').on('keyup', function () {
+            //     table.search(this.value).draw();
+            // });
+
+            // Hilangkan tampilan filter default (opsional)
+            // $('#table_mahasiswa_bimbingan_wrapper').children().first().addClass('d-none');
         });
     </script>
 @endpush
