@@ -18,6 +18,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\LaporanPrestasiController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BobotKriteriaController;
 
 
 /*
@@ -123,6 +124,10 @@ Route::middleware(['authorize:admin'])->group(function () {
         Route::get('laporan-prestasi-export-excel', [LaporanPrestasiController::class, 'exportExcel'])->name('laporan-prestasi.exportExcel');
         Route::get('laporan-prestasi-export-pdf', [LaporanPrestasiController::class, 'exportPdf'])->name('laporan-prestasi.exportPdf');
     });
+
+    Route::get('/bobot', [BobotKriteriaController::class, 'index']);
+    Route::post('/bobot', [BobotKriteriaController::class, 'update']);
+
 
     //  Route::resource('laporan-prestasi', LaporanPrestasiController::class)->only(['index']);
 
