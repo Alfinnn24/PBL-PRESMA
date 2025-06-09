@@ -73,7 +73,7 @@
       <div class="row align-items-center">
         <div class="col-md-6 text-center mb-4 mb-md-0 animate-on-scroll rotate-in">
           <img
-            src="{{ asset('images/group.jpeg') }}"
+            src="{{ asset('images/kelas2a.jpg') }}"
             alt="Team"
             class="img-fluid interactive-card"
             style="max-height: 300px; border-radius: 15px;"
