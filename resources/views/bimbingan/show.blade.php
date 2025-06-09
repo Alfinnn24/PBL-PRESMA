@@ -6,24 +6,26 @@
             <h5>Prestasi Mahasiswa: {{ $mahasiswa->nama_lengkap }} ({{ $mahasiswa->nim }})</h5>
             <a href="{{ url('/dosen/bimbingan') }}" class="btn btn-secondary btn-sm">← Kembali ke Daftar</a>
         </div>
+
         <div class="card-body">
             {{-- Filter Tahun --}}
-            <form method="GET">
-                <select name="tahun" onchange="this.form.submit()" class="form-select form-select-sm">
-                    <option value="">-- Semua Tahun --</option>
-                    @foreach ($tahunList as $tahun)
-                        <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>
-                            {{ $tahun }}
-                        </option>
-                    @endforeach
-                </select>
+            <form method="GET" class="mb-3">
+                <div style="max-width: 200px;">
+                    <select name="tahun" onchange="this.form.submit()" class="form-select form-select-sm">
+                        <option value="">-- Semua Tahun --</option>
+                        @foreach ($tahunList as $tahun)
+                            <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>
+                                {{ $tahun }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
             </form>
 
             {{-- Tabel Prestasi --}}
-            <div class="table-responsive">
-                <table id="table_prestasi" class="table table-bordered table-striped table-hover table-sm display nowrap"
-                    style="width:100%">
-                    <thead class="table-light">
+            <div style="overflow-x:auto;">
+                <table id="table_prestasi" class="table modern-table display nowrap" style="width:100%">
+                    <thead>
                         <tr>
                             <th>No</th>
                             <th>Nama Prestasi</th>
@@ -45,7 +47,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center">Belum ada prestasi yang ditemukan.</td>
+                                <td colspan="6" class="text-center">Belum ada prestasi yang ditemukan.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -58,28 +60,25 @@
             </div>
         </div>
     </div>
-    @push('js')
-        <script>
-            $(document).ready(function () {
-                $('#table_prestasi').DataTable({
-                    paging: true,
-                    searching: false,
-                    ordering: false,
-                    info: true,
-                    responsive: true,
-                    lengthChange: false, // ← ini menonaktifkan "Show entries"
-                    language: {
-                        zeroRecords: "Tidak ada prestasi ditemukan",
-                        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                        infoEmpty: "Tidak ada data tersedia",
-                        infoFiltered: "(difilter dari total _MAX_ data)",
-                        paginate: {
-                            previous: "Previous",
-                            next: "Next"
-                        }
-                    }
-                });
-            });
-        </script>
-    @endpush
 @endsection
+
+@push('css')
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
+@endpush
+
+@push('js')
+    <script>
+        $(document).ready(function () {
+            $('#table_prestasi').DataTable({
+                paging: false,
+                searching: false,
+                ordering: false,
+                info: false,
+                responsive: true,
+                language: {
+                    zeroRecords: "Tidak ada prestasi ditemukan"
+                }
+            });
+        });
+    </script>
+@endpush
