@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             BidangMinatSeeder::class,
             DetailBidangKeahlianSeeder::class,
             DetailBidangMinatSeeder::class,
+            BobotKriteriaSeeder::class,
         ]);
     }
 }

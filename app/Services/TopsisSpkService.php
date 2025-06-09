@@ -6,6 +6,7 @@ use App\Models\MahasiswaModel;
 use App\Models\LombaModel;
 use App\Models\RekomendasiLombaModel;
 use App\Helpers\BidangKeahlianMatcher;
+use App\Models\BobotKriteriaModel;
 
 class TopsisSpkService
 {
@@ -91,8 +92,14 @@ class TopsisSpkService
         if (count($matriks) === 0)
             return [];
 
-        // Bobot
-        $bobot = [0.25, 0.30, 0.20, 0.25];
+        $bobotData = BobotKriteriaModel::pluck('bobot', 'kriteria')->toArray();
+        $bobot = [
+            $bobotData['sertifikasi'] ?? 0,
+            $bobotData['keahlian'] ?? 0,
+            $bobotData['pengalaman'] ?? 0,
+            $bobotData['prestasi'] ?? 0,
+        ];
+
 
         // Normalisasi
         $jumlahKuadrat = array_fill(0, count($kriteria), 0);
