@@ -127,7 +127,7 @@
         </li> --}}
         <li class="nav-item">
             <a class="nav-link" href="{{ url('logout') }}" role="button">
-                <i class="fa-solid fa-power-off" style="color: red;"></i>
+                <i class="fa-solid fa-right-from-bracket" style="color: red;"></i>
             </a>
         </li>
         <li class="nav-item">
