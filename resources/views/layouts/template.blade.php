@@ -115,6 +115,58 @@
             }
         });
     </script>
+    {{-- buat notifikasi --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUnreadNotifications();
+
+            function fetchUnreadNotifications() {
+                fetch('{{ route('notifikasi.unreaded') }}')
+                    .then(res => res.json())
+                    .then(data => {
+                        const count = data.data.length;
+                        document.getElementById('notif-count').textContent = count;
+                        document.getElementById('notif-header').textContent = `${count} Notifikasi Baru`;
+
+                        const notifItems = document.getElementById('notif-items');
+                        notifItems.innerHTML = '';
+
+                        data.data.slice(0, 5).forEach(item => {
+                            notifItems.insertAdjacentHTML('beforeend', `
+                        <a href="/notifikasi/read/${item.id}" class="dropdown-item d-flex" style="flex-direction: column; align-items: start; max-width: 260px; padding: 0.5rem 1rem;">
+                        <span style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">
+                        ${item.judul}
+                         </span>
+                         <span style="font-size: 0.85em; color: #6c757d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">
+                        ${item.pesan}
+                         </span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                    `);
+                        });
+
+                        if (count === 0) {
+                            notifItems.innerHTML =
+                                '<span class="dropdown-item text-center text-muted">Tidak ada notifikasi baru</span>';
+                        }
+                    });
+            }
+
+            window.markAllRead = function(e) {
+                e.preventDefault();
+                fetch('{{ route('notifikasi.readall') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                    },
+                }).then(res => res.json()).then(data => {
+                    if (data.success) fetchUnreadNotifications();
+                    else alert('Gagal: ' + data.message);
+                });
+            }
+        });
+    </script>
 
     @stack('js') <!-- Digunakan untuk memanggil custom js dari perintah push('js') pada masing-masing view -->
 </body>
