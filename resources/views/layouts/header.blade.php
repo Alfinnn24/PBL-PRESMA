@@ -99,32 +99,25 @@
             </div>
         </li> --}}
         <!-- Notifications Dropdown Menu -->
-        {{-- <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge"></span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <span class="dropdown-item dropdown-header">15 Notifications</span>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-envelope mr-2"></i> 4 new messages
-                    <span class="float-right text-muted text-sm">3 mins</span>
+        @if (Auth::user()->role === 'mahasiswa' || Auth::user()->role === 'admin')
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#" id="notifDropdown">
+                    <i class="far fa-bell"></i>
+                    <span class="badge badge-warning navbar-badge" id="notif-count">0</span>
                 </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-users mr-2"></i> 8 friend requests
-                    <span class="float-right text-muted text-sm">12 hours</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-file mr-2"></i> 3 new reports
-                    <span class="float-right text-muted text-sm">2 days</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-            </div>
-        </li> --}}
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notif-list">
+                    <span class="dropdown-item dropdown-header" id="notif-header">0 Notifikasi Baru</span>
+                    <div class="dropdown-divider"></div>
+                    <div id="notif-items">
+                        <!-- Notifikasi akan di-render lewat JS -->
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ route('notifikasi.index') }}" class="dropdown-item dropdown-footer">
+                        Lihat Semua Notifikasi
+                    </a>
+                </div>
+            </li>
+        @endif
         <li class="nav-item">
             <a class="nav-link" href="{{ url('logout') }}" role="button">
                 <i class="fa-solid fa-right-from-bracket" style="color: red;"></i>
@@ -138,8 +131,7 @@
                     @elseif(Auth::user()->role === 'dosen' && Auth::user()->dosen && Auth::user()->dosen->foto_profile){{ asset('storage/' . Auth::user()->dosen->foto_profile) }}
                     @elseif(Auth::user()->role === 'admin' && Auth::user()->admin && Auth::user()->admin->foto_profile){{ asset('storage/' . Auth::user()->admin->foto_profile) }}
                     @else{{ asset('images/default-profile2.jpg') }} @endif"
-                        alt="Profile"
-                        class="img-fluid"
+                        alt="Profile" class="img-fluid"
                         style="
                     width: 100%;
                     height: 100%;
