@@ -57,7 +57,7 @@
         </div>
         <div class="col-md-6 text-center animate-on-scroll zoom-in delay-200">
           <img
-            src="{{ asset('images/catat.jpg') }}"
+            src="{{ asset('images/gambarcatatan.jpg') }}"
             alt="catat"
             class="img-fluid interactive-card"
             style="max-height: 350px; border-radius: 15px;"
