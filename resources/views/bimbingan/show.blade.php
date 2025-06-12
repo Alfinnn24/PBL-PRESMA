@@ -9,7 +9,7 @@
 
         <div class="card-body">
             {{-- Filter Tahun --}}
-            <form method="GET" class="mb-3">
+            <!-- <form method="GET" class="mb-3">
                 <div style="max-width: 200px;">
                     <select name="tahun" onchange="this.form.submit()" class="form-select form-select-sm">
                         <option value="">-- Semua Tahun --</option>
@@ -20,7 +20,7 @@
                         @endforeach
                     </select>
                 </div>
-            </form>
+            </form> -->
 
             {{-- Tabel Prestasi --}}
             <div style="overflow-x:auto;">
