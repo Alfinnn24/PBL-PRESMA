@@ -26,6 +26,8 @@ class BobotKriteriaController extends Controller
 
     public function update(Request $request)
     {
+        // \Log::info('Request diterima', $request->all());
+        // \Log::info('Data bobot yang diterima:', $request->input('bobot'));
         $data = $request->input('bobot');
         $total = 0;
 
@@ -33,9 +35,12 @@ class BobotKriteriaController extends Controller
             $total += floatval($bobot);
         }
 
-        if (round($total, 4) !== 1.0) {
-            return redirect()->back()->withErrors('Total bobot harus sama dengan 1. Saat ini: ' . $total);
-        }
+        // if (abs($total - 1.0) > 0.001) {
+        //     return redirect()->back()->withErrors('Total bobot harus sama dengan 1. Saat ini: ' . $total);
+        // }
+
+        // \Log::info("Total bobot dihitung: $total");
+        // \Log::info("Perbandingan dengan 1.0: " . abs($total - 1.0));
 
         foreach ($data as $id => $bobot) {
             BobotKriteriaModel::where('id', $id)->update([

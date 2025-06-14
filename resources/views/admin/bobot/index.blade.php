@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Atur Bobot Kriteria</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="location.reload();"></button>
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -39,8 +39,8 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-warning" data-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal" onclick="location.reload();">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-simpan">Simpan</button>
             </div>
         </div>
     </form>
@@ -132,6 +132,24 @@
     }));
     updateChart(initialData);
 });
+
+    $('#btn-simpan').on('click', function () {
+        const form = $('#form-bobot-kriteria');
+        const url = form.attr('action');
+        const data = form.serialize();
+
+        $.post(url, data)
+            .done(function (response) {
+                // Optional: tampilkan notifikasi
+                //alert('Data berhasil disimpan!');
+                $('#myModal').modal('hide');
+                setTimeout(() => location.reload(), 500);
+            })
+            .fail(function (xhr) {
+                alert('Gagal menyimpan data.');
+                console.error(xhr.responseText);
+            });
+    });
 
 
 </script>
