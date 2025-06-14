@@ -15,12 +15,12 @@ class PendaftaranController extends Controller
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar Pendaftaran Lomba',
-            'list' => ['Home', 'Pendaftaran Lomba']
+            'title' => 'History Pendaftaran Lomba',
+            'list' => ['Home', 'History Lomba']
         ];
 
         $page = (object) [
-            'title' => 'Daftar pendaftaran lomba oleh mahasiswa'
+            'title' => 'History pendaftaran lomba oleh mahasiswa'
         ];
 
         $activeMenu = 'pendaftaranLomba';

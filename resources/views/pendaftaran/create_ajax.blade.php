@@ -12,14 +12,8 @@
 
                 <div class="form-group">
                     <label>Lomba</label>
-                    <select name="lomba_id" id="lomba_id" class="form-control" required>
-                        <option value="">- Pilih Lomba -</option>
-                        @foreach($lomba as $l)
-                            <option value="{{ $l->id }}" {{ (isset($lombaTerpilih) && $l->id == $lombaTerpilih) ? 'selected' : '' }}>
-                                {{ $l->nama }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <input type="text" class="form-control" value="{{ isset($lombaTerpilih) ? $lomba->firstWhere('id', $lombaTerpilih)->nama ?? '-' : '-' }}" readonly>
+                    <input type="hidden" name="lomba_id" id="lomba_id" value="{{ isset($lombaTerpilih) ? $lombaTerpilih : '' }}">
                     <small id="error-lomba_id" class="error-text form-text text-danger"></small>
                 </div>
 

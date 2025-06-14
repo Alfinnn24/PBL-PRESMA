@@ -12,11 +12,11 @@
         </div>
         <div class="card-body">
             <!-- @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-                @if (session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif -->
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+                    @if (session('error'))
+                        <div class="alert alert-danger">{{ session('error') }}</div>
+                    @endif -->
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label>Status</label>
@@ -28,15 +28,15 @@
                     </select>
                 </div>
                 <!-- <div class="col-md-3">
-                                                        <label>Kecocokan</label>
-                                                        <select id="filter_kecocokan" class="form-control">
-                                                            <option value="">- Semua -</option>
-                                                            <option value="tinggi">Sangat direkomendasikan</option>
-                                                            <option value="sedang">Direkomendasikan</option>
-                                                            <option value="rendah">Cukup direkomendasikan</option>
-                                                            <option value="srendah">Tidak direkomendasikan</option>
-                                                        </select>
-                                                    </div> -->
+                                                            <label>Kecocokan</label>
+                                                            <select id="filter_kecocokan" class="form-control">
+                                                                <option value="">- Semua -</option>
+                                                                <option value="tinggi">Sangat direkomendasikan</option>
+                                                                <option value="sedang">Direkomendasikan</option>
+                                                                <option value="rendah">Cukup direkomendasikan</option>
+                                                                <option value="srendah">Tidak direkomendasikan</option>
+                                                            </select>
+                                                        </div> -->
             </div>
 
             <table class="table modern-table display nowrap" id="table_rekomendasi" style="width:100%">
