@@ -43,7 +43,7 @@
                             <td class="col-9">{{ $prestasi->status }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Catatn Prestasi:</th>
+                            <th class="text-right col-3">Catatan Prestasi:</th>
                             <td class="col-9">{{ $prestasi->catatan }}</td>
                         </tr>
                     </table>
