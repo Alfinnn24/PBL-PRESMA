@@ -130,12 +130,14 @@
                 no_telp: {
                     required: function () {
                         return $('#role').val().toLowerCase() === 'mahasiswa';
-                    }
+                    },
+                    digits: true
                 },
                 no_telp_dosen: {
                     required: function () {
                         return $('#role').val().toLowerCase() === 'dosen';
-                    }
+                    },
+                    digits: true
                 },
                 alamat: {
                     required: function () {
@@ -178,7 +180,10 @@
                     maxlength: "Angkatan harus terdiri dari 4 digit.",
                     range: "Masukkan tahun yang valid antara 1900 dan " + new Date().getFullYear() + "."
                 },
-                no_telp: "No. Telepon wajib diisi untuk mahasiswa.",
+                no_telp: {
+                    required: "No. Telepon wajib diisi.",
+                    digits: "No. Telepon harus berupa angka."
+                },
                 alamat: "Alamat wajib diisi untuk mahasiswa.",
                 program_studi_id: "Program Studi wajib dipilih untuk mahasiswa.",
                 program_studi_id_dosen: "Program Studi wajib dipilih untuk dosen.",
