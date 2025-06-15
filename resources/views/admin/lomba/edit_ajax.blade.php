@@ -126,7 +126,8 @@ $(document).ready(function() {
             },
               penyelenggara: {
                 required: true,
-                maxlength: 255
+                minlength: 3,
+                maxlength: 100
             },
               tingkat: {
                 required: true,
@@ -136,15 +137,17 @@ $(document).ready(function() {
                 required: true
             },
               persyaratan: {
-                maxlength: 500
+                minlength: 3,
+                maxlength: 100
             },
               jumlah_peserta: {
                 digits: true,
-                min: 1
+                min: 1,
+                max: 10
             },
               link_registrasi: {
                 url: true,
-                maxlength: 255
+                maxlength: 50
             },
               tanggal_mulai: {
                 required: true,
